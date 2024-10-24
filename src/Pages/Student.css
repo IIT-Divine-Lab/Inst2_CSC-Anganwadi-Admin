@@ -1,0 +1,180 @@
+  .banner {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  }
+  
+  h1 {
+    font-size: 24px;
+    margin-bottom: 20px;
+    justify-content: space-between;
+    display: flex;
+  }
+  
+  .download-btn {
+    background-color: #4CAF50; /* Green */
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-bottom: 20px;
+  }
+  
+  .download-btn:hover {
+    background-color: #45a049; /* Darker green */
+  }
+  
+  table {
+    width: calc(100% - 150px);
+    margin-left: 150px;
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+  }
+  
+  th, td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+  }
+  
+  th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+  }
+  
+  tr:nth-child(even) {
+    background-color: #f9f9f9;
+  }
+  
+  tr:hover {
+    background-color: #f1f1f1;
+  }
+  
+  /* Centered pagination styles */
+  .pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+  }
+  
+  .pagination span {
+    font-size: 16px;
+    margin: 0px 10px;
+  }
+  
+  .pagination button {
+    margin: 0 5px;
+    padding: 5px 10px;
+    border: 1px solid #007BFF; /* Blue */
+    background-color: white;
+    color: #007BFF;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .pagination button:hover {
+    background-color: #007BFF; /* Blue */
+    color: white;
+  }
+  
+  .pagination button:disabled {
+    background-color: #e9ecef;
+    color: #6c757d;
+    cursor: not-allowed;
+  }
+  
+  .pagination-top {
+    display: flex;
+    align-items: center;
+    margin: 20px 0; /* Space above and below the pagination */
+  }
+  
+  .pagination-top span {
+    margin-right: 10px; /* Space between the label and input */
+    font-weight: bold; /* Make the label bold */
+  }
+  
+  .pagination-top input {
+    width: 60px; /* Set a fixed width for the input */
+    padding: 5px; /* Add some padding for better touch target */
+    margin-right: 10px; /* Space between the input and button */
+    border: 1px solid #ccc; /* Light gray border */
+    border-radius: 4px; /* Rounded corners */
+    font-size: 14px; /* Font size for readability */
+  }
+  
+  .pagination-top button {
+    padding: 6px 12px; /* Padding for the button */
+    background-color: #007bff; /* Bootstrap primary color */
+    color: white; /* Text color */
+    border: none; /* Remove border */
+    border-radius: 4px; /* Rounded corners */
+    cursor: pointer; /* Pointer cursor on hover */
+    transition: background-color 0.3s; /* Smooth transition for hover effect */
+  }
+  
+  .pagination-top button:hover {
+    background-color: #0056b3; /* Darker blue on hover */
+  }
+  
+  .pagination-top button:disabled {
+    background-color: #ccc; /* Gray background for disabled state */
+    cursor: not-allowed; /* Not allowed cursor */
+  }
+  
+  /* Download button styles */
+  .download-btn {
+    background-color: #4CAF50; /* Green */
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .download-btn:hover {
+    background-color: #45a049; /* Darker green */
+  }
+  
+  /* Table styles */
+  .table-container {
+    width: 100%; /* Ensure it takes the full width of the container */
+    margin-top: 20px; /* Space above the table */
+  }
+  
+  .table-container th, .table-container td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid #ddd; /* Add a bottom border for rows */
+  }
+  .table-container {
+    width: calc(100% - 150px); /* Adjust according to sidebar width */
+    margin-left: 100px; /* Space for sidebar */
+    overflow-x: auto; 
+    padding: 20px;
+    margin-top: 20px;/* Allow horizontal scrolling */
+  }
+  
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  th, td {
+    margin-left: 150px;
+    padding: 8px;
+    text-align: left;
+    border: 1px solid #ddd;
+  }
+  
+  .tick{
+    color: green;
+  }
+  
+  .cross{
+    color: red;
+  }
