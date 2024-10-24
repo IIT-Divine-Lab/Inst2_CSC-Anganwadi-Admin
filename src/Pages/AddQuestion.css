@@ -16,8 +16,8 @@
    }
 }
 
-.fieldLabel {
-}
+/* .fieldLabel {
+} */
 
 .formField {
    outline: none;
@@ -37,7 +37,7 @@
    align-items: center;
 }
 
-.ml-12{
+.ml-12 {
    margin-left: 12px;
 }
 

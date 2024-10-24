@@ -1,28 +1,31 @@
+// eslint-disable-next-line
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import { useNavigate } from "react-router-dom"; 
-import { FaEye } from "react-icons/fa"; 
-import { CiEdit } from "react-icons/ci"; 
-import { MdDelete } from "react-icons/md"; 
+import { useNavigate } from "react-router-dom";
+import { FaEye } from "react-icons/fa";
+import { CiEdit } from "react-icons/ci";
+import { MdDelete } from "react-icons/md";
 import "./Category.css";
 import { useSelector } from "react-redux";
 
 const Category = () => {
    const categories = useSelector((state) => state.categories);
    const [currentPage, setCurrentPage] = useState(1);
+   // eslint-disable-next-line
    const [pageInput, setPageInput] = useState(1);
    const recordsPerPage = 10;
    const totalPages = Math.ceil(categories.length / recordsPerPage);
    const navigate = useNavigate();
 
    const handleAddCategory = () => {
-      navigate("./AddCategory"); 
+      navigate("./AddCategory");
    };
 
    const handlePageChange = (pageNumber) => {
       setCurrentPage(pageNumber);
    };
 
+   // eslint-disable-next-line
    const handleGoToPage = () => {
       const pageNum = parseInt(pageInput);
       if (pageNum >= 1 && pageNum <= totalPages) {
@@ -61,11 +64,11 @@ const Category = () => {
                <tbody>
                   {currentRecords.length > 0 ? (
                      currentRecords.map((category, index) => (
-                        <tr key ={index}>
+                        <tr key={index}>
                            <td>{startIndex + index + 1}</td>
                            <td>{category.categoryName}</td>
-                           <td>{category.structureName}</td> 
-                           <td>{category.totalQuestions}</td> 
+                           <td>{category.structureName}</td>
+                           <td>{category.totalQuestions}</td>
                            <td>
                               <FaEye className="action-icon" title="View" />
                               <CiEdit className="action-icon" title="Edit" />

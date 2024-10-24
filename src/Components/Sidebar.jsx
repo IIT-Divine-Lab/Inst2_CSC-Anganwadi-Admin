@@ -13,7 +13,7 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
       if (location.pathname === "/questions/addquestion") {
          setIsCollapsed(true);
       }
-   }, [location.pathname]);
+   }, [location.pathname, setIsCollapsed]);
 
    const handleQuestionsClick = () => {
       setIsCollapsed(false);

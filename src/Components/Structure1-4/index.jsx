@@ -6,7 +6,7 @@ import Body from '../Common/Body';
 import ParentContainer from '../Common/ParentContainer';
 import Button from '../Common/Button';
 
-const Structure1to4 = ({ structure, questionText, questionImageBefore, questionImageAfter, totalOptions = 4, o1, o2, o3, o4, questionOnlyText, questionSound, questionSoundText }) => {
+const Structure1to4 = ({ structure, questionText, questionImageBefore, questionImageAfter, totalOptions = 4, option, questionOnlyText, questionSound, questionSoundText, enabledText, enabledSound }) => {
    // let question = {
    //    structure: 4,
    //    questionText: "Select the correct symbol inside the shape.",
@@ -60,21 +60,22 @@ const Structure1to4 = ({ structure, questionText, questionImageBefore, questionI
                   : structure === 4 ?
                      <>
                         {
-                           !questionOnlyText && questionSound ?
+                           enabledSound === true ?
                               <audio loops={false} id='audioQues' className='audioQues' src={questionSound}></audio>
                               : ""
                         }
                         <div className='audioContainer'>
                            {
-                              !questionOnlyText ?
+                              enabledSound === true ?
                                  <HiSpeakerWave onClick={questionSound !== undefined ? playAudio : () => { }} className='speaker' />
                                  : ""
                            }
                            {
-                              questionSoundText ?
-                                 <span style={{ marginLeft: "10px" }}>{questionSoundText}</span>
-                                 :
-                                 <span>{questionOnlyText}</span>
+                              enabledSound === true && enabledText === true ?
+                                 <span style={{ marginLeft: "10px" }}>{questionSoundText || "Text appear here"}</span>
+                                 : enabledSound === false ?
+                                    <span>{questionOnlyText || "Text appear here"}</span>
+                                    : ""
                            }
                         </div>
                      </>
@@ -84,13 +85,13 @@ const Structure1to4 = ({ structure, questionText, questionImageBefore, questionI
             <div className="quesOptionContainer">
                <div className='rowContainer' style={totalOptions >= 3 ? { flexWrap: "wrap" } : {}}>
                   <div className="optionContainer">
-                     <img src={o1} alt='' className="option" style={o1 === undefined ? { minHeight: "120px" } : {}} />
+                     <img src={option?.o1} alt='' className="option" style={option?.o1 === undefined ? { minHeight: "120px" } : {}} />
                      <input type="radio" name="q1" id="a1" className='chooseOption' />
                   </div>
                   {
                      totalOptions >= 2 ?
                         <div className="optionContainer">
-                           <img src={o2} alt='' className="option" style={o2 === undefined ? { minHeight: "120px" } : {}} />
+                           <img src={option?.o2} alt='' className="option" style={option?.o2 === undefined ? { minHeight: "120px" } : {}} />
                            <input type="radio" name="q1" id="a2" className='chooseOption' />
                         </div>
                         :
@@ -99,7 +100,7 @@ const Structure1to4 = ({ structure, questionText, questionImageBefore, questionI
                   {
                      totalOptions >= 3 ?
                         <div className="optionContainer" style={totalOptions >= 3 ? { marginLeft: "0px", marginTop: "40px" } : {}}>
-                           <img src={o3} alt='' className="option" style={o3 === undefined ? { minHeight: "120px" } : {}} />
+                           <img src={option?.o3} alt='' className="option" style={option?.o3 === undefined ? { minHeight: "120px" } : {}} />
                            <input type="radio" name="q1" id="a3" className='chooseOption' />
                         </div>
                         :
@@ -108,7 +109,7 @@ const Structure1to4 = ({ structure, questionText, questionImageBefore, questionI
                   {
                      totalOptions >= 4 ?
                         <div className="optionContainer" style={totalOptions >= 3 ? { marginTop: "40px" } : {}}>
-                           <img src={o4} alt='' className="option" style={o4 === undefined ? { minHeight: "120px" } : {}} />
+                           <img src={option?.o4} alt='' className="option" style={option?.o4 === undefined ? { minHeight: "120px" } : {}} />
                            <input type="radio" name="q1" id="a2" className='chooseOption' />
                         </div>
                         :
