@@ -1,96 +1,103 @@
+.my-config {
+   --uc-primary-oklch-dark: 97% 0 0;
+   --uc-primary-oklch-light: 10% 0 0;
+}
+
 .App {
-  text-align: center;
+   text-align: center;
 }
 
 .App-logo {
-  height: 40vmin;
-  pointer-events: none;
+   height: 40vmin;
+   pointer-events: none;
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+   .App-logo {
+      animation: App-logo-spin infinite 20s linear;
+   }
 }
 
 .App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+   background-color: #282c34;
+   min-height: 100vh;
+   display: flex;
+   flex-direction: column;
+   align-items: center;
+   justify-content: center;
+   font-size: calc(10px + 2vmin);
+   color: white;
 }
 
 .App-link {
-  color: #61dafb;
+   color: #61dafb;
 }
 
 @keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+   from {
+      transform: rotate(0deg);
+   }
+   to {
+      transform: rotate(360deg);
+   }
 }
 .sidebar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 150px;
-  height: 100%;
-  background-color: #333;
-  color: white;
-  padding: 10px;
-  transition: width 0.3s;
+   position: fixed;
+   top: 0;
+   left: 0;
+   width: 150px;
+   height: 100%;
+   background-color: #333;
+   color: white;
+   padding: 10px;
+   transition: width 0.3s;
 }
 
 .sidebar.collapsed {
-  width: 60px;
+   width: 60px;
 }
 
-.sidebar.Active{
-background-color: white;
+.sidebar.active {
+   background-color: white;
+   color: black;
 }
 
 .link-item {
-  display: flex;
-  align-items: center;
-  margin: 10px 0;
-  cursor: pointer;
-  height: 60px;
+   display: flex;
+   align-items: center;
+   margin: 10px 0;
+   cursor: pointer;
+   height: 60px;
 }
 
 .link-item .description {
-  margin-left: 12px;
+   margin-left: 12px;
 }
 
 .sidebar.collapsed .link-item {
-  justify-content: center;
+   justify-content: center;
 }
 
 .icon {
-  font-size: 24px;
+   font-size: 24px;
 }
 
 /* Add media queries for responsiveness */
 
 @media (max-width: 768px) {
-  .table-container {
-    width: 100%; /* Full width on smaller screens */
-    margin-left: 0; /* Remove margin on smaller screens */
-  }
-  th, td {
-    display: block; /* Stack cells on smaller screens */
-    width: 100%; /* Full width for each cell */
-  }
+   .table-container {
+      width: 100%; /* Full width on smaller screens */
+      margin-left: 0; /* Remove margin on smaller screens */
+   }
+   th,
+   td {
+      display: block; /* Stack cells on smaller screens */
+      width: 100%; /* Full width for each cell */
+   }
 }
 
 @media (max-width: 480px) {
-  .hide-on-small {
-    display: none; /* Hide less important columns */
-  }
+   .hide-on-small {
+      display: none; /* Hide less important columns */
+   }
 }

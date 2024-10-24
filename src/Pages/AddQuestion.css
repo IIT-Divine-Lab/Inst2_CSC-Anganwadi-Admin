@@ -1,0 +1,57 @@
+.w-45 {
+   width: 45%;
+}
+
+.flex-jc {
+   display: flex;
+   justify-content: center;
+}
+
+.formFieldContainer {
+   display: flex;
+   flex-direction: column;
+
+   &:not(:nth-child(1)) {
+      margin-top: 16px;
+   }
+}
+
+.fieldLabel {
+}
+
+.formField {
+   outline: none;
+   margin-top: 8px;
+   border: 1px solid #cacaca;
+   min-height: 40px;
+   border-radius: 8px;
+   background: transparent;
+
+   padding: 0 8px;
+   margin-top: 8px;
+}
+
+.customFileUploadContainer {
+   margin-top: 8px;
+   display: flex;
+   align-items: center;
+}
+
+.ml-12{
+   margin-left: 12px;
+}
+
+.spin {
+   animation-name: spin;
+   animation-duration: 1s;
+   animation-iteration-count: infinite;
+}
+
+@keyframes spin {
+   0% {
+      transform: rotate(0);
+   }
+   100% {
+      transform: rotate(360deg);
+   }
+}

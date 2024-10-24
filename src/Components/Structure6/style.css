@@ -1,0 +1,106 @@
+.quesImage {
+   width: 100%;
+   height: auto;
+}
+/* 
+.quesOptionContainer {
+   margin-top: 40px;
+   width: 70%;
+   display: flex;
+   flex-direction: column;
+   justify-content: center;
+   align-items: center;
+}
+
+.rowContainer {
+   display: flex;
+   align-items: center;
+   justify-content: center;
+}
+
+.optionContainer {
+   position: relative;
+   width: 150px;
+
+   &:nth-child(1),
+   &:nth-child(2) {
+      margin: 0;
+   }
+
+   &:not(:first-child) {
+      margin-left: 48px;
+   }
+}
+
+.option {
+   font-size: 88px;
+   border: 1px solid #d6d6d6;
+   width: 100%;
+   display: flex;
+   justify-content: center;
+   align-items: center;
+   background-color: #fffcf1;
+   border-radius: 16px;
+   color: #6a4a35;
+}
+
+.chooseOption {
+   position: absolute;
+   top: 0;
+   opacity: 0;
+   height: 100%;
+   width: 100%;
+   display: flex;
+   justify-content: center;
+   align-items: center;
+}
+
+.optionActive {
+   border-radius: 32px;
+   border: 3px solid #c7c552 !important;
+} */
+
+.s2OptionImage {
+   margin: 32px 0;
+   height: 350px;
+   width: auto;
+   position: relative;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+}
+
+.s2OptionImage img {
+   height: 100%;
+}
+
+.options {
+   position: absolute;
+   left: 50%;
+   top: 50%;
+   transform: translate(-50%, -50%);
+}
+
+.egg {
+   width: 55px;
+   margin: 22px;
+
+   &:nth-child(even) {
+      margin-left: 84px;
+   }
+}
+
+/* .audioQues {
+   width: 100%;
+   height: 20px;
+   background-color: red;
+}
+
+.speaker {
+   font-size: 64px;
+   color: white;
+   background-color: #6a4a35;
+   padding: 10px;
+   border-radius: 10px;
+   cursor: pointer;
+} */
