@@ -1,12 +1,15 @@
 // eslint-disable-next-line
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
-import { FaEye } from "react-icons/fa";
+// import { FaEye } from "react-icons/fa";
 import { CiEdit } from "react-icons/ci";
 import { MdDelete } from "react-icons/md";
 import "./Category.css";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import axios from "axios";
+import adminApiUrl from "../adminApiUrl";
+import { deleteCategory, setCategory } from "../redux/actions/actions";
 
 const Category = () => {
    const categories = useSelector((state) => state.categories);
@@ -16,9 +19,10 @@ const Category = () => {
    const recordsPerPage = 10;
    const totalPages = Math.ceil(categories.length / recordsPerPage);
    const navigate = useNavigate();
+   const dispatch = useDispatch();
 
    const handleAddCategory = () => {
-      navigate("./AddCategory");
+      navigate("./addcategory");
    };
 
    const handlePageChange = (pageNumber) => {
@@ -40,6 +44,35 @@ const Category = () => {
       startIndex,
       startIndex + recordsPerPage
    );
+
+   const fetchCategories = useCallback(async () => {
+      axios.get(adminApiUrl + "category")
+         .then((({ data }) => {
+            dispatch(setCategory(data.categories));
+         }))
+         .catch((error) => {
+            console.log(error);
+         })
+   }, [dispatch])
+
+   const handleCategoryEdit = (id, categoryName, number) => {
+      navigate("./editcategory", { state: { id, categoryName, number } })
+   }
+
+   const handleCategoryDelete = (id) => {
+      axios.delete(adminApiUrl + "category/" + id)
+         .then(({ data }) => {
+            dispatch(deleteCategory(data?.category))
+         })
+         .catch((error) => {
+            console.error(error);
+         })
+   }
+
+   useEffect(() => {
+      if (categories.length === 0)
+         fetchCategories();
+   }, [categories, fetchCategories])
 
    return (
       <section className="dashboard page">
@@ -67,12 +100,12 @@ const Category = () => {
                         <tr key={index}>
                            <td>{startIndex + index + 1}</td>
                            <td>{category.categoryName}</td>
-                           <td>{category.structureName}</td>
+                           <td>{category.structure}</td>
                            <td>{category.totalQuestions}</td>
                            <td>
-                              <FaEye className="action-icon" title="View" />
-                              <CiEdit className="action-icon" title="Edit" />
-                              <MdDelete className="action-icon" title="Delete" />
+                              {/* <FaEye className="action-icon" title="View" /> */}
+                              <CiEdit className="action-icon" title="Edit" onClick={() => handleCategoryEdit(category._id, category.categoryName, category.structure)} />
+                              <MdDelete className="action-icon" title="Delete" onClick={() => handleCategoryDelete(category._id)} />
                            </td>
 
                         </tr>

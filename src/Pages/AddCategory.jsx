@@ -1,34 +1,62 @@
 import React, { useState } from 'react';
 import './AddCategory.css';
 import { useDispatch } from 'react-redux';
-import { addCategory } from '../redux/actions/actions';
-import { useNavigate } from 'react-router-dom';
+import { addCategory, modifyCategory } from '../redux/actions/actions';
+import { useLocation, useNavigate } from 'react-router-dom';
+import adminApiUrl from '../adminApiUrl';
+import axios from 'axios';
+import { toast } from 'react-toastify';
 
 const AddCategory = () => {
-   const [categoryName, setCategoryName] = useState('');
-   const [number, setNumber] = useState(1);
+   const location = useLocation();
+   const id = location?.state?.id || false;
+   const [categoryName, setCategoryName] = useState(id ? location.state.categoryName : '');
+   const [number, setNumber] = useState(id ? location.state.number : 1);
    const dispatch = useDispatch();
    const navigate = useNavigate();
 
    const handleSave = () => {
-      console.log('Category Name:', categoryName);
-      console.log('Selected Number:', number);
+      console.log('Category Name:', categoryName, typeof categoryName);
+      console.log('Selected Number:', number, typeof number);
       let category = {
-         categoryName,
-         structureName: ` ${number}`, 
+         categoryName: categoryName,
+         structure: number,
+      }
+      if (id) {
+         if (categoryName === location.state.categoryName && number === location.state.number) {
+            toast.info("No Changes Found", {
+               autoClose: 2000
+            })
+            return;
+         }
+         axios.put(adminApiUrl + "category/" + id, category)
+            .then(({data}) => {
+               console.log(data);
+               dispatch(modifyCategory(data?.category));
+               navigate("/category");
+            })
+            .catch((error) => {
+               console.log(error);
+            })
+      }
+      else {
+         axios.post(adminApiUrl + "category", category)
+            .then(({data}) => {
+               console.log(data);
+               dispatch(addCategory(data?.category));
+               navigate("/category");
+            })
+            .catch((error) => {
+               console.log(error);
+            })
       }
 
-      dispatch(addCategory(category));
-
-      setCategoryName('');
-      setNumber(1);
-      navigate("/Category");
    };
 
    return (
       <section className='add-category-page'>
          <div>
-            <h1>Add Category</h1>
+            <h1>{id ? "Edit" : "Add"} Category</h1>
             <div>
                <label>
                   Category Name:

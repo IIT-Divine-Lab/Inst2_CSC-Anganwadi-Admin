@@ -17,17 +17,17 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
 
    const handleQuestionsClick = () => {
       setIsCollapsed(false);
-      navigate("/Questions");
+      navigate("/questions");
    };
 
    const handleStudentDataClick = () => {
       setIsCollapsed(false);
-      navigate("/Student");
+      navigate("/student");
    };
 
    const handleCategoryClick = () => {
       setIsCollapsed(false);
-      navigate("/Category");
+      navigate("/category");
    };
 
    return (
@@ -38,7 +38,7 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
             {!isCollapsed && <span className="description">Home</span>}
          </div>
          <div className="link-item" onClick={handleStudentDataClick}>
-            {location.pathname === "/Student" && (
+            {location.pathname === "/student" && (
                <div className="active"></div>
             )}
             <PiStudentFill className="icon" />
@@ -52,7 +52,7 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
             {!isCollapsed && <span className="description">Questions</span>}
          </div>
          <div className="link-item" onClick={handleCategoryClick}>
-            {location.pathname === "/Category" && (
+            {location.pathname === "/category" && (
                <div className="active"></div>
             )}
             <MdOutlineCategory className="icon" />

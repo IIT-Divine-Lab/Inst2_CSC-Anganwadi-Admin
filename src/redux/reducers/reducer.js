@@ -20,7 +20,7 @@ export const CategoryReducer = (state = [], { type, payload }) => {
       case ActionTypes.DELETE_CATEGORY: newCategory = state.filter((value) => value._id !== payload._id)
          return newCategory;
       case ActionTypes.MODIFY_CATEGORY: newCategory = state.filter((value) => value._id !== payload._id)
-         return [payload, newCategory];
+         return [payload, ...newCategory];
       default:
          return state;
    }
