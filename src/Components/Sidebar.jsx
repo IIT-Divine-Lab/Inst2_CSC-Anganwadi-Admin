@@ -17,7 +17,7 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
 
    const handleQuestionsClick = () => {
       setIsCollapsed(false);
-      navigate("/questions");
+      navigate("/Questions");
    };
 
    const handleStudentDataClick = () => {

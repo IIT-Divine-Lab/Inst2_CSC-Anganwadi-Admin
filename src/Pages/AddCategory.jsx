@@ -22,7 +22,7 @@ const AddCategory = () => {
 
       setCategoryName('');
       setNumber(1);
-      navigate("/category");
+      navigate("/Category");
    };
 
    return (
