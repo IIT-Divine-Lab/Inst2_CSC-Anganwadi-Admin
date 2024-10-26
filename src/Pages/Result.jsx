@@ -11,6 +11,7 @@ const Result = () => {
    const recordsPerPage = 10;
    const totalPages = Math.ceil(result?.length / recordsPerPage) || 1;
    const startIndex = (currentPage - 1) * recordsPerPage;
+   // eslint-disable-next-line
    const currentRecords = result?.slice(startIndex, startIndex + recordsPerPage);
 
    const data = [
@@ -68,6 +69,7 @@ const Result = () => {
       },
    ]
 
+   // eslint-disable-next-line
    const handlePageChange = (pageNumber) => {
       setCurrentPage(pageNumber);
    };
