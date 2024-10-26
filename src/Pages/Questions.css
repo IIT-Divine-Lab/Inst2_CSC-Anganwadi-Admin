@@ -1,81 +1,80 @@
 /* Questions.css */
 
 .banner {
-    background-color: #fff;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+   background-color: #fff;
+   padding: 20px;
+   border-radius: 8px;
+   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .add-category-btn {
-    background-color: #4CAF50;
-    color: white;
-    padding: 10px 15px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    margin-bottom: 20px;
-    font-weight: bold;
+   background-color: #4caf50;
+   color: white;
+   padding: 10px 15px;
+   border: none;
+   border-radius: 5px;
+   cursor: pointer;
+   margin-bottom: 20px;
+   font-weight: bold;
 }
 
 .add-category-btn:hover {
-    background-color: #45a047;
+   background-color: #45a047;
 }
 
 .table-container {
-    width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 20px;
+   border-collapse: collapse;
+   margin-bottom: 20px;
 }
 
 .table-container th,
 .table-container td {
-    padding: 12px 15px;
-    border: 1px solid #ddd;
-    text-align: left;
+   padding: 12px 15px;
+   border: 1px solid #ddd;
+   text-align: left;
 }
 
 .table-container th {
-    background-color: #f2f2f2;
+   background-color: #f2f2f2;
 }
 
 .table-container tr:nth-child(even) {
-    background-color: #f9f9f9;
+   background-color: #f9f9f9;
 }
 
 .table-container tr:hover {
-    background-color: #f1f1f1;
+   background-color: #f1f1f1;
 }
 
 .pagination {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 20px;
+   display: flex;
+   justify-content: space-between;
+   align-items: center;
+   margin-top: 20px;
 }
 
 .pagination button {
-    background-color: #007bff;
-    color: white;
-    border: none;
-    padding: 10px 15px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-weight: bold;
+   background-color: #007bff;
+   color: white;
+   border: none;
+   padding: 10px 15px;
+   border-radius: 5px;
+   cursor: pointer;
+   font-weight: bold;
 }
 
 .pagination button:hover {
-    background-color: #0056b3;
+   background-color: #0056b3;
 }
 
 .action-icon {
-    margin: 0 8px;
-    cursor: pointer;
-    font-size: 1.5rem;
-    color: #333;
-    transition: color 0.3s;
+   margin: 0 8px;
+   cursor: pointer;
+   font-size: 1.5rem;
+   color: #333;
+   transition: color 0.3s;
 }
 
 .action-icon:hover {
-    color: #007bff;
+   color: #007bff;
 }

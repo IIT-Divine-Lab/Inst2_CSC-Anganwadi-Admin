@@ -30,7 +30,7 @@
 
   table {
     width: calc(100% - 150px);
-    margin-left: 150px;
+    /* margin-left: 150px; */
     width: 100%;
     border-collapse: collapse;
     margin-bottom: 20px;
@@ -183,9 +183,8 @@
   }
 
   .table-container {
-    width: calc(100% - 150px);
     /* Adjust according to sidebar width */
-    margin-left: 100px;
+    /* margin-left: 100px; */
     /* Space for sidebar */
     overflow-x: auto;
     padding: 20px;

@@ -44,21 +44,21 @@ export const setQuestion = (Questions) => {
    
    export const addQuestion = (Questions) => {
    return {
-      type: ActionTypes.ADD_QUESTIONS,
+      type: ActionTypes.ADD_QUESTION,
       payload: Questions
    }
 }
 
    export const deleteQuestion = (Questions) => {
    return {
-      type: ActionTypes.DELETE_QUESTIONS,
+      type: ActionTypes.DELETE_QUESTION,
       payload: Questions
    }
 }
 
    export const modifyQuestions = (Questions) => {
    return {
-      type: ActionTypes.MODIFY_QUESTIONS,
+      type: ActionTypes.MODIFY_QUESTION,
       payload: Questions
    }
 }

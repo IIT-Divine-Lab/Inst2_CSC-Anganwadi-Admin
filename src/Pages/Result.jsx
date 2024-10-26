@@ -1,111 +1,143 @@
-// // eslint-disable-next-line
-// import React, { useEffect, useState } from "react";
-// import { toast } from "react-toastify";
-// import { useNavigate } from "react-router-dom";
-// import { FaEye } from "react-icons/fa";
-// import { CiEdit } from "react-icons/ci";
-// import { MdDelete } from "react-icons/md";
-// import "./Result.css";
-// import { useSelector } from "react-redux";
+import React, { useState } from 'react'
+import { useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
+import "./Result.css"
 
-// const Result = () => {
-//   const results = useSelector((state) => state.results);
-//   const [currentPage, setCurrentPage] = useState(1);
-//   // eslint-disable-next-line
-//   const [pageInput, setPageInput] = useState(1);
-//   const recordsPerPage = 10;
-//   const totalPages = Math.ceil(results.length / recordsPerPage);
-//   const navigate = useNavigate();
+const Result = () => {
+   const [pageInput, setPageInput] = useState(1);
+   const [currentPage, setCurrentPage] = useState(1);
 
-//   const handleAddResult = () => {
-//     navigate("./AddResult");
-//   };
+   const result = useSelector((state) => state?.questions || []);
+   const recordsPerPage = 10;
+   const totalPages = Math.ceil(result?.length / recordsPerPage) || 1;
+   const startIndex = (currentPage - 1) * recordsPerPage;
+   const currentRecords = result?.slice(startIndex, startIndex + recordsPerPage);
 
-//   const handlePageChange = (pageNumber) => {
-//     setCurrentPage(pageNumber);
-//   };
+   const data = [
+      {
+         categoryName: "Task 1",
+         totalQuestion: 6
+      },
+      {
+         categoryName: "Task 2",
+         totalQuestion: 4
+      },
+      {
+         categoryName: "Task 3",
+         totalQuestion: 5
+      },
+      {
+         categoryName: "Task 4",
+         totalQuestion: 3
+      },
+      {
+         categoryName: "Task 5",
+         totalQuestion: 8
+      },
+      {
+         categoryName: "Task 6",
+         totalQuestion: 4
+      },
+      {
+         categoryName: "Task 7",
+         totalQuestion: 3
+      },
+      {
+         categoryName: "Task 8",
+         totalQuestion: 5
+      },
+      {
+         categoryName: "Task 9",
+         totalQuestion: 5
+      },
+      {
+         categoryName: "Task 10",
+         totalQuestion: 5
+      },
+      {
+         categoryName: "Task 11",
+         totalQuestion: 5
+      },
+      {
+         categoryName: "Task 12",
+         totalQuestion: 5
+      },
+      {
+         categoryName: "Task 13",
+         totalQuestion: 5
+      },
+   ]
 
-//   // eslint-disable-next-line
-//   const handleGoToPage = () => {
-//     const pageNum = parseInt(pageInput);
-//     if (pageNum >= 1 && pageNum <= totalPages) {
-//       setCurrentPage(pageNum);
-//     } else {
-//       toast.error("Invalid page number.");
-//     }
-//   };
+   const handlePageChange = (pageNumber) => {
+      setCurrentPage(pageNumber);
+   };
 
-//   const startIndex = (currentPage - 1) * recordsPerPage;
-//   const currentRecords = results.slice(startIndex, startIndex + recordsPerPage);
+   const handleGoToPage = () => {
+      const pageNum = parseInt(pageInput);
+      if (pageNum >= 1 && pageNum <= totalPages) {
+         setCurrentPage(pageNum);
+      } else {
+         toast.error("Invalid page number.");
+      }
+   };
 
-//   return (
-//     <section className="dashboard page">
-//       <div className="banner">
-//         <h1>
-//           Result Data
-//           <button onClick={handleAddResult} className="add-category-btn">
-//             Add Result
-//           </button>
-//         </h1>
+   return (
+      <section>
+         <div className="banner">
+            <h1>Result</h1>
+            <div className="pagination-top">
+               <span>Go To</span>
+               <input
+                  type="number"
+                  value={pageInput}
+                  min={1}
+                  max={totalPages}
+                  onChange={(e) => setPageInput(e.target.value)}
+               />
+               <button onClick={handleGoToPage}>Go</button>
+            </div>
+            <div className='parentTableContainer'>
+               <table className='table-container' style={{ width: `calc(500px * ` + (data.length + 1) + `)` }}>
+                  <thead>
+                     <tr>
+                        <th rowSpan={2}>S. No</th>
+                        <th rowSpan={2}>Name</th>
+                        <th rowSpan={2}>Anganwadi Centre</th>
+                        <th rowSpan={2}>Age Group</th>
+                        {
+                           data.map((headData, index) => {
+                              return <th key={index} style={{ textAlign: "center" }} colSpan={headData.totalQuestion}>{headData.categoryName}</th>
+                           })
+                        }
+                     </tr>
+                     <tr>
+                        {
+                           data.flatMap((headData, index) => {
+                              return Array.from({ length: headData.totalQuestion }, (_, i) => (
+                                 <th style={{ textAlign: "center" }} key={`${index}-${i}`}>Trial {i + 1}</th>
+                              ))
+                           })
+                        }
+                     </tr>
+                     <tr>
+                        <td style={{ textAlign: "center" }}></td>
+                        <td style={{ textAlign: "center" }}></td>
+                        <td style={{ textAlign: "center" }}></td>
+                        <td style={{ textAlign: "center" }}></td>
+                        {
+                           data.flatMap((headData, index) => {
+                              return Array.from({ length: headData.totalQuestion }, (_, i) => (
+                                 <td style={{ textAlign: "center" }} key={`${index}-${i}`}>Trial {i + 1}</td>
+                              ))
+                           })
+                        }
+                     </tr>
+                  </thead>
+               </table>
+            </div>
+         </div>
+      </section>
+   )
+}
 
-//         <table className="table-container">
-//           <thead>
-//             <tr>
-//               <th>S.No</th>
-//               <th>Result</th>
-//               <th>Structure Name</th>
-//               <th>Total Questions</th>
-//               <th>Action</th>
-//             </tr>
-//           </thead>
-//           <tbody>
-//             {currentRecords.length > 0 ? (
-//               currentRecords.map(
-//                 (
-//                   result,
-//                   index
-//                 ) => (
-//                   <tr key={index}>
-//                     <td>{startIndex + index + 1}</td>
-//                     <td>{result.resultName}</td>{" "}
-//                     <td>{result.structureName}</td>
-//                     <td>{result.totalQuestions}</td>
-//                     <td>
-//                       <FaEye className="action-icon" title="View" />
-//                       <CiEdit className="action-icon" title="Edit" />
-//                       <MdDelete className="action-icon" title="Delete" />
-//                     </td>
-//                   </tr>
-//                 )
-//               )
-//             ) : (
-//               <tr>
-//                 <td colSpan="5">No Result Records Found!</td>{" "}
-//               </tr>
-//             )}
-//           </tbody>
-//         </table>
-
-//         <div className="pagination">
-//           <button
-//             onClick={() => handlePageChange(currentPage - 1)}
-//             disabled={currentPage === 1}
-//           >
-//             Previous
-//           </button>
-//           <span>
-//             Page {currentPage} of {totalPages}
-//           </span>
-//           <button
-//             onClick={() => handlePageChange(currentPage + 1)}
-//             disabled={currentPage === totalPages}
-//           >
-//             Next
-//           </button>
-//         </div>
-//       </div>
-//     </section>
-//   );
-// };
-
-// export default Result;
+export default Result

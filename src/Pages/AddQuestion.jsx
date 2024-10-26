@@ -1,45 +1,34 @@
-import React, { useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import "./AddQuestion.css"
 // eslint-disable-next-line
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import Structure1to4 from '../Components/Structure1-4';
 import { FileUploaderRegular } from '@uploadcare/react-uploader';
 import { FaSpinner, FaCheck } from "react-icons/fa6";
 import Button from '../Components/Common/Button';
+import { toast } from 'react-toastify';
+// eslint-disable-next-line
+import { useLocation, useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import adminApiUrl, { apiUrl } from '../adminApiUrl';
+import { addQuestion, setCategory } from '../redux/actions/actions';
 
 
 const AddQuestion = () => {
-   const categories = [
-      {
-         categoryName: "Category2",
-         structure: 2
-      },
-      {
-         categoryName: "Category3",
-         structure: 3
-      },
-      {
-         categoryName: "Category5",
-         structure: 5
-      },
-      {
-         categoryName: "Category4",
-         structure: 4
-      },
-      {
-         categoryName: "Category1",
-         structure: 1
-      }
-   ];
-   // const categories = useSelector((state) => state.categories);
-
+   const categories = useSelector((state) => state.categories);
+   const navigate = useNavigate();
+   const dispatch = useDispatch();
+   // const location = useLocation();
+   // const id = location?.state?.id || undefined;
+   // const [existingData, setExistingData] = useState({});
    const [quesCategory, setQuesCategory] = useState("Select question category");
    const [ageGroup, setAgeGroup] = useState("Select age group");
    const [questionImageBefore, setQuestionImageBefore] = useState(undefined);
    const [questionText, setQuestionText] = useState("");
    const [questionImageAfter, setQuestionImageAfter] = useState(undefined);
    const [workingStructure, setWorkingStructure] = useState(0);
-   const [totalOptions, setTotalOptions] = useState("Choose");
+   const [totalOptions, setTotalOptions] = useState(0);
+   const [correctAnswer, setCorrectAnswer] = useState("-");
    const [option, setOption] = useState();
    const [questionSound, setQuestionSound] = useState("");
    const [questionOnlyText, setQuestionOnlyText] = useState("");
@@ -132,7 +121,7 @@ const AddQuestion = () => {
 
    const updateQuestionSound = (e) => {
       if (!e.allEntries.length) {
-         let uuid = questionSound.split("/");
+         let uuid = questionSound?.split("/");
          deleteFromUploadCare(uuid[uuid.length - 2])
             .then(() => {
                setQuestionSound(undefined);
@@ -150,9 +139,132 @@ const AddQuestion = () => {
    }
 
    const handleQuestionSubmission = (e) => {
-      let submission = {};
+      if (quesCategory === "Select question category") {
+         toast.warn("Please choose category");
+         return;
+      }
+      else if (workingStructure === 1 && (ageGroup === "Select age group" || questionImageBefore === undefined || questionText === "" || questionImageAfter === undefined || totalOptions === 0 || option === undefined || correctAnswer === "-")) {
+         toast.warn("Please fill all details");
+         return;
+      }
+      else if (workingStructure === 2 && (ageGroup === "Select age group" || questionText === "" || questionImageAfter === undefined || totalOptions === 0 || option === undefined || correctAnswer === "-")) {
+         toast.warn("Please fill all details");
+         return;
+      }
+      else if (workingStructure === 3 && (ageGroup === "Select age group" || questionText === "" || totalOptions === 0 || option === undefined || correctAnswer === "-")) {
+         toast.warn("Please fill all details");
+         return;
+      }
+      else if (workingStructure === 4 && (ageGroup === "Select age group" || (enabledSound && questionSound === "") || (enabledText && enabledSound && questionSoundText === "") || (enabledText && !enabledSound && questionOnlyText === "") || questionText === "" || totalOptions === 0 || option === undefined || correctAnswer === "-")) {
+         toast.warn("Please fill all details");
+         return;
+      }
+      let submission = {
+         quesCategory,
+         ageGroup,
+         question: {
+            structure: workingStructure,
+            questionText,
+            questionType: ((workingStructure >= 1 && workingStructure <= 6) && workingStructure !== 5) ? "single" : "multi",
+            totalOptions,
+            option,
+            correctAnswer: [correctAnswer]
+         }
+      };
+      switch (workingStructure) {
+         case 1: submission = {
+            ...submission, question: { ...submission.question, questionImage: { before: questionImageBefore, after: questionImageAfter } }
+         }
+            break;
+         case 2: submission = {
+            ...submission, question: { ...submission.question, questionImage: { after: questionImageAfter } }
+         }
+            break;
+         case 4:
+            if (enabledSound && enabledText)
+               submission = { ...submission, question: { ...submission.question, questionSound, questionSoundText } }
+            else if (enabledSound)
+               submission = { ...submission, question: { ...submission.question, questionSound } }
+            if (!enabledSound && enabledText)
+               submission = { ...submission, question: { ...submission.question, questionOnlyText } }
+            break;
+
+         default:
+            break;
+      }
+      axios.post(apiUrl + "assessment", submission)
+         .then(({ data }) => {
+            console.log(data);
+            dispatch(addQuestion(data?.question))
+            navigate("/questions")
+         })
+         .catch((error) => {
+            console.error(error);
+         })
       console.log(submission);
    }
+
+   // const fetchEditableQuestion = useCallback(async () => {
+   //    axios.get(apiUrl + "assessment/" + id)
+   //       .then(({ data }) => {
+   //          let { ageGroup, quesCategory, question } = data.questions;
+   //          setExistingData(data.questions);
+            
+   //          setQuesCategory(quesCategory);
+   //          setAgeGroup(ageGroup);
+   //          setWorkingStructure(question?.structure);
+   //          setTotalOptions(question?.totalOptions);
+   //          setQuestionText(question?.questionText);
+   //          setOption(question?.option)
+   //          setCorrectAnswer(question?.questionType !== "multi" ? question?.correctAnswer[0] : question?.correctAnswer)
+   //          if (question?.structure === 1 || question?.structure === 2) {
+   //             setQuestionImageAfter(question?.questionImage?.after || undefined);
+   //             if (question.structure === 1)
+   //                setQuestionImageBefore(question?.questionImage?.before || undefined);
+   //          } else if (question?.structure === 4) {
+   //             if (question?.questionSound) {
+   //                setQuestionSound(question?.questionSound)
+   //                if (question?.questionSoundText){
+   //                   setQuestionSoundText(question?.questionSoundText)
+   //                   setEnabledText(true)
+   //                }
+   //                else {
+   //                   setEnabledText(false)
+   //                }
+   //                setEnabledSound(true)
+   //             } else if (question?.questionOnlyText) {
+   //                setQuestionOnlyText(question?.questionOnlyText)
+   //                setEnabledText(true)
+   //                setEnabledSound(false)
+   //             }
+   //          }
+
+   //       })
+   //       .catch(error => {
+   //          console.error(error);
+   //       })
+   // }, [id])
+
+   const fetchCategory = useCallback(async () => {
+      axios.get(adminApiUrl + "category")
+         .then(({ data }) => {
+            dispatch(setCategory(data.categories));
+         })
+         .catch((error) => {
+            console.log(error);
+         })
+   }, [dispatch])
+
+   // useEffect(() => {
+   //    if (id !== undefined) {
+   //       fetchEditableQuestion()
+   //    }
+   // }, [fetchEditableQuestion, id])
+
+   useEffect(() => {
+      if (categories.length === 0)
+         fetchCategory();
+   }, [fetchCategory, categories])
 
    return (
       <div className='banner flex-jc'>
@@ -163,17 +275,12 @@ const AddQuestion = () => {
                   setQuesCategory(e.target.value);
                   setWorkingStructure(categories.filter((cat) => cat.categoryName === e.target.value)[0]?.structure);
                }} id="category">
-                  {/* {
+                  <option value="Select question category">Select question category</option>
+                  {
                      categories.map((category, index) => {
                         return <option key={index} value={category.categoryName}>{category.categoryName}</option>
                      })
-                  } */}
-                  <option value="Select question category">Select question category</option>
-                  <option value="Category1">Category1</option>
-                  <option value="Category2">Category2</option>
-                  <option value="Category3">Category3</option>
-                  <option value="Category4">Category4</option>
-                  <option value="Category5">Category5</option>
+                  }
                </select>
             </div>
             <hr />
@@ -253,7 +360,6 @@ const AddQuestion = () => {
                                     maxLocalFileSizeBytes={1500000}
                                     multiple={false}
                                     imgOnly={true}
-                                    confirmUpload={true}
                                     sourceList="local, camera, gdrive, gphotos"
                                     useCloudImageEditor={false}
                                     classNameUploader="my-config uc-light"
@@ -276,7 +382,6 @@ const AddQuestion = () => {
                                        pubkey="f0b48dbfeaff1298ebed"
                                        maxLocalFileSizeBytes={5000000}
                                        multiple={false}
-                                       confirmUpload={true}
                                        sourceList="local, url, gdrive"
                                        useCloudImageEditor={false}
                                        classNameUploader="my-config uc-light"
@@ -289,39 +394,66 @@ const AddQuestion = () => {
                      <div className="formFieldContainer">
                         <label className="fieldLabel">Select Total Options</label>
                         <select name="totalOptions" disabled={option !== undefined ? true : false} id="totalOptions" value={totalOptions} onChange={(e) => setTotalOptions(e.target.value)} className="formField">
-                           <option value="Choose">Select Total Options</option>
+                           <option value={0}>Select Total Options</option>
                            {
                               workingStructure !== 5 ?
                                  <>
-                                    <option value="2">2</option>
-                                    <option value="3">3</option>
-                                    <option value="4">4</option>
+                                    <option value={2}>2</option>
+                                    <option value={3}>3</option>
+                                    <option value={4}>4</option>
                                  </>
                                  :
                                  <>
-                                    <option value="10">10</option>
-                                    <option value="15">15</option>
-                                    <option value="20">20</option>
+                                    <option value={10}>10</option>
+                                    <option value={15}>15</option>
+                                    <option value={20}>20</option>
                                  </>
                            }
                         </select>
                      </div>
                      <div className='formFieldContainer'>
-                        <label className='fieldLabel'> {totalOptions !== "Choose" ? "Select " + totalOptions + " photos as options" : ""}</label>
-                        <div className='customFileUploadContainer'>
-                           <FileUploaderRegular
-                              pubkey="f0b48dbfeaff1298ebed"
-                              maxLocalFileSizeBytes={1500000}
-                              multipleMax={totalOptions}
-                              multipleMin={totalOptions}
-                              imgOnly={true}
-                              confirmUpload={true}
-                              sourceList="local, camera, gdrive, gphotos"
-                              useCloudImageEditor={false}
-                              classNameUploader="my-config uc-light"
-                              onChange={(e) => updateOptions(e.allEntries)}
-                           />
-                        </div>
+                        <label className='fieldLabel'> {totalOptions !== 0 ? "Select " + totalOptions + " photos as options" : ""}</label>
+                        {
+                           totalOptions !== 0 ?
+                              <>
+                                 <div className='customFileUploadContainer'>
+                                    <FileUploaderRegular
+                                       pubkey="f0b48dbfeaff1298ebed"
+                                       maxLocalFileSizeBytes={1500000}
+                                       multipleMax={totalOptions}
+                                       multipleMin={totalOptions}
+                                       imgOnly={true}
+                                       confirmUpload={true}
+                                       sourceList="local, camera, gdrive, gphotos"
+                                       useCloudImageEditor={false}
+                                       classNameUploader="my-config uc-light"
+                                       onChange={(e) => updateOptions(e.allEntries)}
+                                    />
+                                 </div>
+                                 {
+
+                                    workingStructure !== 6 ?
+                                       <div className="formFieldContainer">
+                                          <label className="fieldLabel">Select Correct Answer</label>
+                                          <select name="correctAnswer" id="correctAnswer" value={correctAnswer} onChange={(e) => setCorrectAnswer(e.target.value)} className="formField">
+                                             <option value="-">Select Correct Answer</option>
+                                             {
+                                                [1, 2, 3, 4].map((num, index) => {
+                                                   if (totalOptions >= num) {
+                                                      return <option key={index} value={"o" + num}>{num}</option>
+                                                   }
+                                                   else return "";
+                                                })
+                                             }
+
+                                          </select>
+                                       </div>
+                                       : ""
+                                 }
+                              </>
+                              :
+                              ""
+                        }
                      </div>
 
                      {/* Submit Button */}

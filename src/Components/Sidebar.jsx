@@ -30,6 +30,11 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
       navigate("/category");
    };
 
+   const handleResultClick = () => {
+      setIsCollapsed(false);
+      navigate("/result");
+   };
+
    return (
       <div className={`sidebar ${isCollapsed ? "collapsed" : ""}`}>
          <div className="link-item" onClick={() => navigate("/")}>
@@ -57,6 +62,13 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
             )}
             <MdOutlineCategory className="icon" />
             {!isCollapsed && <span className="description">Category</span>}
+         </div>
+         <div className="link-item" onClick={handleResultClick}>
+            {location.pathname === "/result" && (
+               <div className="active"></div>
+            )}
+            <MdOutlineCategory className="icon" />
+            {!isCollapsed && <span className="description">Result</span>}
          </div>
       </div>
    );

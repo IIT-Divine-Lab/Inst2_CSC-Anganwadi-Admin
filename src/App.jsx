@@ -8,7 +8,7 @@ import AddCategoryPage from "./Pages/AddCategory";
 import Category from "./Pages/Category";
 import AddQuestion from "./Pages/AddQuestion";
 import Questions from "./Pages/Questions";
-// import Result from "./Pages/Result";
+import Result from "./Pages/Result";
 
 
 const App = () => {
@@ -21,14 +21,15 @@ const App = () => {
             style={isCollapsed ? { marginLeft: "90px" } : { marginLeft: "170px" }}
          >
             <Routes>
-               <Route path="/student" element={<StudentData />} />
                <Route path="/" element={<div>Welcome Home!</div>} />
-               <Route path="/category/addcategory" element={<AddCategoryPage />} />
-               <Route path="/category/editcategory" element={<AddCategoryPage />} />
-               <Route path="/category" element={<Category />} />
+               <Route path="/student" element={<StudentData />} />
                <Route path="/questions" element={<Questions />} />
                <Route path="/questions/addquestion" element={<AddQuestion />} />
-               {/* <Route path="/result" element={<Result />} /> */}
+               <Route path="/questions/editquestion" element={<AddQuestion />} />
+               <Route path="/category" element={<Category />} />
+               <Route path="/category/addcategory" element={<AddCategoryPage />} />
+               <Route path="/category/editcategory" element={<AddCategoryPage />} />
+               <Route path="/result" element={<Result />} />
             </Routes>
          </div>
       </Router>

@@ -1,36 +1,34 @@
 [
-    {
-        "structure": "1",
-        "questionText":"Select the correct symbol inside the shape.",
-        "questionType":"Single",
-        "questionImage":{
-            "before":"questionImageBefore",
-            "after":"questionImageAfter"
-        },
-        "totalOptions":"4",
-        "option":{
-            "o1":"optiion1",
-            "o2":"optiion1",
-            "o3":"optiion1",
-            "o4":"optiion1"
-        }
-    },
-    {
-        "structure": "1",
-        "questionText":"Select the correct symbol inside the shape.",
-        "questionType":"Single",
-        "questionImage":{
-            "before":"questionImageBefore",
-            "after":"questionImageAfter"
-        },
-        "totalOptions":"4",
-        "option":{
-            "o1":"optiion1",
-            "o2":"optiion1",
-            "o3":"optiion1",
-            "o4":"optiion1"
-        }
-    }
-
-    
+   {
+      "structure": "1",
+      "questionText": "Select the correct symbol inside the shape.",
+      "questionType": "Single",
+      "questionImage": {
+         "before": "questionImageBefore",
+         "after": "questionImageAfter"
+      },
+      "totalOptions": "4",
+      "option": {
+         "o1": "optiion1",
+         "o2": "optiion1",
+         "o3": "optiion1",
+         "o4": "optiion1"
+      }
+   },
+   {
+      "structure": "1",
+      "questionText": "Select the correct symbol inside the shape.",
+      "questionType": "Single",
+      "questionImage": {
+         "before": "questionImageBefore",
+         "after": "questionImageAfter"
+      },
+      "totalOptions": "4",
+      "option": {
+         "o1": "optiion1",
+         "o2": "optiion1",
+         "o3": "optiion1",
+         "o4": "optiion1"
+      }
+   }
 ]
