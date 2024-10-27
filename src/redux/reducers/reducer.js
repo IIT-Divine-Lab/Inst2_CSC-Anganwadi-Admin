@@ -41,3 +41,12 @@ export const QuestionReducer = (state = [], { type, payload }) => {
          return state;
    }
 }
+
+export const ResultReducer = (state = [], { type, payload }) => {
+   switch (type) {
+      case ActionTypes.SET_RESULT:
+         return payload;
+      default:
+         return state;
+   }
+}

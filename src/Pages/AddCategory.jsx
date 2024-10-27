@@ -12,6 +12,7 @@ const AddCategory = () => {
    const id = location?.state?.id || false;
    const [categoryName, setCategoryName] = useState(id ? location.state.categoryName : '');
    const [number, setNumber] = useState(id ? location.state.number : 1);
+   const [totalQuestions, setTotalQuestions] = useState(id ? location.state.totalQuestions : 0);
    const dispatch = useDispatch();
    const navigate = useNavigate();
 
@@ -21,16 +22,17 @@ const AddCategory = () => {
       let category = {
          categoryName: categoryName,
          structure: number,
+         totalQuestions: totalQuestions
       }
       if (id) {
-         if (categoryName === location.state.categoryName && number === location.state.number) {
+         if (categoryName === location.state.categoryName && number === location.state.number && totalQuestions === location.state.totalQuestions) {
             toast.info("No Changes Found", {
                autoClose: 2000
             })
             return;
          }
          axios.put(adminApiUrl + "category/" + id, category)
-            .then(({data}) => {
+            .then(({ data }) => {
                console.log(data);
                dispatch(modifyCategory(data?.category));
                navigate("/category");
@@ -41,7 +43,7 @@ const AddCategory = () => {
       }
       else {
          axios.post(adminApiUrl + "category", category)
-            .then(({data}) => {
+            .then(({ data }) => {
                console.log(data);
                dispatch(addCategory(data?.category));
                navigate("/category");
@@ -78,6 +80,17 @@ const AddCategory = () => {
                         </option>
                      ))}
                   </select>
+               </label>
+            </div>
+            <div>
+               <label>
+                  Total Questions:
+                  <input
+                     type="text"
+                     value={totalQuestions}
+                     onChange={(e) => setTotalQuestions(e.target.value)}
+                     placeholder="Enter total no. of Questions"
+                  />
                </label>
             </div>
             <button onClick={handleSave}>Save</button>

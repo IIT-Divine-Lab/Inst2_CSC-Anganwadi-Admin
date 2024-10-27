@@ -55,8 +55,8 @@ const Category = () => {
          })
    }, [dispatch])
 
-   const handleCategoryEdit = (id, categoryName, number) => {
-      navigate("./editcategory", { state: { id, categoryName, number } })
+   const handleCategoryEdit = (id, categoryName, number, totalQuestions) => {
+      navigate("./editcategory", { state: { id, categoryName, number, totalQuestions } })
    }
 
    const handleCategoryDelete = (id) => {
@@ -104,7 +104,7 @@ const Category = () => {
                            <td>{category.totalQuestions}</td>
                            <td>
                               {/* <FaEye className="action-icon" title="View" /> */}
-                              <CiEdit className="action-icon" title="Edit" onClick={() => handleCategoryEdit(category._id, category.categoryName, category.structure)} />
+                              <CiEdit className="action-icon" title="Edit" onClick={() => handleCategoryEdit(category._id, category.categoryName, category.structure, category.totalQuestions)} />
                               <MdDelete className="action-icon" title="Delete" onClick={() => handleCategoryDelete(category._id)} />
                            </td>
 

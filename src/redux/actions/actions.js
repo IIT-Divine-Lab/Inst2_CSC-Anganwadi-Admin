@@ -5,7 +5,7 @@ export const setStudents = (students) => {
       type: ActionTypes.SET_STUDENTS,
       payload: students
    }
-} 
+}
 
 export const setCategory = (categories) => {
    return {
@@ -36,29 +36,36 @@ export const modifyCategory = (category) => {
 }
 
 export const setQuestion = (Questions) => {
-      return{
+   return {
       type: ActionTypes.SET_QUESTIONS,
       payload: Questions
-      }
    }
-   
-   export const addQuestion = (Questions) => {
+}
+
+export const addQuestion = (Questions) => {
    return {
       type: ActionTypes.ADD_QUESTION,
       payload: Questions
    }
 }
 
-   export const deleteQuestion = (Questions) => {
+export const deleteQuestion = (Questions) => {
    return {
       type: ActionTypes.DELETE_QUESTION,
       payload: Questions
    }
 }
 
-   export const modifyQuestions = (Questions) => {
+export const modifyQuestions = (Questions) => {
    return {
       type: ActionTypes.MODIFY_QUESTION,
       payload: Questions
+   }
+}
+
+export const setResults = (Results) => {
+   return {
+      type: ActionTypes.SET_RESULT,
+      payload: Results
    }
 }
