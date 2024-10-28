@@ -1,26 +1,28 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { toast } from 'react-toastify';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
-import studentData from '../data/StudentData.json';
+// import studentData from '../data/StudentData.json';
 import { RxCross2 } from "react-icons/rx";
 import { TiTick } from "react-icons/ti";
 import "./Student.css"
-import {useDispatch, useSelector} from 'react-redux';
-import {setStudents} from '../redux/actions/actions.js';
+import { useDispatch, useSelector } from 'react-redux';
+import { setStudents } from '../redux/actions/actions.js';
+import axios from "axios";
+import { apiUrl } from "../adminApiUrl.jsx";
+import { TbRefresh } from "react-icons/tb";
 
 const Student = () => {
    const dispatch = useDispatch();
    const students = useSelector((state) => (state.student));
-   const[currentPage,setCurrentPage] = useState(1);
-   const[pageInput, setPageInput] = useState(1);
+   const [currentPage, setCurrentPage] = useState(1);
+   const [pageInput, setPageInput] = useState(1);
+   const [contentRefresh, setContentRefresh] = useState(false);
    const recordsPerPage = 10;
    const totalPages = Math.ceil(students.length / recordsPerPage);
 
-   useEffect(() => {
-      if(students.length === 0)
-         dispatch(setStudents(studentData));
-   }, [dispatch, students]);
+   const startIndex = (currentPage - 1) * recordsPerPage;
+   const currentRecords = students.slice(startIndex, startIndex + recordsPerPage);
 
    const handleDownloadExcel = () => {
       if (students.length === 0) {
@@ -53,7 +55,7 @@ const Student = () => {
          })))
          console.log(worksheet);
          let sinCentre = str.split(" ");
-         let centreName ="";
+         let centreName = "";
          for (let i = 0; i < sinCentre.length; i++) {
             centreName += sinCentre[i];
          }
@@ -78,22 +80,53 @@ const Student = () => {
       }
    };
 
-   const startIndex = (currentPage - 1) * recordsPerPage;
-   const currentRecords = students.slice(startIndex, startIndex + recordsPerPage);
+   const fetchStudentData = useCallback(async () => {
+      axios.get(apiUrl + "user")
+         .then(({ data }) => {
+            // console.log(data);
+            if (data.message !== "No Data")
+               dispatch(setStudents(data.students));
+            else 
+               dispatch(setStudents([]));
+         })
+         .catch(error => {
+            console.error(error);
+         })
+         .finally(() => {
+            setTimeout(() => {
+               setContentRefresh(false);
+            }, 3000);
+         })
+   }, [dispatch])
+
+   useEffect(() => {
+      if (students.length === 0)
+         fetchStudentData()
+   }, [fetchStudentData, students]);
 
    return (
       <section>
          <div className="banner">
             <h1>
                Student Data
-               <button onClick={handleDownloadExcel} className="download-btn">Export</button>
+               <span style={{ display: "flex", alignItems: "center" }}>
+                  <span style={{ border: "2px solid #333", marginRight: "12px", cursor: "pointer" }} onClick={() => {
+                     setContentRefresh(true);
+                     fetchStudentData()
+                  }}>
+                     <TbRefresh style={{ padding: "5px" }} className={contentRefresh ? 'spin2' : ''} />
+                  </span>
+                  <button onClick={handleDownloadExcel} className="download-btn">Export</button>
+               </span>
             </h1>
 
             <div className="pagination-top">
                <span>Go To </span>
                <input
                   type="number"
-                  value={pageInput} // Use the renamed input state
+                  min={1}
+                  max={totalPages}
+                  value={pageInput}
                   onChange={(e) => setPageInput(e.target.value)}
                   onKeyUp={(e) => e.key === 'Enter' && handleGoToPage()}
                />
@@ -120,7 +153,7 @@ const Student = () => {
                            <td>{student.rollno}</td>
                            <td>{student.age}</td>
                            <td>{student.awcentre}</td>
-                           <td>{student.assessmentId ? <TiTick className="tick" /> : <RxCross2 className="cross" />}</td>
+                           <td>{student.assessId ? <TiTick className="tick" /> : <RxCross2 className="cross" />}</td>
                         </tr>
                      ))
                   ) : (

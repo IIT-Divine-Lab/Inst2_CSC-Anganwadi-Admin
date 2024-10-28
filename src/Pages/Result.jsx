@@ -5,6 +5,7 @@ import "./Result.css"
 import adminApiUrl, { apiUrl } from '../adminApiUrl';
 import axios from 'axios';
 import { setCategory, setResults } from '../redux/actions/actions';
+import { TbRefresh } from 'react-icons/tb';
 
 const Result = () => {
    const [pageInput, setPageInput] = useState(1);
@@ -13,6 +14,7 @@ const Result = () => {
 
    const result = useSelector((state) => state?.result || []);
    const category = useSelector((state) => state?.categories || []);
+   const [contentRefresh, setContentRefresh] = useState(false);
    const recordsPerPage = 10;
    const totalPages = Math.ceil(result?.length / recordsPerPage) || 1;
    const startIndex = (currentPage - 1) * recordsPerPage;
@@ -40,6 +42,9 @@ const Result = () => {
          .catch((error) => {
             console.error(error)
          })
+         .finally(() => {
+            setContentRefresh(false);
+         })
    }, [dispatch])
 
    const fetchCategories = useCallback(async () => {
@@ -49,6 +54,11 @@ const Result = () => {
          }))
          .catch((error) => {
             console.log(error);
+         })
+         .finally(() => {
+            setTimeout(() => {
+               setContentRefresh(false);
+            }, 3000);
          })
    }, [dispatch])
 
@@ -67,10 +77,12 @@ const Result = () => {
          for (let i = 0; i < resQues.length; i++) {
             let obj;
             if (cat === resQues[i].quesId.quesCategory) {
+               console.log(resQues[i].quesId)
                obj = {
                   quesId: resQues[i].quesId._id,
                   answerMarked: resQues[i].AnswerMarked,
-                  correctAnswer: resQues[i].quesId.question.correctAnswer
+                  correctAnswer: resQues[i].quesId.question.correctAnswer,
+                  questionType: resQues[i].quesId.question.questionType
                }
                data.push(obj);
             }
@@ -84,23 +96,34 @@ const Result = () => {
       let arr = new Array(total).fill("-");
       let cat = resQues[category];
       if (cat !== undefined) {
-         console.log(cat);
          for (let i = 0; i < cat.length; i++) {
-            if (cat[i].answerMarked.length === cat[i].correctAnswer.length) {
-               console.log("1");
-               for (let j = 0; j < cat[i].correctAnswer.length; j++) {
-                  if (!(cat[i].correctAnswer.includes(cat[i].answerMarked[j]))) {
-                     console.log("2");
-                     arr[i] = 0;
-                     console.log(cat[i].quesId)
+            if (cat[i].questionType === "single") {
+               if (cat[i].answerMarked.length === cat[i].correctAnswer.length) {
+                  for (let j = 0; j < cat[i].correctAnswer.length; j++) {
+                     if (!(cat[i].correctAnswer.includes(cat[i].answerMarked[j]))) {
+                        arr[i] = 0;
+                        console.log(cat[i].quesId)
+                     }
+                     else {
+                        arr[i] = 1;
+                     }
                   }
-                  else {
-                     arr[i] = 1;
-                  }
+               }
+               else {
+                  arr[i] = 0;
                }
             }
             else {
-               arr[i] = 0;
+               let a = 0;
+               for (let j = 0; j < cat[i].correctAnswer.length; j++) {
+                  if (!(cat[i].correctAnswer.includes(cat[i].answerMarked[j]))) {
+                     a += 0;
+                  }
+                  else {
+                     a += 1;
+                  }
+               }
+               arr[i] = a;
             }
          }
       }
@@ -119,7 +142,15 @@ const Result = () => {
    return (
       <section>
          <div className="banner">
-            <h1>Result</h1>
+            <h1>Result
+               <span style={{ border: "2px solid #333", cursor: "pointer" }} onClick={() => {
+                  setContentRefresh(true);
+                  fetchCategories();
+                  fetchResults();
+               }}>
+                  <TbRefresh style={{ padding: "5px" }} className={contentRefresh ? 'spin2' : ''} />
+               </span>
+            </h1>
             <div className="pagination-top">
                <span>Go To</span>
                <input
@@ -174,7 +205,7 @@ const Result = () => {
                               {
                                  category.flatMap((headData, index) => {
                                     let categoryRecords = score(headData.categoryName, resQuestion, headData?.totalQuestions);
-                                    console.log(categoryRecords);
+
                                     if (headData?.totalQuestions)
                                        return Array.from({ length: headData?.totalQuestions || 0 }, (_, i) => (
                                           <td style={{ textAlign: "center" }} key={`${index}-${i}`}>{categoryRecords[i]}</td>

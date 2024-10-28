@@ -12,6 +12,9 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import adminApiUrl, { apiUrl } from '../adminApiUrl';
 import { addQuestion, setCategory } from '../redux/actions/actions';
+import Structure5 from '../Components/Structure5';
+import Select from 'react-select';
+import Structure6 from '../Components/Structure6';
 
 
 const AddQuestion = () => {
@@ -28,6 +31,7 @@ const AddQuestion = () => {
    const [questionImageAfter, setQuestionImageAfter] = useState(undefined);
    const [workingStructure, setWorkingStructure] = useState(0);
    const [totalOptions, setTotalOptions] = useState(0);
+   const [multiCorrectAnswer, setMultiCorrectAnswer] = useState([]);
    const [correctAnswer, setCorrectAnswer] = useState("-");
    const [option, setOption] = useState();
    const [questionSound, setQuestionSound] = useState("");
@@ -35,6 +39,9 @@ const AddQuestion = () => {
    const [questionSoundText, setQuestionSoundText] = useState("");
    const [enabledSound, setEnabledSound] = useState(true);
    const [enabledText, setEnabledText] = useState(true);
+   const [answerImage, setAnswerImage] = useState(undefined);
+   const [activeAnswerImage, setActiveAnswerImage] = useState(undefined);
+   const [inactiveAnswerImage, setInactiveAnswerImage] = useState(undefined);
 
    const struct = () => {
       let selectCategory = categories.filter((cat) => cat.categoryName === quesCategory);
@@ -48,7 +55,7 @@ const AddQuestion = () => {
                questionImageBefore={questionImageBefore}
                questionText={questionText}
                questionImageAfter={questionImageAfter}
-               totalOptions={totalOptions}
+               totalOptions={totalOptions || 10}
                option={option}
                enabledSound={enabledSound}
                enabledText={enabledText}
@@ -56,8 +63,21 @@ const AddQuestion = () => {
                questionOnlyText={questionOnlyText}
                questionSoundText={questionSoundText}
             />
-         case 5: return <>Structure 5</>
-         case 6: return <>Structure 6</>
+         case 5: return <Structure5
+            questionText={questionText}
+            options={option}
+            totalOptions={totalOptions}
+            selected={multiCorrectAnswer}
+            handleSelection={handleSelection}
+         />
+         case 6: return <Structure6
+            questionText={questionText}
+            questionImageAfter={questionImageAfter}
+            activeOption={correctAnswer}
+            answerImage={answerImage}
+            active={activeAnswerImage}
+            inactive={inactiveAnswerImage}
+         />
          default: console.log("Error");
             break;
       }
@@ -118,6 +138,62 @@ const AddQuestion = () => {
       }
       setQuestionImageAfter(e.allEntries[0].cdnUrl);
    }
+   const updateAnswerImage = (e) => {
+      if (!e.allEntries.length) {
+         let uuid = answerImage.split("/");
+         deleteFromUploadCare(uuid[uuid.length - 2])
+            .then(() => {
+               setAnswerImage(undefined);
+            })
+            .catch((error) => {
+               console.log(error);
+            })
+         return;
+      }
+      if (e.allEntries[0].isUploading) {
+         setAnswerImage(0);
+         return;
+      }
+      setAnswerImage(e.allEntries[0].cdnUrl);
+   }
+
+   const updateActiveAnswerImage = (e) => {
+      if (!e.allEntries.length) {
+         let uuid = activeAnswerImage.split("/");
+         deleteFromUploadCare(uuid[uuid.length - 2])
+            .then(() => {
+               setActiveAnswerImage(undefined);
+            })
+            .catch((error) => {
+               console.log(error);
+            })
+         return;
+      }
+      if (e.allEntries[0].isUploading) {
+         setActiveAnswerImage(0);
+         return;
+      }
+      setActiveAnswerImage(e.allEntries[0].cdnUrl);
+   }
+
+   const updateInctiveAnswerImage = (e) => {
+      if (!e.allEntries.length) {
+         let uuid = inactiveAnswerImage.split("/");
+         deleteFromUploadCare(uuid[uuid.length - 2])
+            .then(() => {
+               setInactiveAnswerImage(undefined);
+            })
+            .catch((error) => {
+               console.log(error);
+            })
+         return;
+      }
+      if (e.allEntries[0].isUploading) {
+         setInactiveAnswerImage(0);
+         return;
+      }
+      setInactiveAnswerImage(e.allEntries[0].cdnUrl);
+   }
 
    const updateQuestionSound = (e) => {
       if (!e.allEntries.length) {
@@ -136,6 +212,14 @@ const AddQuestion = () => {
          return;
       }
       setQuestionSound(e.allEntries[0].cdnUrl);
+   }
+
+   const handleSelection = (selectedOptions) => {
+      console.log(selectedOptions);
+      if (option === undefined) {
+         return;
+      }
+      setMultiCorrectAnswer(selectedOptions);
    }
 
    const handleQuestionSubmission = (e) => {
@@ -159,6 +243,20 @@ const AddQuestion = () => {
          toast.warn("Please fill all details");
          return;
       }
+      else if (workingStructure === 5 && (ageGroup === "Select age group" || questionText === "" || totalOptions === 0 || option === undefined || multiCorrectAnswer.length === 0)) {
+         toast.warn("Please fill all details");
+         return;
+      }
+      else if (workingStructure === 6 && (ageGroup === "Select age group" || questionText === "" || questionImageAfter === undefined || correctAnswer === "-" || answerImage === undefined || activeAnswerImage === undefined || inactiveAnswerImage === undefined)) {
+         toast.warn("Please fill all details");
+         return;
+      }
+      let correctAnswers = [];
+      if (workingStructure === 5) {
+         for (let i = 0; i < multiCorrectAnswer.length; i++) {
+            correctAnswers.push(multiCorrectAnswer[i].value)
+         }
+      }
       let submission = {
          quesCategory,
          ageGroup,
@@ -166,9 +264,9 @@ const AddQuestion = () => {
             structure: workingStructure,
             questionText,
             questionType: ((workingStructure >= 1 && workingStructure <= 6) && workingStructure !== 5) ? "single" : "multi",
-            totalOptions,
+            totalOptions: (workingStructure === 6 ? 4 : totalOptions),
             option,
-            correctAnswer: [correctAnswer]
+            correctAnswer: workingStructure === 5 ? correctAnswers : [correctAnswer]
          }
       };
       switch (workingStructure) {
@@ -187,6 +285,10 @@ const AddQuestion = () => {
                submission = { ...submission, question: { ...submission.question, questionSound } }
             if (!enabledSound && enabledText)
                submission = { ...submission, question: { ...submission.question, questionOnlyText } }
+            break;
+         case 6: submission = {
+            ...submission, question: { ...submission.question, questionImage: { after: questionImageAfter }, answerImage, option: { active: activeAnswerImage, inactive: inactiveAnswerImage } }
+         }
             break;
 
          default:
@@ -209,7 +311,7 @@ const AddQuestion = () => {
    //       .then(({ data }) => {
    //          let { ageGroup, quesCategory, question } = data.questions;
    //          setExistingData(data.questions);
-            
+
    //          setQuesCategory(quesCategory);
    //          setAgeGroup(ageGroup);
    //          setWorkingStructure(question?.structure);
@@ -255,6 +357,14 @@ const AddQuestion = () => {
          })
    }, [dispatch])
 
+   const generateOptions = (len) => {
+      let options = []
+      for (let i = 0; i < len; i++) {
+         options.push({ value: "o" + (i + 1), label: "option " + (i + 1) })
+      }
+      return options;
+   }
+
    // useEffect(() => {
    //    if (id !== undefined) {
    //       fetchEditableQuestion()
@@ -273,6 +383,9 @@ const AddQuestion = () => {
                <label className='fieldLabel'>Category</label>
                <select name="category" value={quesCategory} className='formField' onChange={(e) => {
                   setQuesCategory(e.target.value);
+                  if (categories.filter((cat) => cat.categoryName === e.target.value)[0]?.structure === 6) {
+                     setTotalOptions(4);
+                  }
                   setWorkingStructure(categories.filter((cat) => cat.categoryName === e.target.value)[0]?.structure);
                }} id="category">
                   <option value="Select question category">Select question category</option>
@@ -351,29 +464,103 @@ const AddQuestion = () => {
                            ""
                      }
                      {
-                        workingStructure === 1 || workingStructure === 2 ?
-                           <div className='formFieldContainer'>
-                              <label className='fieldLabel'>Question Image</label>
-                              <div className='customFileUploadContainer'>
-                                 <FileUploaderRegular
-                                    pubkey="f0b48dbfeaff1298ebed"
-                                    maxLocalFileSizeBytes={1500000}
-                                    multiple={false}
-                                    imgOnly={true}
-                                    sourceList="local, camera, gdrive, gphotos"
-                                    useCloudImageEditor={false}
-                                    classNameUploader="my-config uc-light"
-                                    onChange={(e) => updateAfterImage(e)}
-                                 />
-                                 {questionImageAfter !== undefined ?
-                                    questionImageAfter === 0 ?
-                                       <FaSpinner className='spin' />
+                        workingStructure === 1 || workingStructure === 2 || workingStructure === 6 ?
+                           <>
+                              <div className='formFieldContainer'>
+                                 <label className='fieldLabel'>Question Image</label>
+                                 <div className='customFileUploadContainer'>
+                                    <FileUploaderRegular
+                                       pubkey="f0b48dbfeaff1298ebed"
+                                       maxLocalFileSizeBytes={1500000}
+                                       multiple={false}
+                                       imgOnly={true}
+                                       sourceList="local, camera, gdrive, gphotos"
+                                       useCloudImageEditor={false}
+                                       classNameUploader="my-config uc-light"
+                                       onChange={(e) => updateAfterImage(e)}
+                                    />
+                                    {questionImageAfter !== undefined ?
+                                       questionImageAfter === 0 ?
+                                          <FaSpinner className='spin ml-12' />
+                                          :
+                                          <FaCheck className='ml-12' />
                                        :
-                                       <FaCheck />
-                                    :
-                                    ""}
+                                       ""}
+                                 </div>
                               </div>
-                           </div>
+                              {
+                                 workingStructure === 6 ?
+                                    <>
+                                       <div className='formFieldContainer'>
+                                          <label className='fieldLabel'>Answer Image</label>
+                                          <div className='customFileUploadContainer'>
+                                             <FileUploaderRegular
+                                                pubkey="f0b48dbfeaff1298ebed"
+                                                maxLocalFileSizeBytes={1500000}
+                                                multiple={false}
+                                                imgOnly={true}
+                                                sourceList="local, camera, gdrive, gphotos"
+                                                useCloudImageEditor={false}
+                                                classNameUploader="my-config uc-light"
+                                                onChange={(e) => updateAnswerImage(e)}
+                                             />
+                                             {answerImage !== undefined ?
+                                                answerImage === 0 ?
+                                                   <FaSpinner className='spin ml-12' />
+                                                   :
+                                                   <FaCheck className='ml-12' />
+                                                :
+                                                ""}
+                                          </div>
+                                       </div>
+                                       <div className='formFieldContainer'>
+                                          <label className='fieldLabel'>Inactive Image</label>
+                                          <div className='customFileUploadContainer'>
+                                             <FileUploaderRegular
+                                                pubkey="f0b48dbfeaff1298ebed"
+                                                maxLocalFileSizeBytes={1500000}
+                                                multiple={false}
+                                                imgOnly={true}
+                                                sourceList="local, camera, gdrive, gphotos"
+                                                useCloudImageEditor={false}
+                                                classNameUploader="my-config uc-light"
+                                                onChange={(e) => updateInctiveAnswerImage(e)}
+                                             />
+                                             {inactiveAnswerImage !== undefined ?
+                                                inactiveAnswerImage === 0 ?
+                                                   <FaSpinner className='spin ml-12' />
+                                                   :
+                                                   <FaCheck className='ml-12' />
+                                                :
+                                                ""}
+                                          </div>
+                                       </div>
+                                       <div className='formFieldContainer'>
+                                          <label className='fieldLabel'>Active Image</label>
+                                          <div className='customFileUploadContainer'>
+                                             <FileUploaderRegular
+                                                pubkey="f0b48dbfeaff1298ebed"
+                                                maxLocalFileSizeBytes={1500000}
+                                                multiple={false}
+                                                imgOnly={true}
+                                                sourceList="local, camera, gdrive, gphotos"
+                                                useCloudImageEditor={false}
+                                                classNameUploader="my-config uc-light"
+                                                onChange={(e) => updateActiveAnswerImage(e)}
+                                             />
+                                             {activeAnswerImage !== undefined ?
+                                                activeAnswerImage === 0 ?
+                                                   <FaSpinner className='spin ml-12' />
+                                                   :
+                                                   <FaCheck className='ml-12' />
+                                                :
+                                                ""}
+                                          </div>
+                                       </div>
+                                    </>
+                                    : ""
+                              }
+                           </>
                            : workingStructure === 4 && enabledSound ?
                               <div className='formFieldContainer'>
                                  <label className='fieldLabel'>Audio</label>
@@ -391,68 +578,99 @@ const AddQuestion = () => {
                               </div>
                               : ""
                      }
-                     <div className="formFieldContainer">
-                        <label className="fieldLabel">Select Total Options</label>
-                        <select name="totalOptions" disabled={option !== undefined ? true : false} id="totalOptions" value={totalOptions} onChange={(e) => setTotalOptions(e.target.value)} className="formField">
-                           <option value={0}>Select Total Options</option>
-                           {
-                              workingStructure !== 5 ?
-                                 <>
-                                    <option value={2}>2</option>
-                                    <option value={3}>3</option>
-                                    <option value={4}>4</option>
-                                 </>
-                                 :
-                                 <>
-                                    <option value={10}>10</option>
-                                    <option value={15}>15</option>
-                                    <option value={20}>20</option>
-                                 </>
-                           }
-                        </select>
-                     </div>
+                     {
+                        workingStructure !== 6 ?
+                           <div className="formFieldContainer">
+                              <label className="fieldLabel">Select Total Options</label>
+                              <select name="totalOptions" disabled={option !== undefined ? true : false} id="totalOptions" value={totalOptions} onChange={(e) => setTotalOptions(e.target.value)} className="formField">
+                                 <option value={0}>Select Total Options</option>
+                                 {
+                                    workingStructure !== 5 ?
+                                       <>
+                                          <option value={2}>2</option>
+                                          <option value={3}>3</option>
+                                          <option value={4}>4</option>
+                                       </>
+                                       :
+                                       <>
+                                          <option value={10}>10</option>
+                                          <option value={15}>15</option>
+                                          <option value={20}>20</option>
+                                       </>
+                                 }
+                              </select>
+                           </div>
+                           :
+                           ""
+                     }
                      <div className='formFieldContainer'>
-                        <label className='fieldLabel'> {totalOptions !== 0 ? "Select " + totalOptions + " photos as options" : ""}</label>
                         {
                            totalOptions !== 0 ?
                               <>
-                                 <div className='customFileUploadContainer'>
-                                    <FileUploaderRegular
-                                       pubkey="f0b48dbfeaff1298ebed"
-                                       maxLocalFileSizeBytes={1500000}
-                                       multipleMax={totalOptions}
-                                       multipleMin={totalOptions}
-                                       imgOnly={true}
-                                       confirmUpload={true}
-                                       sourceList="local, camera, gdrive, gphotos"
-                                       useCloudImageEditor={false}
-                                       classNameUploader="my-config uc-light"
-                                       onChange={(e) => updateOptions(e.allEntries)}
-                                    />
-                                 </div>
                                  {
-
                                     workingStructure !== 6 ?
-                                       <div className="formFieldContainer">
-                                          <label className="fieldLabel">Select Correct Answer</label>
-                                          <select name="correctAnswer" id="correctAnswer" value={correctAnswer} onChange={(e) => setCorrectAnswer(e.target.value)} className="formField">
-                                             <option value="-">Select Correct Answer</option>
-                                             {
-                                                [1, 2, 3, 4].map((num, index) => {
-                                                   if (totalOptions >= num) {
-                                                      return <option key={index} value={"o" + num}>{num}</option>
-                                                   }
-                                                   else return "";
-                                                })
-                                             }
-
-                                          </select>
-                                       </div>
+                                       <>
+                                          <label className='fieldLabel'> {totalOptions !== 0 ? "Select " + totalOptions + " photos as options" : ""}</label>
+                                          <div className='customFileUploadContainer'>
+                                             <FileUploaderRegular
+                                                pubkey="f0b48dbfeaff1298ebed"
+                                                maxLocalFileSizeBytes={1500000}
+                                                multipleMax={totalOptions}
+                                                multipleMin={totalOptions}
+                                                imgOnly={true}
+                                                confirmUpload={true}
+                                                sourceList="local, camera, gdrive, gphotos"
+                                                useCloudImageEditor={false}
+                                                classNameUploader="my-config uc-light"
+                                                onChange={(e) => updateOptions(e.allEntries)}
+                                             />
+                                          </div>
+                                       </>
                                        : ""
                                  }
+                                 <div className="formFieldContainer">
+                                    {
+
+                                       workingStructure !== 5 ?
+                                          <>
+                                             <label className="fieldLabel">Select Correct Answer</label>
+                                             <select name="correctAnswer" id="correctAnswer" value={correctAnswer} onChange={(e) => setCorrectAnswer(e.target.value)} className="formField">
+                                                <option value="-">Select Correct Answer</option>
+                                                {
+                                                   [1, 2, 3, 4].map((num, index) => {
+                                                      if (totalOptions >= num) {
+                                                         return <option key={index} value={"o" + num}>{num}</option>
+                                                      }
+                                                      else return "";
+                                                   })
+                                                }
+
+                                             </select>
+                                          </>
+
+                                          :
+                                          workingStructure === 5 ?
+                                             <>
+                                                <label className="fieldLabel">Select Correct Answer</label>
+                                                <Select
+                                                   isMulti
+                                                   options={generateOptions(totalOptions)}
+                                                   value={multiCorrectAnswer}
+                                                   // onChange={(e) => handleSelection(e.target.value)}
+                                                   onChange={handleSelection}
+                                                />
+                                             </>
+
+                                             : ""
+                                    }
+                                 </div>
                               </>
-                              :
-                              ""
+                              : workingStructure === 6 ?
+                                 <>
+
+                                 </>
+                                 :
+                                 ""
                         }
                      </div>
 

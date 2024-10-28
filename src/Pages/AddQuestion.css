@@ -46,12 +46,25 @@
    animation-duration: 1s;
    animation-iteration-count: infinite;
 }
+.spin2 {
+   animation-name: spin2;
+   animation-duration: 0.5s;
+   animation-iteration-count: infinite;
+}
 
 @keyframes spin {
    0% {
-      transform: rotate(0);
+      transform: rotateZ(0);
    }
    100% {
-      transform: rotate(360deg);
+      transform: rotateZ(360deg);
+   }
+}
+@keyframes spin2 {
+   0% {
+      transform: rotateZ(0);
+   }
+   100% {
+      transform: rotateZ(-360deg);
    }
 }

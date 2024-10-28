@@ -10,24 +10,19 @@ import { MdDelete } from "react-icons/md";
 import "./Questions.css";
 import axios from "axios";
 import { apiUrl } from "../adminApiUrl";
+import { TbRefresh } from "react-icons/tb";
 
 const Questions = () => {
    const dispatch = useDispatch();
    const questions = useSelector((state) => state.questions || []);
-   const categories = useSelector((state => state.categories));
    const [currentPage, setCurrentPage] = useState(1);
    const [pageInput, setPageInput] = useState(1);
+   const [contentRefresh, setContentRefresh] = useState(false);
    const recordsPerPage = 10;
    const totalPages = Math.ceil(questions.length / recordsPerPage);
    const navigate = useNavigate();
 
    const handleAddQuestion = () => {
-      if (categories.length === 0) {
-         toast.error("You need to add categories first", {
-            autoClose: 3000
-         })
-         return;
-      }
       navigate("./addquestion");
    };
 
@@ -54,6 +49,11 @@ const Questions = () => {
          })
          .catch((error) => {
             console.error(error);
+         })
+         .finally(() => {
+            setTimeout(() => {
+               setContentRefresh(false);
+            }, 3000);
          })
    }, [dispatch])
 
@@ -133,14 +133,22 @@ const Questions = () => {
          <div className="banner">
             <h1>
                Questions Data
-               <button onClick={handleAddQuestion} className="add-question-btn">
-                  Add Question
-               </button>
+               <span style={{ display: "flex", alignItems: "center" }}>
+                  <span style={{ border: "2px solid #333", marginRight: "12px", cursor: "pointer" }} onClick={() => {
+                     setContentRefresh(true);
+                     fetchQuestions()
+                  }}>
+                     <TbRefresh style={{ padding: "5px" }} className={contentRefresh ? 'spin2' : ''} />
+                  </span>
+                  <button onClick={handleAddQuestion} className="download-btn">Add Questions</button>
+               </span>
             </h1>
             <div className="pagination-top">
                <span>Go To </span>
                <input
                   type="number"
+                  min={1}
+                  max={totalPages}
                   value={pageInput}
                   onChange={(e) => setPageInput(e.target.value)}
                   onKeyUp={(e) => e.key === 'Enter' && handleGoToPage()}
@@ -153,6 +161,7 @@ const Questions = () => {
                   <tr>
                      <th>S.No</th>
                      <th>Question Text</th>
+                     <th>Question Type</th>
                      <th>Age Group</th>
                      <th>Total Options</th>
                      <th>Structure</th>
@@ -165,6 +174,7 @@ const Questions = () => {
                         <tr key={index}>
                            <td>{startIndex + index + 1}</td>
                            <td>{data.question.questionText}</td>
+                           <td>{data.question.questionType}</td>
                            <td>{data.ageGroup}</td>
                            <td>{data.question.totalOptions}</td>
                            <td>{data.question.structure}</td>

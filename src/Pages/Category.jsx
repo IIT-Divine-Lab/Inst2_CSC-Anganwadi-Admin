@@ -10,11 +10,12 @@ import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import adminApiUrl from "../adminApiUrl";
 import { deleteCategory, setCategory } from "../redux/actions/actions";
+import { TbRefresh } from "react-icons/tb";
 
 const Category = () => {
    const categories = useSelector((state) => state.categories);
    const [currentPage, setCurrentPage] = useState(1);
-   // eslint-disable-next-line
+   const [contentRefresh, setContentRefresh] = useState(false);
    const [pageInput, setPageInput] = useState(1);
    const recordsPerPage = 10;
    const totalPages = Math.ceil(categories.length / recordsPerPage);
@@ -53,6 +54,11 @@ const Category = () => {
          .catch((error) => {
             console.log(error);
          })
+         .finally(() => {
+            setTimeout(() => {
+               setContentRefresh(false);
+            }, 3000);
+         })
    }, [dispatch])
 
    const handleCategoryEdit = (id, categoryName, number, totalQuestions) => {
@@ -79,10 +85,28 @@ const Category = () => {
          <div className="banner">
             <h1>
                Category Data
-               <button onClick={handleAddCategory} className="add-category-btn">
-                  Add Category
-               </button>
+               <span style={{ display: "flex", alignItems: "center" }}>
+                  <span style={{ border: "2px solid #333", marginRight: "12px", cursor: "pointer" }} onClick={() => {
+                     setContentRefresh(true);
+                     fetchCategories()
+                  }}>
+                     <TbRefresh style={{ padding: "5px" }} className={contentRefresh ? 'spin2' : ''} />
+                  </span>
+                  <button onClick={handleAddCategory} className="download-btn">Add Category</button>
+               </span>
             </h1>
+            <div className="pagination-top">
+               <span>Go To </span>
+               <input
+                  type="number"
+                  min={1}
+                  max={totalPages}
+                  value={pageInput}
+                  onChange={(e) => setPageInput(e.target.value)}
+                  onKeyUp={(e) => e.key === 'Enter' && handleGoToPage()}
+               />
+               <button onClick={handleGoToPage}>Go</button>
+            </div>
 
             <table className="table-container">
                <thead>
