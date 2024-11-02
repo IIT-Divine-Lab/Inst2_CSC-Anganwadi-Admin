@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import "./Result.css"
@@ -6,6 +6,7 @@ import adminApiUrl, { apiUrl } from '../adminApiUrl';
 import axios from 'axios';
 import { setCategory, setResults } from '../redux/actions/actions';
 import { TbRefresh } from 'react-icons/tb';
+import * as XLSX from "xlsx"
 
 const Result = () => {
    const [pageInput, setPageInput] = useState(1);
@@ -20,7 +21,16 @@ const Result = () => {
    const startIndex = (currentPage - 1) * recordsPerPage;
    // eslint-disable-next-line
    const currentRecords = result?.slice(startIndex, startIndex + recordsPerPage);
+const tableRef = useRef();
 
+  // Export function
+    const exportToXLSX = () => {
+        // Create a workbook from the HTML table using `table_to_book`
+            const workbook = XLSX.utils.table_to_book(tableRef.current, { sheet: "Sheet1" });
+
+                // Generate a downloadable Excel file
+                    XLSX.writeFile(workbook, "exported_table.xlsx");
+                      };
    const handlePageChange = (pageNumber) => {
       setCurrentPage(pageNumber);
    };
@@ -143,12 +153,15 @@ const Result = () => {
       <section>
          <div className="banner">
             <h1>Result
+               <span style={{display: "flex", alignItems: "center"}}>
                <span style={{ border: "2px solid #333", cursor: "pointer" }} onClick={() => {
                   setContentRefresh(true);
                   fetchCategories();
                   fetchResults();
                }}>
                   <TbRefresh style={{ padding: "5px" }} className={contentRefresh ? 'spin2' : ''} />
+               </span>
+               <button className='download-btn' onClick={exportToXLSX}>Export</button>
                </span>
             </h1>
             <div className="pagination-top">
@@ -163,7 +176,7 @@ const Result = () => {
                <button onClick={handleGoToPage}>Go</button>
             </div>
             <div className='parentTableContainer'>
-               <table className='table-container' style={{ width: `calc(600px * ` + (category.length + 1) + `)` }}>
+               <table ref={tableRef} className='table-container' style={{ width: `calc(600px * ` + (category.length + 1) + `)` }}>
                   <thead>
                      <tr>
                         <th rowSpan={2}>S. No</th>
