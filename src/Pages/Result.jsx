@@ -75,25 +75,25 @@ const Result = () => {
    const regrouping = (resQues) => {
       // console.log(resQues)
       let categories = [];
-      for (let i = 0; i < resQues.length; i++) {
+      for (let i = 0; i < resQues?.length; i++) {
          let cat = resQues[i]?.quesCategory?._id
          if (!(categories.includes(cat)))
             categories.push(cat)
       }
       let allQuestion = {}
-      for (let j = 0; j < categories.length; j++) {
+      for (let j = 0; j < categories?.length; j++) {
          let cat = categories[j];
          let data = [];
-         for (let i = 0; i < resQues.length; i++) {
+         for (let i = 0; i < resQues?.length; i++) {
             console.log(cat);
             let obj;
-            if (cat === resQues[i].quesCategory?._id) {
-               console.log(resQues[i].quesId)
+            if (cat === resQues[i]?.quesCategory?._id) {
+               // console.log(resQues[i]?.quesId)
                obj = {
-                  quesId: resQues[i].quesId._id,
+                  quesId: resQues[i].quesId?._id,
                   answerMarked: resQues[i].AnswerMarked,
-                  correctAnswer: resQues[i].quesId.question.correctAnswer,
-                  questionType: resQues[i].quesId.question.questionType
+                  correctAnswer: resQues[i].quesId?.question.correctAnswer,
+                  questionType: resQues[i].quesId?.question.questionType
                }
                data.push(obj);
             }
@@ -108,13 +108,13 @@ const Result = () => {
       let arr = new Array(total).fill("-");
       let cat = resQues[category];
       if (cat !== undefined) {
-         for (let i = 0; i < cat.length; i++) {
+         for (let i = 0; i < cat?.length; i++) {
             if (cat[i].questionType === "single") {
-               if (cat[i].answerMarked.length === cat[i].correctAnswer.length) {
-                  for (let j = 0; j < cat[i].correctAnswer.length; j++) {
+               if (cat[i].answerMarked?.length === cat[i].correctAnswer?.length) {
+                  for (let j = 0; j < cat[i].correctAnswer?.length; j++) {
                      if (!(cat[i].correctAnswer.includes(cat[i].answerMarked[j]))) {
                         arr[i] = 0;
-                        console.log(cat[i].quesId)
+                        console.log(cat[i]?.quesId)
                      }
                      else {
                         arr[i] = 1;
@@ -127,7 +127,7 @@ const Result = () => {
             }
             else {
                let a = 0;
-               for (let j = 0; j < cat[i].correctAnswer.length; j++) {
+               for (let j = 0; j < cat[i].correctAnswer?.length; j++) {
                   if (!(cat[i].correctAnswer.includes(cat[i].answerMarked[j]))) {
                      a += 0;
                   }

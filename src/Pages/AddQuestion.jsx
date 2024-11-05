@@ -44,7 +44,7 @@ const AddQuestion = () => {
    const [inactiveAnswerImage, setInactiveAnswerImage] = useState(undefined);
 
    const struct = () => {
-      let selectCategory = categories.filter((cat) => cat.categoryName === quesCategory);
+      let selectCategory = categories.filter((cat) => cat._id === quesCategory);
       switch (selectCategory[0].structure) {
          case 1:
          case 2:
