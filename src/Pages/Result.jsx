@@ -21,16 +21,16 @@ const Result = () => {
    const startIndex = (currentPage - 1) * recordsPerPage;
    // eslint-disable-next-line
    const currentRecords = result?.slice(startIndex, startIndex + recordsPerPage);
-const tableRef = useRef();
+   const tableRef = useRef();
 
-  // Export function
-    const exportToXLSX = () => {
-        // Create a workbook from the HTML table using `table_to_book`
-            const workbook = XLSX.utils.table_to_book(tableRef.current, { sheet: "Sheet1" });
+   // Export function
+   const exportToXLSX = () => {
+      // Create a workbook from the HTML table using `table_to_book`
+      const workbook = XLSX.utils.table_to_book(tableRef.current, { sheet: "Sheet1" });
 
-                // Generate a downloadable Excel file
-                    XLSX.writeFile(workbook, "exported_table.xlsx");
-                      };
+      // Generate a downloadable Excel file
+      XLSX.writeFile(workbook, "exported_table.xlsx");
+   };
    const handlePageChange = (pageNumber) => {
       setCurrentPage(pageNumber);
    };
@@ -76,7 +76,7 @@ const tableRef = useRef();
       // console.log(resQues)
       let categories = [];
       for (let i = 0; i < resQues.length; i++) {
-         let cat = resQues[i].quesId.quesCategory
+         let cat = resQues[i]?.quesCategory?._id
          if (!(categories.includes(cat)))
             categories.push(cat)
       }
@@ -85,8 +85,9 @@ const tableRef = useRef();
          let cat = categories[j];
          let data = [];
          for (let i = 0; i < resQues.length; i++) {
+            console.log(cat);
             let obj;
-            if (cat === resQues[i].quesId.quesCategory) {
+            if (cat === resQues[i].quesCategory?._id) {
                console.log(resQues[i].quesId)
                obj = {
                   quesId: resQues[i].quesId._id,
@@ -99,6 +100,7 @@ const tableRef = useRef();
          }
          allQuestion[cat] = data;
       }
+      console.log(allQuestion);
       return allQuestion;
    }
 
@@ -153,15 +155,15 @@ const tableRef = useRef();
       <section>
          <div className="banner">
             <h1>Result
-               <span style={{display: "flex", alignItems: "center"}}>
-               <span style={{ border: "2px solid #333", cursor: "pointer" }} onClick={() => {
-                  setContentRefresh(true);
-                  fetchCategories();
-                  fetchResults();
-               }}>
-                  <TbRefresh style={{ padding: "5px" }} className={contentRefresh ? 'spin2' : ''} />
-               </span>
-               <button className='download-btn' onClick={exportToXLSX}>Export</button>
+               <span style={{ display: "flex", alignItems: "center" }}>
+                  <span style={{ border: "2px solid #333", cursor: "pointer" }} onClick={() => {
+                     setContentRefresh(true);
+                     fetchCategories();
+                     fetchResults();
+                  }}>
+                     <TbRefresh style={{ padding: "5px" }} className={contentRefresh ? 'spin2' : ''} />
+                  </span>
+                  <button className='download-btn' onClick={exportToXLSX}>Export</button>
                </span>
             </h1>
             <div className="pagination-top">
@@ -217,7 +219,7 @@ const tableRef = useRef();
                               <td>{user.age}</td>
                               {
                                  category.flatMap((headData, index) => {
-                                    let categoryRecords = score(headData.categoryName, resQuestion, headData?.totalQuestions);
+                                    let categoryRecords = score(headData._id, resQuestion, headData?.totalQuestions);
 
                                     if (headData?.totalQuestions)
                                        return Array.from({ length: headData?.totalQuestions || 0 }, (_, i) => (

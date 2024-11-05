@@ -391,7 +391,7 @@ const AddQuestion = () => {
                   <option value="Select question category">Select question category</option>
                   {
                      categories.map((category, index) => {
-                        return <option key={index} value={category.categoryName}>{category.categoryName}</option>
+                        return <option key={index} value={category._id}>{category.categoryName}</option>
                      })
                   }
                </select>
