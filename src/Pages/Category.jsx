@@ -49,7 +49,8 @@ const Category = () => {
    const fetchCategories = useCallback(async () => {
       axios.get(adminApiUrl + "category")
          .then((({ data }) => {
-            dispatch(setCategory(data.categories));
+            if (data.message !== "No Data")
+               dispatch(setCategory(data.categories));
          }))
          .catch((error) => {
             console.log(error);

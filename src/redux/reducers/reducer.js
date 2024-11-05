@@ -3,7 +3,6 @@ import ActionTypes from "../constants/action_types";
 export const StudentReducer = (state = [], { type, payload }) => {
    switch (type) {
       case ActionTypes.SET_STUDENTS:
-         console.log(payload.length);
          return payload?.length ? [...payload] : [];
 
       default:

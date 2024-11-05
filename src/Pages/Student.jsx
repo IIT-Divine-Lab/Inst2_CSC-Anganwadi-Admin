@@ -86,8 +86,6 @@ const Student = () => {
             // console.log(data);
             if (data.message !== "No Data")
                dispatch(setStudents(data.students));
-            else 
-               dispatch(setStudents([]));
          })
          .catch(error => {
             console.error(error);

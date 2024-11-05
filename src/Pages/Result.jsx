@@ -47,7 +47,8 @@ const Result = () => {
    const fetchResults = useCallback(async () => {
       await axios.get(apiUrl + "result")
          .then(({ data }) => {
-            dispatch(setResults(data.result))
+            if (data.message !== "No Record Found")
+               dispatch(setResults(data.result))
          })
          .catch((error) => {
             console.error(error)
@@ -60,7 +61,8 @@ const Result = () => {
    const fetchCategories = useCallback(async () => {
       axios.get(adminApiUrl + "category")
          .then((({ data }) => {
-            dispatch(setCategory(data.categories));
+            if (data.message !== "No Data")
+               dispatch(setCategory(data.categories));
          }))
          .catch((error) => {
             console.log(error);
@@ -142,6 +144,14 @@ const Result = () => {
       return arr;
    }
 
+   const fetchTotalQuestions = () => {
+      let a = 0;
+      for (let i = 0; i < category.length; i++) {
+         a += category[i].totalQuestions
+      }
+      return a + 6;
+   }
+
    useEffect(() => {
       if (result.length === 0) {
          fetchResults();
@@ -183,6 +193,8 @@ const Result = () => {
                      <tr>
                         <th rowSpan={2}>S. No</th>
                         <th rowSpan={2}>Name</th>
+                        <th rowSpan={2}>Roll No</th>
+                        <th rowSpan={2}>Gender</th>
                         <th rowSpan={2}>Anganwadi Centre</th>
                         <th rowSpan={2}>Age Group</th>
                         {
@@ -209,29 +221,39 @@ const Result = () => {
                         }
                      </tr>
                      {
-                        result?.map((res, index) => {
-                           let user = res.userId;
-                           let resQuestion = regrouping(res.questions);
-                           return (<tr key={index}>
-                              <td>{index + 1}</td>
-                              <td>{user.name}</td>
-                              <td>{user.awcentre}</td>
-                              <td>{user.age}</td>
-                              {
-                                 category.flatMap((headData, index) => {
-                                    let categoryRecords = score(headData._id, resQuestion, headData?.totalQuestions);
+                        result.length !== 0 ?
+                           result?.map((res, index) => {
+                              let user = res.userId;
+                              let resQuestion = regrouping(res.questions);
+                              return (<tr key={index}>
+                                 <td>{index + 1}</td>
+                                 <td>{user.name}</td>
+                                 <td>{user.rollno}</td>
+                                 <td>{user.gender}</td>
+                                 <td>{user.awcentre}</td>
+                                 <td>{user.age}</td>
+                                 {
+                                    category.flatMap((headData, index) => {
+                                       let categoryRecords = score(headData._id, resQuestion, headData?.totalQuestions);
 
-                                    if (headData?.totalQuestions)
-                                       return Array.from({ length: headData?.totalQuestions || 0 }, (_, i) => (
-                                          <td style={{ textAlign: "center" }} key={`${index}-${i}`}>{categoryRecords[i]}</td>
-                                       ))
-                                    else
-                                       return () => {
-                                       }
-                                 })
-                              }
-                           </tr>)
-                        })
+                                       if (headData?.totalQuestions)
+                                          return Array.from({ length: headData?.totalQuestions || 0 }, (_, i) => (
+                                             <td style={{ textAlign: "center" }} key={`${index}-${i}`}>{categoryRecords[i]}</td>
+                                          ))
+                                       else
+                                          return () => {
+                                          }
+                                    })
+                                 }
+                              </tr>)
+                           })
+                           : (
+                              <tr>
+                                 <td colSpan={fetchTotalQuestions()}>
+                                    No Student Records Found!
+                                 </td>
+                              </tr>
+                           )
                      }
                   </thead>
                </table>
