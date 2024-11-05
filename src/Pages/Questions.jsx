@@ -161,10 +161,10 @@ const Questions = () => {
                   <tr>
                      <th>S.No</th>
                      <th>Question Text</th>
+                     <th>Question Category</th>
                      <th>Question Type</th>
                      <th>Age Group</th>
                      <th>Total Options</th>
-                     <th>Structure</th>
                      <th>Actions</th>
                   </tr>
                </thead>
@@ -174,10 +174,10 @@ const Questions = () => {
                         <tr key={index}>
                            <td>{startIndex + index + 1}</td>
                            <td>{data.question.questionText}</td>
+                           <td>{data.quesCategory.categoryName ? data.quesCategory.categoryName.split("Domain")[0] + "Domain" : ''}</td>
                            <td>{data.question.questionType}</td>
                            <td>{data.ageGroup}</td>
                            <td>{data.question.totalOptions}</td>
-                           <td>{data.question.structure}</td>
                            <td>
                               {/* <FaEye className="action-icon" title="View" /> */}
                               {/* <CiEdit className="action-icon" title="Edit" onClick={() => { handleQuestionEdit(data._id) }} /> */}
