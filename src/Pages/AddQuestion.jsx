@@ -383,10 +383,10 @@ const AddQuestion = () => {
                <label className='fieldLabel'>Category</label>
                <select name="category" value={quesCategory} className='formField' onChange={(e) => {
                   setQuesCategory(e.target.value);
-                  if (categories.filter((cat) => cat.categoryName === e.target.value)[0]?.structure === 6) {
+                  if (categories.filter((cat) => cat._id === e.target.value)[0]?.structure === 6) {
                      setTotalOptions(4);
                   }
-                  setWorkingStructure(categories.filter((cat) => cat.categoryName === e.target.value)[0]?.structure);
+                  setWorkingStructure(categories.filter((cat) => cat._id === e.target.value)[0]?.structure);
                }} id="category">
                   <option value="Select question category">Select question category</option>
                   {
