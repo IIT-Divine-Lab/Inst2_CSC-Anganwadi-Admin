@@ -33,7 +33,7 @@ const Structure1to4 = ({ view, structure, questionText, questionImageBefore, que
    }
 
    return (
-      <ParentContainer view={view ? 0.5 : false}>
+      <ParentContainer view={view ? 0.57 : false}>
          {
             structure === 1 ?
                questionImageBefore !== undefined ?

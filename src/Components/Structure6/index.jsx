@@ -3,13 +3,14 @@ import './style.css'
 import Heading from '../Common/Heading'
 import Body from '../Common/Body'
 import Button from '../Common/Button'
+import ParentContainer from '../Common/ParentContainer'
 // import active from "./active.png"
 // import inactive from "./inactive.png"
 // import answerImage from "./ans.png"
 
-const Structure6 = ({ activeOption, active, inactive, answerImage, questionText, questionImageAfter, question }) => {
+const Structure6 = ({ view, activeOption, active, inactive, answerImage, questionText, questionImageAfter, question }) => {
    return (
-      <>
+      <ParentContainer view={view ? 0.7 : false}>
          <Heading>
             {questionText !== "" ? questionText : "Your question text will appear."}
          </Heading>
@@ -28,7 +29,7 @@ const Structure6 = ({ activeOption, active, inactive, answerImage, questionText,
             </div>
          </Body>
          <Button>Next</Button>
-      </>
+      </ParentContainer>
    )
 }
 

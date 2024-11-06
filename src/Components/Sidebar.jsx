@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { PiStudentFill } from "react-icons/pi";
 import { GoHome } from "react-icons/go";
 import { FaQuestionCircle } from "react-icons/fa";
+import { TbReportAnalytics } from "react-icons/tb";
 import { MdOutlineCategory } from "react-icons/md";
 
 const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
@@ -49,13 +50,6 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
             <PiStudentFill className="icon" />
             {!isCollapsed && <span className="description">Student Data</span>}
          </div>
-         <div className="link-item" onClick={handleQuestionsClick}>
-            {location.pathname === "/questions" && (
-               <div className="active"></div>
-            )}
-            <FaQuestionCircle className="icon" />
-            {!isCollapsed && <span className="description">Questions</span>}
-         </div>
          <div className="link-item" onClick={handleCategoryClick}>
             {location.pathname === "/category" && (
                <div className="active"></div>
@@ -63,11 +57,18 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
             <MdOutlineCategory className="icon" />
             {!isCollapsed && <span className="description">Category</span>}
          </div>
+         <div className="link-item" onClick={handleQuestionsClick}>
+            {location.pathname === "/questions" && (
+               <div className="active"></div>
+            )}
+            <FaQuestionCircle className="icon" />
+            {!isCollapsed && <span className="description">Questions</span>}
+         </div>
          <div className="link-item" onClick={handleResultClick}>
             {location.pathname === "/result" && (
                <div className="active"></div>
             )}
-            <MdOutlineCategory className="icon" />
+            <TbReportAnalytics className="icon" />
             {!isCollapsed && <span className="description">Result</span>}
          </div>
       </div>

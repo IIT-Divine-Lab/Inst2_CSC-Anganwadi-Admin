@@ -46,6 +46,7 @@ const Questions = () => {
          view: true,
          structure,
          questionText: data.question?.questionText,
+         totalOptions: data.question?.totalOptions,
       };
       switch (structure) {
          case 1:
@@ -55,7 +56,6 @@ const Questions = () => {
             ...props,
             questionImageBefore: data.question?.questionImage.before,
             option: data.question?.option,
-            totalOptions: data.question?.totalOptions,
             questionImageAfter: data.question?.questionImage.after,
             enabledSound: data.question?.questionSound ? true : false,
             enabledText: data.question?.questionOnlyText || data.question?.questionSoundText ? true : false,
@@ -68,12 +68,17 @@ const Questions = () => {
          case 5: props = {
             ...props,
             options: data.question?.option,
-            totalOptions: data.question?.totalOptions,
-            questionText: data.question?.questionText,
-            selected: data.question?.correctAnswer
+            selected: data.question?.correctAnswer[0]
          }
             break;
-         case 6: return Structure6;
+         case 6: props = {
+            questionImageAfter: data.question?.questionImage.after,
+            activeOption: data.question?.correctAnswer[0],
+            answerImage: data.question?.answerImage,
+            active: data.question?.option.active,
+            inactive: data.question?.option.inactive
+         }
+         break;
          case 7: return Structure7;
          case 8:
             break;
