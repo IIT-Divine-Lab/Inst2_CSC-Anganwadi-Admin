@@ -355,6 +355,7 @@ const AddQuestion = () => {
             if (!enabledSound && enabledText)
                submission = { ...submission, question: { ...submission.question, option, questionOnlyText } }
             break;
+         case 3:
          case 5: submission = {
             ...submission,
             question: { ...submission.question, option }
