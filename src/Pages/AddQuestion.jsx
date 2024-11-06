@@ -3,6 +3,9 @@ import "./AddQuestion.css"
 // eslint-disable-next-line
 import { useDispatch, useSelector } from 'react-redux'
 import Structure1to4 from '../Components/Structure1-4';
+import Structure5 from '../Components/Structure5';
+import Structure6 from '../Components/Structure6';
+import Structure7 from '../Components/Structure7';
 import { FileUploaderRegular } from '@uploadcare/react-uploader';
 import { FaSpinner, FaCheck } from "react-icons/fa6";
 import Button from '../Components/Common/Button';
@@ -12,10 +15,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import adminApiUrl, { apiUrl } from '../adminApiUrl';
 import { addQuestion, setCategory } from '../redux/actions/actions';
-import Structure5 from '../Components/Structure5';
 import Select from 'react-select';
-import Structure6 from '../Components/Structure6';
-import Structure7 from '../Components/Structure7';
 
 import Agarbatti from "../Components/Images/Agarbatti.png"
 import Food from "../Components/Images/Food.png"

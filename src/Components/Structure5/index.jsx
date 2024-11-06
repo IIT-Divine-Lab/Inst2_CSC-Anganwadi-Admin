@@ -2,20 +2,21 @@ import React, { useEffect, useState } from 'react'
 import Heading from '../Common/Heading'
 import "./style.css"
 import Button from '../Common/Button';
+import ParentContainer from '../Common/ParentContainer';
 
-const Structure5 = ({ options = [], totalOptions, questionText, selected }) => {
+const Structure5 = ({ view, options = [], totalOptions, questionText, selected }) => {
    const [column, setColumn] = useState(2);
    // console.log(options);
    // console.log(totalOptions);
 
    useEffect(() => {
       let quotient = totalOptions / 5;
-      // console.log(quotient);
+      console.log(selected);
       setColumn(quotient);
    }, [totalOptions, selected])
 
    return (
-      <>
+      <ParentContainer view={view ? 0.65 : false}>
          <Heading>
             {questionText !== "" ? questionText : "Your question text will appear."}
          </Heading>
@@ -26,7 +27,7 @@ const Structure5 = ({ options = [], totalOptions, questionText, selected }) => {
                      <div>
                         <img
                            src={options["o" + (i + 1)]}
-                           className={selected.includes(options["o" + (i + 1)]) ? 'selected' : ''}
+                           className={selected[selected.findIndex((val) => val?.value === ("o" + (i + 1)))]?.value === ("o" + (i + 1)) || selected.includes("o" + (i + 1)) ? 'selected' : ''}
                            alt=""
                         />
                      </div>
@@ -36,7 +37,7 @@ const Structure5 = ({ options = [], totalOptions, questionText, selected }) => {
             }
          </div>
          <Button>Next</Button>
-      </>
+      </ParentContainer>
    )
 }
 

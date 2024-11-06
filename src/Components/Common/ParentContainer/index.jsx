@@ -3,14 +3,16 @@ import React from 'react'
 const ParentContainer = (props) => {
 
    const questionStructure = {
-      width: "100%",
-      height: "100%",
+      width: props.view ? "850px" : "100%",
+      minHeight: props.view ? "80vh" : "",
+      height: props.view ? "80vh" : "100%",
       display: "flex",
       justifyContent: "center",
       alignItems: "center"
    }
 
    const questionSubStructure = {
+      transform: props.view ? `scale(${props.view})` : "",
       minHeight: "750px",
       width: "90%",
       padding: "0 5%",
