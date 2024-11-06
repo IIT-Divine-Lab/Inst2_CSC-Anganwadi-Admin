@@ -54,9 +54,9 @@ const Questions = () => {
          case 3:
          case 4: props = {
             ...props,
-            questionImageBefore: data.question?.questionImage.before,
+            questionImageBefore: data.question?.questionImage?.before,
             option: data.question?.option,
-            questionImageAfter: data.question?.questionImage.after,
+            questionImageAfter: data.question?.questionImage?.after,
             enabledSound: data.question?.questionSound ? true : false,
             enabledText: data.question?.questionOnlyText || data.question?.questionSoundText ? true : false,
             questionSound: data.question?.questionSound,
