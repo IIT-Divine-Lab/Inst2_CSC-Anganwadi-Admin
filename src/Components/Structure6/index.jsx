@@ -2,6 +2,7 @@ import React from 'react'
 import './style.css'
 import Heading from '../Common/Heading'
 import Body from '../Common/Body'
+import Button from '../Common/Button'
 // import active from "./active.png"
 // import inactive from "./inactive.png"
 // import answerImage from "./ans.png"
@@ -26,6 +27,7 @@ const Structure6 = ({ activeOption, active, inactive, answerImage, questionText,
                </div>
             </div>
          </Body>
+         <Button>Next</Button>
       </>
    )
 }

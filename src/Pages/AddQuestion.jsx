@@ -15,7 +15,18 @@ import { addQuestion, setCategory } from '../redux/actions/actions';
 import Structure5 from '../Components/Structure5';
 import Select from 'react-select';
 import Structure6 from '../Components/Structure6';
+import Structure7 from '../Components/Structure7';
 
+import Agarbatti from "../Components/Images/Agarbatti.png"
+import Food from "../Components/Images/Food.png"
+import IceBowl from "../Components/Images/IceBowl.png"
+import RedBall from "../Components/Images/RedBall.png"
+import Speaker from "../Components/Images/Speaker.png"
+import Ear from "../Components/Images/ear.png"
+import Eyes from "../Components/Images/eyes.png"
+import Hand from "../Components/Images/hand.png"
+import Nose from "../Components/Images/nose.png"
+import Tongue from "../Components/Images/tongue.png"
 
 const AddQuestion = () => {
    const categories = useSelector((state) => state.categories);
@@ -42,6 +53,53 @@ const AddQuestion = () => {
    const [answerImage, setAnswerImage] = useState(undefined);
    const [activeAnswerImage, setActiveAnswerImage] = useState(undefined);
    const [inactiveAnswerImage, setInactiveAnswerImage] = useState(undefined);
+
+   const [matches, setMatches] = useState([]);
+
+   const leftColumn = [
+      {
+         val: "जीभ",
+         src: Tongue
+      },
+      {
+         val: "आंख",
+         src: Eyes
+      },
+      {
+         val: "कान",
+         src: Ear
+      },
+      {
+         val: "त्वचा",
+         src: Hand
+      },
+      {
+         val: "नाक",
+         src: Nose
+      },
+   ]
+   const rightColumn = [
+      {
+         val: "Ball",
+         src: RedBall
+      },
+      {
+         val: "Jalebi",
+         src: Food
+      },
+      {
+         val: "Agarbatti",
+         src: Agarbatti
+      },
+      {
+         val: "Ice",
+         src: IceBowl
+      },
+      {
+         val: "Speaker",
+         src: Speaker
+      }
+   ]
 
    const struct = () => {
       let selectCategory = categories.filter((cat) => cat._id === quesCategory);
@@ -77,6 +135,13 @@ const AddQuestion = () => {
             answerImage={answerImage}
             active={activeAnswerImage}
             inactive={inactiveAnswerImage}
+         />
+         case 7: return <Structure7
+            questionText={questionText}
+            leftColumn={leftColumn}
+            rightColumn={rightColumn}
+            matches={matches}
+            setMatches={setMatches}
          />
          default: console.log("Error");
             break;
@@ -257,6 +322,11 @@ const AddQuestion = () => {
             correctAnswers.push(multiCorrectAnswer[i].value)
          }
       }
+      if (workingStructure === 7) {
+         for (let i = 0; i < matches.length; i++) {
+            correctAnswers.push(`${matches[i].left.val}-${matches[i].right}`)
+         }
+      }
       let submission = {
          quesCategory,
          ageGroup,
@@ -265,32 +335,35 @@ const AddQuestion = () => {
             questionText,
             questionType: ((workingStructure >= 1 && workingStructure <= 6) && workingStructure !== 5) ? "single" : "multi",
             totalOptions: (workingStructure === 6 ? 4 : totalOptions),
-            option,
-            correctAnswer: workingStructure === 5 ? correctAnswers : [correctAnswer]
+            correctAnswer: workingStructure === 5 || workingStructure === 7 ? correctAnswers : [correctAnswer]
          }
       };
       switch (workingStructure) {
          case 1: submission = {
-            ...submission, question: { ...submission.question, questionImage: { before: questionImageBefore, after: questionImageAfter } }
+            ...submission, question: { ...submission.question, option, questionImage: { before: questionImageBefore, after: questionImageAfter } }
          }
             break;
          case 2: submission = {
-            ...submission, question: { ...submission.question, questionImage: { after: questionImageAfter } }
+            ...submission, question: { ...submission.question, option, questionImage: { after: questionImageAfter } }
          }
             break;
          case 4:
             if (enabledSound && enabledText)
-               submission = { ...submission, question: { ...submission.question, questionSound, questionSoundText } }
+               submission = { ...submission, question: { ...submission.question, option, questionSound, questionSoundText } }
             else if (enabledSound)
-               submission = { ...submission, question: { ...submission.question, questionSound } }
+               submission = { ...submission, question: { ...submission.question, option, questionSound } }
             if (!enabledSound && enabledText)
-               submission = { ...submission, question: { ...submission.question, questionOnlyText } }
+               submission = { ...submission, question: { ...submission.question, option, questionOnlyText } }
+            break;
+         case 5: submission = {
+            ...submission,
+            question: { ...submission.question, option }
+         }
             break;
          case 6: submission = {
             ...submission, question: { ...submission.question, questionImage: { after: questionImageAfter }, answerImage, option: { active: activeAnswerImage, inactive: inactiveAnswerImage } }
          }
             break;
-
          default:
             break;
       }
@@ -386,6 +459,9 @@ const AddQuestion = () => {
                   if (categories.filter((cat) => cat._id === e.target.value)[0]?.structure === 6) {
                      setTotalOptions(4);
                   }
+                  else if (categories.filter((cat) => cat._id === e.target.value)[0]?.structure === 7) {
+                     setTotalOptions(5);
+                  }
                   setWorkingStructure(categories.filter((cat) => cat._id === e.target.value)[0]?.structure);
                }} id="category">
                   <option value="Select question category">Select question category</option>
@@ -464,7 +540,7 @@ const AddQuestion = () => {
                            ""
                      }
                      {
-                        workingStructure === 1 || workingStructure === 2 || workingStructure === 6 ?
+                        workingStructure === 1 || workingStructure === 2 || workingStructure === 6 || workingStructure === 8 ?
                            <>
                               <div className='formFieldContainer'>
                                  <label className='fieldLabel'>Question Image</label>
@@ -579,7 +655,7 @@ const AddQuestion = () => {
                               : ""
                      }
                      {
-                        workingStructure !== 6 ?
+                        workingStructure !== 6 && workingStructure !== 7 && workingStructure !== 8 ?
                            <div className="formFieldContainer">
                               <label className="fieldLabel">Select Total Options</label>
                               <select name="totalOptions" disabled={option !== undefined ? true : false} id="totalOptions" value={totalOptions} onChange={(e) => setTotalOptions(e.target.value)} className="formField">
@@ -602,13 +678,13 @@ const AddQuestion = () => {
                            :
                            ""
                      }
-                     <div className='formFieldContainer'>
+                     <>
                         {
                            totalOptions !== 0 ?
                               <>
                                  {
-                                    workingStructure !== 6 ?
-                                       <>
+                                    workingStructure !== 6 && workingStructure !== 7 && workingStructure !== 8 ?
+                                       <div className="formFieldContainer">
                                           <label className='fieldLabel'> {totalOptions !== 0 ? "Select " + totalOptions + " photos as options" : ""}</label>
                                           <div className='customFileUploadContainer'>
                                              <FileUploaderRegular
@@ -624,14 +700,14 @@ const AddQuestion = () => {
                                                 onChange={(e) => updateOptions(e.allEntries)}
                                              />
                                           </div>
-                                       </>
+                                       </div>
                                        : ""
                                  }
-                                 <div className="formFieldContainer">
+                                 <>
                                     {
 
-                                       workingStructure !== 5 ?
-                                          <>
+                                       workingStructure !== 5 && workingStructure !== 7 && workingStructure !== 8 ?
+                                          <div className="formFieldContainer">
                                              <label className="fieldLabel">Select Correct Answer</label>
                                              <select name="correctAnswer" id="correctAnswer" value={correctAnswer} onChange={(e) => setCorrectAnswer(e.target.value)} className="formField">
                                                 <option value="-">Select Correct Answer</option>
@@ -645,33 +721,43 @@ const AddQuestion = () => {
                                                 }
 
                                              </select>
-                                          </>
+                                          </div>
 
                                           :
                                           workingStructure === 5 ?
-                                             <>
+                                             <div className="formFieldContainer">
                                                 <label className="fieldLabel">Select Correct Answer</label>
                                                 <Select
                                                    isMulti
                                                    options={generateOptions(totalOptions)}
                                                    value={multiCorrectAnswer}
-                                                   // onChange={(e) => handleSelection(e.target.value)}
                                                    onChange={handleSelection}
                                                 />
-                                             </>
-
-                                             : ""
+                                             </div>
+                                             : workingStructure === 7 ?
+                                                <div className="formFieldContainer">
+                                                   <label className="fieldLabel">Correct Answers</label>
+                                                   {
+                                                      matches?.map((val, index) => {
+                                                         return <span key={index}>
+                                                            <span>Left: {val.left.val}</span>
+                                                            <span style={{
+                                                               marginLeft: "10px"
+                                                            }}>
+                                                               Right: {val.right}
+                                                            </span>
+                                                         </span>
+                                                      })
+                                                   }
+                                                </div>
+                                                : ""
                                     }
-                                 </div>
-                              </>
-                              : workingStructure === 6 ?
-                                 <>
-
                                  </>
-                                 :
-                                 ""
+                              </>
+                              :
+                              ""
                         }
-                     </div>
+                     </>
 
                      {/* Submit Button */}
                      <div className='formFieldContainer' onClick={handleQuestionSubmission} style={{ width: "max-content", marginTop: "40px" }}>
