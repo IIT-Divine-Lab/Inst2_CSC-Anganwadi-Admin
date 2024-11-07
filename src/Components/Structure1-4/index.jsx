@@ -7,25 +7,6 @@ import ParentContainer from '../Common/ParentContainer';
 import Button from '../Common/Button';
 
 const Structure1to4 = ({ view, structure, questionText, questionImageBefore, questionImageAfter, totalOptions = 4, option, questionOnlyText, questionSound, questionSoundText, enabledText, enabledSound, correctAnswer }) => {
-   // let question = {
-   //    structure: 4,
-   //    questionText: "Select the correct symbol inside the shape.",
-   //    questionSound,
-   //    questionSoundText: "Select...",
-   //    questionOnlyText: "Select the correct symbol",
-   //    questionType: "single",
-   //    questionImage: {
-   //       before: questionImageBefore,
-   //       after: questionImageAfter
-   //    },
-   //    totalOptions: 4,
-   //    option: {
-   //       o1: option1,
-   //       o2: option2,
-   //       o3: option3,
-   //       o4: option4
-   //    }
-   // }
 
    const playAudio = () => {
       var aud = document.getElementById("audioQues");
@@ -33,7 +14,7 @@ const Structure1to4 = ({ view, structure, questionText, questionImageBefore, que
    }
 
    return (
-      <ParentContainer view={view ? 0.57 : false}>
+      <ParentContainer view={view ? 0.5 : false}>
          {
             structure === 1 ?
                questionImageBefore !== undefined ?
