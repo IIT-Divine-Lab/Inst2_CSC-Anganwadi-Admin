@@ -72,6 +72,7 @@ const Questions = () => {
          }
             break;
          case 6: props = {
+            ...props,
             questionImageAfter: data.question?.questionImage.after,
             activeOption: data.question?.correctAnswer[0],
             answerImage: data.question?.answerImage,
@@ -84,6 +85,7 @@ const Questions = () => {
             break;
          default: console.log("Error");
       }
+      console.log(props);
       return <Component {...props} />;
    };
 

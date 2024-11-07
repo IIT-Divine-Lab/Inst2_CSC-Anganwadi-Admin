@@ -4,9 +4,6 @@ import Heading from '../Common/Heading'
 import Body from '../Common/Body'
 import Button from '../Common/Button'
 import ParentContainer from '../Common/ParentContainer'
-// import active from "./active.png"
-// import inactive from "./inactive.png"
-// import answerImage from "./ans.png"
 
 const Structure6 = ({ view, activeOption, active, inactive, answerImage, questionText, questionImageAfter, question }) => {
    return (
