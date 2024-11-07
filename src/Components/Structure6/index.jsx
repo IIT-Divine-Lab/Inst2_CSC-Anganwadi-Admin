@@ -10,7 +10,7 @@ import ParentContainer from '../Common/ParentContainer'
 
 const Structure6 = ({ view, activeOption, active, inactive, answerImage, questionText, questionImageAfter, question }) => {
    return (
-      <ParentContainer view={view ? 0.7 : false}>
+      <ParentContainer view={view ? 0.5 : false}>
          <Heading>
             {questionText !== "" ? questionText : "Your question text will appear."}
          </Heading>
