@@ -9,6 +9,7 @@ import { TbRefresh } from 'react-icons/tb';
 import * as XLSX from "xlsx"
 
 const Result = () => {
+   // eslint-disable-next-line
    const [pageInput, setPageInput] = useState(1);
    const [currentPage, setCurrentPage] = useState(1);
    const dispatch = useDispatch()
@@ -31,10 +32,13 @@ const Result = () => {
       // Generate a downloadable Excel file
       XLSX.writeFile(workbook, "exported_table.xlsx");
    };
+
+   // eslint-disable-next-line
    const handlePageChange = (pageNumber) => {
       setCurrentPage(pageNumber);
    };
 
+   // eslint-disable-next-line
    const handleGoToPage = () => {
       const pageNum = parseInt(pageInput);
       if (pageNum >= 1 && pageNum <= totalPages) {
@@ -78,7 +82,7 @@ const Result = () => {
       // console.log(resQues)
       let categories = [];
       for (let i = 0; i < resQues?.length; i++) {
-         let cat = resQues[i]?.quesCategory?._id
+         let cat = resQues[i]?.quesCategory?.categoryName
          if (!(categories.includes(cat)))
             categories.push(cat)
       }
@@ -87,9 +91,8 @@ const Result = () => {
          let cat = categories[j];
          let data = [];
          for (let i = 0; i < resQues?.length; i++) {
-            console.log(cat);
             let obj;
-            if (cat === resQues[i]?.quesCategory?._id) {
+            if (cat === resQues[i]?.quesCategory?.categoryName) {
                // console.log(resQues[i]?.quesId)
                obj = {
                   quesId: resQues[i].quesId?._id,
@@ -102,26 +105,27 @@ const Result = () => {
          }
          allQuestion[cat] = data;
       }
-      console.log(allQuestion);
       return allQuestion;
    }
 
    const score = (category, resQues, total) => {
       let arr = new Array(total).fill("-");
       let cat = resQues[category];
-      if (cat !== undefined) {
+      if (cat !== undefined && !category.includes("Draw")) {
          for (let i = 0; i < cat?.length; i++) {
             if (cat[i].questionType === "single") {
                if (cat[i].answerMarked?.length === cat[i].correctAnswer?.length) {
                   for (let j = 0; j < cat[i].correctAnswer?.length; j++) {
                      if (!(cat[i].correctAnswer.includes(cat[i].answerMarked[j]))) {
                         arr[i] = 0;
-                        console.log(cat[i]?.quesId)
                      }
                      else {
                         arr[i] = 1;
                      }
                   }
+               }
+               else if (cat[i].correctAnswer?.length === 2) {
+                  arr[i] = cat[i].answerMarked[0] === cat[i].correctAnswer[0] ? 2 : cat[i].answerMarked[0] === cat[i].correctAnswer[1] ? 1 : 0
                }
                else {
                   arr[i] = 0;
@@ -138,6 +142,13 @@ const Result = () => {
                   }
                }
                arr[i] = a;
+            }
+         }
+      }
+      if (category.includes("Draw") && cat !== undefined) {
+         for (let i = 0; i < cat.length; i++) {
+            if (cat[i].answerMarked.length) {
+               arr[i] = <img style={{ width: "150px" }} alt={cat[i]} src={cat[i].answerMarked[0]} />;
             }
          }
       }
@@ -176,7 +187,7 @@ const Result = () => {
                   <button className='download-btn' onClick={exportToXLSX}>Export</button>
                </span>
             </h1>
-            <div className="pagination-top">
+            {/* <div className="pagination-top">
                <span>Go To</span>
                <input
                   type="number"
@@ -186,7 +197,7 @@ const Result = () => {
                   onChange={(e) => setPageInput(e.target.value)}
                />
                <button onClick={handleGoToPage}>Go</button>
-            </div>
+            </div> */}
             <div className='parentTableContainer'>
                <table ref={tableRef} className='table-container' style={{ width: `calc(600px * ` + (category.length + 1) + `)` }}>
                   <thead>
@@ -234,7 +245,7 @@ const Result = () => {
                                  <td>{user.age}</td>
                                  {
                                     category.flatMap((headData, index) => {
-                                       let categoryRecords = score(headData._id, resQuestion, headData?.totalQuestions);
+                                       let categoryRecords = score(headData?.categoryName, resQuestion, headData?.totalQuestions);
 
                                        if (headData?.totalQuestions)
                                           return Array.from({ length: headData?.totalQuestions || 0 }, (_, i) => (
@@ -258,7 +269,7 @@ const Result = () => {
                   </thead>
                </table>
             </div>
-            <div className="pagination">
+            {/* <div className="pagination">
                <button
                   onClick={() => handlePageChange(currentPage - 1)}
                   disabled={currentPage === 1}
@@ -272,7 +283,7 @@ const Result = () => {
                >
                   Next
                </button>
-            </div>
+            </div> */}
          </div>
       </section>
    )

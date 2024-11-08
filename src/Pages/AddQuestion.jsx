@@ -27,6 +27,7 @@ import Eyes from "../Components/Images/eyes.png"
 import Hand from "../Components/Images/hand.png"
 import Nose from "../Components/Images/nose.png"
 import Tongue from "../Components/Images/tongue.png"
+import Structure8 from '../Components/Structure8';
 
 const AddQuestion = () => {
    const categories = useSelector((state) => state.categories);
@@ -44,6 +45,7 @@ const AddQuestion = () => {
    const [totalOptions, setTotalOptions] = useState(0);
    const [multiCorrectAnswer, setMultiCorrectAnswer] = useState([]);
    const [correctAnswer, setCorrectAnswer] = useState("-");
+   const [neutralAnswer, setNeutralAnswer] = useState("-");
    const [option, setOption] = useState();
    const [questionSound, setQuestionSound] = useState("");
    const [questionOnlyText, setQuestionOnlyText] = useState("");
@@ -142,6 +144,10 @@ const AddQuestion = () => {
             rightColumn={rightColumn}
             matches={matches}
             setMatches={setMatches}
+         />
+         case 8: return <Structure8
+            questionText={questionText}
+            questionImageAfter={questionImageAfter}
          />
          default: console.log("Error");
             break;
@@ -333,9 +339,9 @@ const AddQuestion = () => {
          question: {
             structure: workingStructure,
             questionText,
-            questionType: ((workingStructure >= 1 && workingStructure <= 6) && workingStructure !== 5) ? "single" : "multi",
-            totalOptions: (workingStructure === 6 ? 4 : totalOptions),
-            correctAnswer: workingStructure === 5 || workingStructure === 7 ? correctAnswers : [correctAnswer]
+            questionType: ((workingStructure >= 1 && workingStructure <= 6) && workingStructure !== 5) ? "single" : workingStructure === 8 ? "draw" : "multi",
+            totalOptions: workingStructure === 8 ? -1 : (workingStructure === 6 ? 4 : totalOptions),
+            correctAnswer: workingStructure === 5 || workingStructure === 7 ? correctAnswers : workingStructure === 8 ? ["draw"] : workingStructure === 2 && totalOptions > 2 && quesCategory.includes("6729d6893ae29c44e7450897") ? [correctAnswer, neutralAnswer] : [correctAnswer],
          }
       };
       switch (workingStructure) {
@@ -363,6 +369,13 @@ const AddQuestion = () => {
             break;
          case 6: submission = {
             ...submission, question: { ...submission.question, questionImage: { after: questionImageAfter }, answerImage, option: { active: activeAnswerImage, inactive: inactiveAnswerImage } }
+         }
+            break;
+         case 8: submission = {
+            ...submission,
+            question: {
+               ...submission.question, questionImage: { after: questionImageAfter }
+            }
          }
             break;
          default:
@@ -708,21 +721,44 @@ const AddQuestion = () => {
                                     {
 
                                        workingStructure !== 5 && workingStructure !== 7 && workingStructure !== 8 ?
-                                          <div className="formFieldContainer">
-                                             <label className="fieldLabel">Select Correct Answer</label>
-                                             <select name="correctAnswer" id="correctAnswer" value={correctAnswer} onChange={(e) => setCorrectAnswer(e.target.value)} className="formField">
-                                                <option value="-">Select Correct Answer</option>
-                                                {
-                                                   [1, 2, 3, 4].map((num, index) => {
-                                                      if (totalOptions >= num) {
-                                                         return <option key={index} value={"o" + num}>{num}</option>
-                                                      }
-                                                      else return "";
-                                                   })
-                                                }
+                                          <>
+                                             <div className="formFieldContainer">
+                                                <label className="fieldLabel">Select Correct Answer</label>
+                                                <select name="correctAnswer" id="correctAnswer" value={correctAnswer} onChange={(e) => setCorrectAnswer(e.target.value)} className="formField">
+                                                   <option value="-">Select Correct Answer</option>
+                                                   {
+                                                      [1, 2, 3, 4].map((num, index) => {
+                                                         if (totalOptions >= num) {
+                                                            return <option key={index} value={"o" + num}>{num}</option>
+                                                         }
+                                                         else return "";
+                                                      })
+                                                   }
 
-                                             </select>
-                                          </div>
+                                                </select>
+                                             </div>
+                                             {
+                                                totalOptions > 2 && quesCategory.includes("6729d6893ae29c44e7450897") ?
+                                                   <div className="formFieldContainer">
+                                                      <label className="fieldLabel">Select Neutral Answer</label>
+                                                      <select name="neutralAnswer" id="neutralAnswer" value={neutralAnswer} onChange={(e) => setNeutralAnswer(e.target.value)} className="formField">
+                                                         <option value="-">Select Neutral Answer</option>
+                                                         {
+                                                            [1, 2, 3, 4].map((num, index) => {
+                                                               if (totalOptions >= num && correctAnswer !== ("o" + num)) {
+                                                                  return <option key={index} value={"o" + num}>{num}</option>
+                                                               }
+                                                               else return "";
+                                                            })
+                                                         }
+
+                                                      </select>
+                                                   </div>
+
+                                                   : ``
+                                             }
+                                          </>
+
 
                                           :
                                           workingStructure === 5 ?
