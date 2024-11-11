@@ -199,7 +199,7 @@ const Result = () => {
                <button onClick={handleGoToPage}>Go</button>
             </div> */}
             <div className='parentTableContainer'>
-               <table ref={tableRef} className='table-container' style={{ width: `calc(600px * ` + (category.length + 1) + `)` }}>
+               <table ref={tableRef} className='table-container' style={{ width: `calc(600px * ` + (category.length / 2 + 1) + `)` }}>
                   <thead>
                      <tr>
                         <th rowSpan={2}>S. No</th>
@@ -210,7 +210,7 @@ const Result = () => {
                         <th rowSpan={2}>Age Group</th>
                         {
                            category.map((headData, index) => {
-                              if (headData?.totalQuestions)
+                              if (headData?.totalQuestions && !headData?.categoryName.includes("AAA"))
                                  return <th key={index} style={{ textAlign: "center" }} colSpan={headData?.totalQuestions || 0}>{headData.categoryName}</th>
                               else
                                  return () => {
@@ -221,7 +221,7 @@ const Result = () => {
                      <tr>
                         {
                            category.flatMap((headData, index) => {
-                              if (headData?.totalQuestions)
+                              if (headData?.totalQuestions && !headData?.categoryName.includes("AAA"))
                                  return Array.from({ length: headData?.totalQuestions || 0 }, (_, i) => (
                                     <th style={{ textAlign: "center" }} key={`${index}-${i}`}>Trial {i + 1}</th>
                                  ))
@@ -231,6 +231,8 @@ const Result = () => {
                            })
                         }
                      </tr>
+                  </thead>
+                  <tbody>
                      {
                         result.length !== 0 ?
                            result?.map((res, index) => {
@@ -245,15 +247,22 @@ const Result = () => {
                                  <td>{user.age}</td>
                                  {
                                     category.flatMap((headData, index) => {
-                                       let categoryRecords = score(headData?.categoryName, resQuestion, headData?.totalQuestions);
-
-                                       if (headData?.totalQuestions)
-                                          return Array.from({ length: headData?.totalQuestions || 0 }, (_, i) => (
-                                             <td style={{ textAlign: "center" }} key={`${index}-${i}`}>{categoryRecords[i]}</td>
-                                          ))
-                                       else
+                                       if (headData?.categoryName.includes("AAA")) {
                                           return () => {
-                                          }
+
+                                          };
+                                       }
+                                       else {
+                                          let categoryRecords = score(headData?.categoryName, resQuestion, headData?.totalQuestions);
+
+                                          if (headData?.totalQuestions)
+                                             return Array.from({ length: headData?.totalQuestions || 0 }, (_, i) => (
+                                                <td style={{ textAlign: "center" }} key={`${index}-${i}`}>{categoryRecords[i]}</td>
+                                             ))
+                                          else
+                                             return () => {
+                                             }
+                                       }
                                     })
                                  }
                               </tr>)
@@ -266,7 +275,7 @@ const Result = () => {
                               </tr>
                            )
                      }
-                  </thead>
+                  </tbody>
                </table>
             </div>
             {/* <div className="pagination">

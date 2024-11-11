@@ -1,4 +1,38 @@
 .parentTableContainer {
    width: 100%;
-   overflow-x: auto;
+   max-height: 70vh;
+   overflow: auto;
+   background-color: #fff;
+   scrollbar-width: thin;
+   scrollbar-color: #888 #f1f1f1;
+}
+
+.parentTableContainer > table {
+   padding: 0;
+   margin: 0;
+}
+
+.parentTableContainer::-webkit-scrollbar {
+   width: 10px;
+}
+
+.parentTableContainer::-webkit-scrollbar-track {
+   background: #f1f1f1;
+}
+
+.parentTableContainer::-webkit-scrollbar-thumb {
+   background-color: #888;
+   border-radius: 5px;
+   border: 2px solid #f1f1f1; /* Optional: border for better definition */
+}
+
+.parentTableContainer::-webkit-scrollbar-thumb:hover {
+   background: #555;
+}
+
+.parentTableContainer > table > thead {
+   position: sticky;
+   top: 0;
+   background-color: #fff; /* Adjust color as needed */
+   z-index: 1010;
 }

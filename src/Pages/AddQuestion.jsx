@@ -26,6 +26,11 @@ import Ear from "../Components/Images/ear.png"
 import Eyes from "../Components/Images/eyes.png"
 import Hand from "../Components/Images/hand.png"
 import Nose from "../Components/Images/nose.png"
+import Candle from "../Components/Images/candle.png"
+import Icecream from "../Components/Images/icecream.png"
+import Perfume from "../Components/Images/perfume.png"
+import Teddy from "../Components/Images/teddyBear.png"
+import DemoSpeaker from "../Components/Images/demoSpeaker.png"
 import Tongue from "../Components/Images/tongue.png"
 import Structure8 from '../Components/Structure8';
 
@@ -58,50 +63,98 @@ const AddQuestion = () => {
 
    const [matches, setMatches] = useState([]);
 
-   const leftColumn = [
-      {
-         val: "जीभ",
-         src: Tongue
-      },
-      {
-         val: "आंख",
-         src: Eyes
-      },
-      {
-         val: "कान",
-         src: Ear
-      },
-      {
-         val: "त्वचा",
-         src: Hand
-      },
-      {
-         val: "नाक",
-         src: Nose
-      },
-   ]
-   const rightColumn = [
-      {
-         val: "Ball",
-         src: RedBall
-      },
-      {
-         val: "Jalebi",
-         src: Food
-      },
-      {
-         val: "Agarbatti",
-         src: Agarbatti
-      },
-      {
-         val: "Ice",
-         src: IceBowl
-      },
-      {
-         val: "Speaker",
-         src: Speaker
-      }
-   ]
+   const leftColumn = {
+      Demo: [
+         {
+            val: "त्वचा",
+            src: Hand
+         },
+         {
+            val: "आंख",
+            src: Eyes
+         },
+         {
+            val: "कान",
+            src: Ear
+         },
+         {
+            val: "नाक",
+            src: Nose
+         },
+         {
+            val: "जीभ",
+            src: Tongue
+         }
+      ],
+      Ques: [
+         {
+            val: "जीभ",
+            src: Tongue
+         },
+         {
+            val: "आंख",
+            src: Eyes
+         },
+         {
+            val: "कान",
+            src: Ear
+         },
+         {
+            val: "त्वचा",
+            src: Hand
+         },
+         {
+            val: "नाक",
+            src: Nose
+         }
+      ]
+   }
+   const rightColumn = {
+      Demo: [
+         {
+            val: "Candle",
+            src: Candle
+         },
+         {
+            val: "IceCream",
+            src: Icecream
+         },
+         {
+            val: "Perfume",
+            src: Perfume
+         },
+         {
+            val: "Teddy",
+            src: Teddy
+         },
+         {
+            val: "Speaker",
+            src: DemoSpeaker
+         }
+      ],
+      Ques: [
+         {
+            val: "Ball",
+            src: RedBall
+         },
+         {
+            val: "Jalebi",
+            src: Food
+         },
+         {
+            val: "Agarbatti",
+            src: Agarbatti
+         },
+         {
+            val: "Ice",
+            src: IceBowl
+         },
+         {
+            val: "Speaker",
+            src: Speaker
+         }
+      ]
+   }
 
    const struct = () => {
       let selectCategory = categories.filter((cat) => cat._id === quesCategory);
@@ -140,8 +193,8 @@ const AddQuestion = () => {
          />
          case 7: return <Structure7
             questionText={questionText}
-            leftColumn={leftColumn}
-            rightColumn={rightColumn}
+            leftColumn={getCategoryName(quesCategory).includes("AAA") ? leftColumn.Demo : leftColumn.Ques}
+            rightColumn={getCategoryName(quesCategory).includes("AAA") ? rightColumn.Demo : rightColumn.Ques}
             matches={matches}
             setMatches={setMatches}
          />
@@ -391,6 +444,10 @@ const AddQuestion = () => {
             console.error(error);
          })
       console.log(submission);
+   }
+
+   const getCategoryName = (id) => {
+      return categories.filter((cat) => cat._id === id)[0].categoryName
    }
 
    // const fetchEditableQuestion = useCallback(async () => {
