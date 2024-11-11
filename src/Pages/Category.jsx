@@ -124,7 +124,7 @@ const Category = () => {
                      currentRecords.map((category, index) => (
                         <tr key={index}>
                            <td>{startIndex + index + 1}</td>
-                           <td>{category.categoryName}</td>
+                           <td>{category.categoryName.includes("AAA") ? category.categoryName.split(": ")[0] + ": Demo" : category.categoryName}</td>
                            <td>{category.structure}</td>
                            <td>{category.totalQuestions}</td>
                            <td>

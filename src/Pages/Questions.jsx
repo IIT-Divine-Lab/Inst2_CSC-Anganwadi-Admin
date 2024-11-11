@@ -79,7 +79,7 @@ const Questions = () => {
             active: data.question?.option.active,
             inactive: data.question?.option.inactive
          }
-         break;
+            break;
          case 7: return Structure7;
          case 8:
             break;
@@ -269,8 +269,8 @@ const Questions = () => {
                         <tr key={index}>
                            <td>{startIndex + index + 1}</td>
                            <td style={{ width: "350px" }}>{data.question.questionText}</td>
-                           <td>{data.quesCategory.categoryName ? data.quesCategory.categoryName.split("Domain")[0].split(": ")[1] + "Domain" : ''}</td>
-                           <td style={{ width: "250px" }}>{data.quesCategory.categoryName ? data.quesCategory.categoryName.split("Domain")[0].split(": ")[0] + " : " + data.quesCategory.categoryName.split("- ")[1] : ''}</td>
+                           <td>{data.quesCategory.categoryName ? data.quesCategory.categoryName.includes("AAA") ? "Demo" : data.quesCategory.categoryName.split("Domain")[0].split(": ")[1] + "Domain" : ''}</td>
+                           <td style={{ width: "250px" }}>{data.quesCategory.categoryName ? data.quesCategory.categoryName.includes("AAA") ? data.quesCategory.categoryName.split("Domain")[0].split(": ")[0] + ": Demo" : data.quesCategory.categoryName.split("Domain")[0].split(": ")[0] + ": " + data.quesCategory.categoryName.split("- ")[1] : ''}</td>
                            {/* <td>{data.question.questionType}</td> */}
                            <td>{data.ageGroup}</td>
                            <td>{data.question.totalOptions}</td>
