@@ -15,11 +15,11 @@ import { TbRefresh } from "react-icons/tb";
 const Student = () => {
    const dispatch = useDispatch();
    const students = useSelector((state) => (state.student));
-   const [currentPage, setCurrentPage] = useState(1);
    const [pageInput, setPageInput] = useState(1);
    const [contentRefresh, setContentRefresh] = useState(false);
    const recordsPerPage = 10;
    const totalPages = Math.ceil(students.length / recordsPerPage);
+   const [currentPage, setCurrentPage] = useState(totalPages ? 1 : 0);
 
    const startIndex = (currentPage - 1) * recordsPerPage;
    const currentRecords = students.slice(startIndex, startIndex + recordsPerPage);
@@ -106,15 +106,15 @@ const Student = () => {
       <section>
          <div className="banner">
             <h1>
-               Student Data
+               Student
                <span style={{ display: "flex", alignItems: "center" }}>
-                  <span style={{ border: "2px solid #333", marginRight: "12px", cursor: "pointer" }} onClick={() => {
+                  <span className="refreshBtn" onClick={() => {
                      setContentRefresh(true);
                      fetchStudentData()
                   }}>
-                     <TbRefresh style={{ padding: "5px" }} className={contentRefresh ? 'spin2' : ''} />
+                     <TbRefresh className={contentRefresh ? 'spin2 refreshIcon' : 'refreshIcon'} />
                   </span>
-                  <button onClick={handleDownloadExcel} className="download-btn">Export</button>
+                  <button onClick={handleDownloadExcel} className=" actionBtn">Export</button>
                </span>
             </h1>
 
@@ -163,14 +163,16 @@ const Student = () => {
             <div className="pagination">
                <button
                   onClick={() => handlePageChange(currentPage - 1)}
-                  disabled={currentPage === 1}
+                  className="prev"
+                  disabled={!totalPages || currentPage === 0 || (currentPage === 1 || totalPages === 1)}
                >
                   Previous
                </button>
-               <span>Page {currentPage} of {totalPages}</span>
+               <span>Page {totalPages ? currentPage : 0} of {totalPages}</span>
                <button
+                  className="next"
                   onClick={() => handlePageChange(currentPage + 1)}
-                  disabled={currentPage === totalPages}
+                  disabled={!totalPages || currentPage === totalPages}
                >
                   Next
                </button>

@@ -3,11 +3,13 @@
    "version": "0.1.0",
    "private": true,
    "dependencies": {
+      "@ffmpeg/ffmpeg": "^0.12.15",
       "@testing-library/jest-dom": "^5.17.0",
       "@testing-library/react": "^13.4.0",
       "@testing-library/user-event": "^13.5.0",
       "@uploadcare/react-uploader": "^1.1.0",
       "axios": "^1.7.7",
+      "browser-image-compression": "^2.0.2",
       "file-saver": "^2.0.5",
       "react": "^18.3.1",
       "react-dom": "^18.3.1",
@@ -24,10 +26,10 @@
    },
    "scripts": {
       "start-dev": "set PORT=3002 && react-scripts start",
-      "start": "react-scripts start",
-      "build": "react-scripts build",
-      "test": "react-scripts test",
-      "eject": "react-scripts eject",
+      "start": "craco start",
+      "build": "craco build",
+      "test": "craco test",
+      "eject": "craco eject",
       "push": "git add . && git commit -m \"changes made\" && git push"
    },
    "eslintConfig": {
@@ -47,5 +49,9 @@
          "last 1 firefox version",
          "last 1 safari version"
       ]
+   },
+   "devDependencies": {
+      "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
+      "@craco/craco": "^7.1.0"
    }
 }

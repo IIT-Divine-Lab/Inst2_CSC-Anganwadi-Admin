@@ -7,7 +7,6 @@ import { useNavigate } from "react-router-dom";
 import { FaEye } from "react-icons/fa";
 // import { CiEdit } from "react-icons/ci";
 import { MdDelete } from "react-icons/md";
-import "./Questions.css";
 import axios from "axios";
 import { apiUrl } from "../adminApiUrl";
 import { TbRefresh } from "react-icons/tb";
@@ -22,11 +21,11 @@ ReactModal.setAppElement('#root');
 const Questions = () => {
    const dispatch = useDispatch();
    const questions = useSelector((state) => state.questions || []);
-   const [currentPage, setCurrentPage] = useState(1);
    const [pageInput, setPageInput] = useState(1);
    const [contentRefresh, setContentRefresh] = useState(false);
    const recordsPerPage = 10;
    const totalPages = Math.ceil(questions.length / recordsPerPage);
+   const [currentPage, setCurrentPage] = useState(totalPages ? 1 : 0);
    const navigate = useNavigate();
 
    const [modalContent, setModalContent] = useState(null);
@@ -85,7 +84,7 @@ const Questions = () => {
             break;
          default: console.log("Error");
       }
-      console.log(props);
+      // console.log(props);
       return <Component {...props} />;
    };
 
@@ -123,7 +122,10 @@ const Questions = () => {
    const fetchQuestions = useCallback(async () => {
       axios.get(apiUrl + "assessment")
          .then(({ data }) => {
-            dispatch(setQuestion(data?.questions))
+            if (data.message !== "No questions found.") {
+               dispatch(setQuestion(data?.questions))
+               // console.log(data?.questions)
+            }
          })
          .catch((error) => {
             console.error(error);
@@ -135,6 +137,7 @@ const Questions = () => {
          })
    }, [dispatch])
 
+   // eslint-disable-next-line
    const deleteFromUploadCare = (uuid) => {
       return fetch(`https://api.uploadcare.com/files/${uuid}/`, {
          method: 'DELETE',
@@ -145,53 +148,64 @@ const Questions = () => {
       })
    }
 
+   // eslint-disable-next-line
+   // const handleQuestionDelete = (id, question) => {
+   //    let uuids = [];
+   //    let option, uuid;
+   //    if (question.structure !== 6 && question.structure !== 7) {
+   //       for (let i = 0; i < question.totalOptions; i++) {
+   //          option = question?.option["o" + (i + 1)]?.split("/");
+   //          uuid = option[option?.length - 2];
+   //          uuids.push(uuid);
+   //       }
+   //       if (question.structure === 1) {
+   //          option = question.questionImage.before.split("/");
+   //          uuid = option[option?.length - 2];
+   //          uuids.push(uuid);
+   //          option = question.questionImage.after.split("/");
+   //          uuid = option[option?.length - 2];
+   //          uuids.push(uuid);
+   //       }
+   //       else if (question.structure === 2) {
+   //          option = question.questionImage.after.split("/");
+   //          uuid = option[option?.length - 2];
+   //          uuids.push(uuid);
+   //       }
+   //       else if (question.structure === 4) {
+   //          option = question.questionSound.split("/");
+   //          uuid = option[option?.length - 2];
+   //          uuids.push(uuid);
+   //       }
+   //    }
+   //    axios.delete(apiUrl + "assessment/" + id)
+   //       .then(({ data }) => {
+   //          dispatch(deleteQuestion(data?.question))
+   //       })
+   //       .catch((error) => {
+   //          console.log(error);
+   //       })
+   //       .finally(() => {
+   //          uuids.forEach(async (uuid) => {
+   //             deleteFromUploadCare(uuid)
+   //                .then(() => {
+   //                   toast.success("Deleted Successfully!!", {
+   //                      autoClose: 1000
+   //                   })
+   //                })
+   //                .catch((error) => {
+   //                   console.error(error);
+   //                })
+   //          })
+   //       })
+   // }
+
    const handleQuestionDelete = (id, question) => {
-      let uuids = [];
-      let option, uuid;
-      if (question.structure !== 6 && question.structure !== 7) {
-         for (let i = 0; i < question.totalOptions; i++) {
-            option = question?.option["o" + (i + 1)]?.split("/");
-            uuid = option[option?.length - 2];
-            uuids.push(uuid);
-         }
-         if (question.structure === 1) {
-            option = question.questionImage.before.split("/");
-            uuid = option[option?.length - 2];
-            uuids.push(uuid);
-            option = question.questionImage.after.split("/");
-            uuid = option[option?.length - 2];
-            uuids.push(uuid);
-         }
-         else if (question.structure === 2) {
-            option = question.questionImage.after.split("/");
-            uuid = option[option?.length - 2];
-            uuids.push(uuid);
-         }
-         else if (question.structure === 4) {
-            option = question.questionSound.split("/");
-            uuid = option[option?.length - 2];
-            uuids.push(uuid);
-         }
-      }
       axios.delete(apiUrl + "assessment/" + id)
          .then(({ data }) => {
             dispatch(deleteQuestion(data?.question))
          })
          .catch((error) => {
             console.log(error);
-         })
-         .finally(() => {
-            uuids.forEach(async (uuid) => {
-               deleteFromUploadCare(uuid)
-                  .then(() => {
-                     toast.success("Deleted Successfully!!", {
-                        autoClose: 1000
-                     })
-                  })
-                  .catch((error) => {
-                     console.error(error);
-                  })
-            })
          })
    }
 
@@ -228,13 +242,13 @@ const Questions = () => {
             <h1>
                Questions Data
                <span style={{ display: "flex", alignItems: "center" }}>
-                  <span style={{ border: "2px solid #333", marginRight: "12px", cursor: "pointer" }} onClick={() => {
+                  <span className="refreshBtn" onClick={() => {
                      setContentRefresh(true);
                      fetchQuestions()
                   }}>
-                     <TbRefresh style={{ padding: "5px" }} className={contentRefresh ? 'spin2' : ''} />
+                     <TbRefresh className={contentRefresh ? 'spin2 refreshIcon' : 'refreshIcon'} />
                   </span>
-                  <button onClick={handleAddQuestion} className="download-btn">Add Questions</button>
+                  <button onClick={handleAddQuestion} className="actionBtn">Add Questions</button>
                </span>
             </h1>
             <div className="pagination-top">
@@ -257,6 +271,7 @@ const Questions = () => {
                      <th>Question Text</th>
                      <th>Question Category</th>
                      <th>Question Sub Category</th>
+                     <th>Question Type</th>
                      <th>Age Group</th>
                      <th>Total Options</th>
                      <th>Actions</th>
@@ -268,36 +283,37 @@ const Questions = () => {
                         <tr key={index}>
                            <td>{startIndex + index + 1}</td>
                            <td style={{ width: "350px" }}>{data.question.questionText}</td>
-                           <td>{data.quesCategory.categoryName ? data.quesCategory.categoryName.includes("AAA") ? "Demo" : data.quesCategory.categoryName.split("Domain")[0].split(": ")[1] + "Domain" : ''}</td>
-                           <td style={{ width: "250px" }}>{data.quesCategory.categoryName ? data.quesCategory.categoryName.includes("AAA") ? data.quesCategory.categoryName.split("Domain")[0].split(": ")[0] + ": Demo" : data.quesCategory.categoryName.split("Domain")[0].split(": ")[0] + ": " + data.quesCategory.categoryName.split("- ")[1] : ''}</td>
+                           <td>{data.quesCategory.categoryName.split(" kush ")[0]}</td>
+                           <td>{data.quesCategory.categoryName.split(" kush ")[1].split(" : ")[0]}</td>
+                           <td>{data.quesCategory.categoryName.split(" kush ")[1].split(" : ")[1]}</td>
                            <td>{data.ageGroup}</td>
                            <td>{data.question.totalOptions}</td>
                            <td>
                               <FaEye className="action-icon" title="View" onClick={() => openModal(modalStructure(data.question?.structure), data, data.question?.structure)} />
                               {/* <CiEdit className="action-icon" title="Edit" onClick={() => { handleQuestionEdit(data._id) }} /> */}
                               <MdDelete className="action-icon" title="Delete" onClick={() => { handleQuestionDelete(data._id, data.question) }} />
+                              {/* <MdDelete className="action-icon" title="Delete" onClick={() => { handleQuestionDelete(data._id, data.question) }} /> */}
                            </td>
                         </tr>
                      ))
                   ) : (
                      <tr>
-                        <td colSpan="6">No Questions Found!</td>
+                        <td colSpan="7">No Questions Found!</td>
                      </tr>
                   )}
                </tbody>
             </table>
-
             <div className="pagination">
                <button
                   onClick={() => handlePageChange(currentPage - 1)}
-                  disabled={currentPage === 1}
+                  disabled={!totalPages || currentPage === 0 || (currentPage === 1 || totalPages === 1)}
                >
                   Previous
                </button>
-               <span>Page {currentPage} of {totalPages}</span>
+               <span>Page {totalPages ? currentPage : 0} of {totalPages}</span>
                <button
                   onClick={() => handlePageChange(currentPage + 1)}
-                  disabled={currentPage === totalPages}
+                  disabled={!totalPages || currentPage === totalPages}
                >
                   Next
                </button>

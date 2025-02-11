@@ -11,7 +11,6 @@ import * as XLSX from "xlsx"
 const Result = () => {
    // eslint-disable-next-line
    const [pageInput, setPageInput] = useState(1);
-   const [currentPage, setCurrentPage] = useState(1);
    const dispatch = useDispatch()
 
    const result = useSelector((state) => state?.result || []);
@@ -19,6 +18,7 @@ const Result = () => {
    const [contentRefresh, setContentRefresh] = useState(false);
    const recordsPerPage = 10;
    const totalPages = Math.ceil(result?.length / recordsPerPage) || 1;
+   const [currentPage, setCurrentPage] = useState(totalPages ? 1 : 0);
    const startIndex = (currentPage - 1) * recordsPerPage;
    // eslint-disable-next-line
    const currentRecords = result?.slice(startIndex, startIndex + recordsPerPage);
@@ -177,14 +177,14 @@ const Result = () => {
          <div className="banner">
             <h1>Result
                <span style={{ display: "flex", alignItems: "center" }}>
-                  <span style={{ border: "2px solid #333", cursor: "pointer" }} onClick={() => {
+                  <span className="refreshBtn" onClick={() => {
                      setContentRefresh(true);
-                     fetchCategories();
-                     fetchResults();
+                     fetchCategories()
+                     fetchResults()
                   }}>
-                     <TbRefresh style={{ padding: "5px" }} className={contentRefresh ? 'spin2' : ''} />
+                     <TbRefresh className={contentRefresh ? 'spin2 refreshIcon' : 'refreshIcon'} />
                   </span>
-                  <button className='download-btn' onClick={exportToXLSX}>Export</button>
+                  <button className='actionBtn' onClick={exportToXLSX}>Export</button>
                </span>
             </h1>
             {/* <div className="pagination-top">
@@ -281,14 +281,14 @@ const Result = () => {
             {/* <div className="pagination">
                <button
                   onClick={() => handlePageChange(currentPage - 1)}
-                  disabled={currentPage === 1}
+                  disabled={!totalPages && (currentPage === 0 || currentPage === 1)}
                >
                   Previous
                </button>
-               <span>Page {currentPage} of {totalPages}</span>
+               <span>Page {totalPages ? currentPage : 0} of {totalPages}</span>
                <button
                   onClick={() => handlePageChange(currentPage + 1)}
-                  disabled={currentPage === totalPages}
+                  disabled={!totalPages && currentPage === totalPages}
                >
                   Next
                </button>

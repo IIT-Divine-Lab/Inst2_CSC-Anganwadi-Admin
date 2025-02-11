@@ -1,0 +1,38 @@
+.uploadContainer {
+   cursor: pointer;
+   background-color: #ebebeb;
+   gap: 0.5em;
+   display: flex;
+   justify-content: center;
+   align-items: center;
+   font-size: 14px;
+   color: #161616;
+   border-radius: 8px;
+}
+
+/* .overlayContainer {
+   position: absolute;
+   top: 0;
+   left: 0;
+   display: flex;
+   justify-content: center;
+   align-items: center;
+   height: 100%;
+   width: 100%;
+   background-color: rgba(0, 0, 0, 30%);
+   z-index: 9997;
+}
+
+.contentContainer {
+   z-index: 9999;
+   background-color: white;
+}
+
+.overlay {
+   z-index: 9998;
+   position: absolute;
+   top: 0;
+   left: 0;
+   height: inherit;
+   width: inherit;
+} */

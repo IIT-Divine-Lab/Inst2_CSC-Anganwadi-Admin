@@ -12,6 +12,16 @@ const Structure1to4 = ({ view, structure, questionText, questionImageBefore, que
       var aud = document.getElementById("audioQues");
       aud.play();
    }
+   // console.log("option at 15", option)
+   const getSourceURL = (obj) => {
+      // console.log("get source url : ", obj)
+      try {
+         return URL.createObjectURL(obj)
+      }
+      catch (error) {
+         return `data:image/png;base64,${obj?.filePath}`
+      }
+   }
 
    return (
       <ParentContainer view={view ? 0.5 : false}>
@@ -19,7 +29,7 @@ const Structure1to4 = ({ view, structure, questionText, questionImageBefore, que
             structure === 1 ?
                questionImageBefore !== undefined ?
                   <div>
-                     <img className='quesImageBefore' style={questionImageAfter !== undefined ? { height: "auto", backgroundColor: "transparent" } : { minHeight: "100px" }} src={questionImageBefore} alt="" />
+                     <img className='quesImageBefore' style={questionImageAfter !== undefined ? { height: "auto", backgroundColor: "transparent" } : { background: "transparent" }} src={questionImageBefore !== undefined ? getSourceURL(questionImageBefore) : undefined} alt="" />
                   </div>
                   :
                   <div className='quesImageBefore'></div>
@@ -34,7 +44,7 @@ const Structure1to4 = ({ view, structure, questionText, questionImageBefore, que
                structure === 1 || structure === 2 ?
                   questionImageAfter !== undefined ?
                      <div>
-                        <img style={structure === 2 ? { height: "300px", width: "auto", backgroundColor: "transparent" } : { backgroundColor: "transparent" }} className='quesImageAfter' src={questionImageAfter} alt="" />
+                        <img style={structure === 2 ? { height: "300px", width: "auto", backgroundColor: "transparent" } : { backgroundColor: "transparent", border: "none" }} className='quesImageAfter' src={questionImageAfter !== undefined ? getSourceURL(questionImageAfter) : undefined} alt="" />
                      </div>
                      :
                      <div style={{ minHeight: "120px" }} className='quesImageAfter'></div>
@@ -42,7 +52,7 @@ const Structure1to4 = ({ view, structure, questionText, questionImageBefore, que
                      <>
                         {
                            enabledSound === true ?
-                              <audio loops={false} id='audioQues' className='audioQues' src={questionSound}></audio>
+                              <audio loops={false} id='audioQues' className='audioQues' src={questionSound !== undefined ? getSourceURL(questionSound) : undefined}></audio>
                               : ""
                         }
                         <div className='audioContainer'>
@@ -66,13 +76,13 @@ const Structure1to4 = ({ view, structure, questionText, questionImageBefore, que
             <div className="quesOptionContainer">
                <div className='rowContainer' style={totalOptions >= 3 ? { flexWrap: "wrap" } : {}}>
                   <div className="optionContainer">
-                     <img src={option?.o1} alt='' className={correctAnswer && correctAnswer[0] === "o1" ? "option optionActive" : "option"} style={option?.o1 === undefined ? { minHeight: "120px", backgroundColor: "#cacaca" } : {}} />
+                     <img src={option !== undefined ? getSourceURL(option[0]) : undefined} alt='' className={correctAnswer && correctAnswer[0] === "o1" ? "option optionActive" : "option"} style={option === undefined ? { minHeight: "120px", backgroundColor: "#cacaca" } : {}} />
                      <input type="radio" name="q1" id="a1" className='chooseOption' />
                   </div>
                   {
                      totalOptions >= 2 ?
                         <div className="optionContainer">
-                           <img src={option?.o2} alt='' className={correctAnswer && correctAnswer[0] === "o2" ? "option optionActive" : "option"} style={option?.o2 === undefined ? { minHeight: "120px", backgroundColor: "#cacaca" } : {}} />
+                           <img src={option !== undefined ? getSourceURL(option[1]) : undefined} alt='' className={correctAnswer && correctAnswer[0] === "o2" ? "option optionActive" : "option"} style={option === undefined ? { minHeight: "120px", backgroundColor: "#cacaca" } : {}} />
                            <input type="radio" name="q1" id="a2" className='chooseOption' />
                         </div>
                         :
@@ -81,7 +91,7 @@ const Structure1to4 = ({ view, structure, questionText, questionImageBefore, que
                   {
                      totalOptions >= 3 ?
                         <div className="optionContainer" style={totalOptions >= 3 ? { marginLeft: "0px", marginTop: "40px" } : {}}>
-                           <img src={option?.o3} alt='' className={correctAnswer && correctAnswer[0] === "o3" ? "option optionActive" : "option"} style={option?.o3 === undefined ? { minHeight: "120px", backgroundColor: "#cacaca" } : {}} />
+                           <img src={option !== undefined ? getSourceURL(option[2]) : undefined} alt='' className={correctAnswer && correctAnswer[0] === "o3" ? "option optionActive" : "option"} style={option === undefined ? { minHeight: "120px", backgroundColor: "#cacaca" } : {}} />
                            <input type="radio" name="q1" id="a3" className='chooseOption' />
                         </div>
                         :
@@ -90,8 +100,8 @@ const Structure1to4 = ({ view, structure, questionText, questionImageBefore, que
                   {
                      totalOptions >= 4 ?
                         <div className="optionContainer" style={totalOptions >= 3 ? { marginTop: "40px" } : {}}>
-                           <img src={option?.o4} alt='' className={correctAnswer && correctAnswer[0] === "o4" ? "option optionActive" : "option"} style={option?.o4 === undefined ? { minHeight: "120px", backgroundColor: "#cacaca" } : {}} />
-                           <input type="radio" name="q1" id="a2" className='chooseOption' />
+                           <img src={option !== undefined ? getSourceURL(option[3]) : undefined} alt='' className={correctAnswer && correctAnswer[0] === "o4" ? "option optionActive" : "option"} style={option === undefined ? { minHeight: "120px", backgroundColor: "#cacaca" } : {}} />
+                           <input type="radio" name="q1" id="a4" className='chooseOption' />
                         </div>
                         :
                         ""

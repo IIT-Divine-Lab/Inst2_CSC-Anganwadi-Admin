@@ -18,7 +18,7 @@ const App = () => {
          <Sidebar isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed} />
          <div
             className="content"
-            style={isCollapsed ? { marginLeft: "90px" } : { marginLeft: "170px" }}
+            style={isCollapsed ? { marginLeft: "110px" } : { marginLeft: "200px" }}
          >
             <Routes>
                <Route path="/" element={<div>Welcome Home!</div>} />

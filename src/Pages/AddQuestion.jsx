@@ -7,6 +7,7 @@ import Structure5 from '../Components/Structure5';
 import Structure6 from '../Components/Structure6';
 import Structure7 from '../Components/Structure7';
 import { FileUploaderRegular } from '@uploadcare/react-uploader';
+import FileUploader from '../Components/FileUploaderRegular';
 import { FaSpinner, FaCheck } from "react-icons/fa6";
 import Button from '../Components/Common/Button';
 import { toast } from 'react-toastify';
@@ -60,7 +61,8 @@ const AddQuestion = () => {
    const [answerImage, setAnswerImage] = useState(undefined);
    const [activeAnswerImage, setActiveAnswerImage] = useState(undefined);
    const [inactiveAnswerImage, setInactiveAnswerImage] = useState(undefined);
-
+   // console.log("option at 64 ", option);
+   // console.log("option at 65 ", typeof option);
    const [matches, setMatches] = useState([]);
 
    const leftColumn = {
@@ -217,51 +219,14 @@ const AddQuestion = () => {
       })
    }
 
-   const updateBeforeImage = (e) => {
-      if (!e.allEntries.length) {
-         let uuid = questionImageBefore.split("/");
-         deleteFromUploadCare(uuid[uuid.length - 2])
-            .then(() => {
-               setQuestionImageBefore(undefined);
-            })
-            .catch((error) => {
-               console.log(error);
-            })
-         return;
-      }
-      if (e.allEntries[0].isUploading) {
-         setQuestionImageBefore(0);
-         return;
-      }
-      setQuestionImageBefore(e.allEntries[0].cdnUrl);
-   }
-
    const updateOptions = (opt = []) => {
-      let option = {}
+      let option = []
       for (let i = 0; i < opt.length; i++) {
-         option["o" + (i + 1)] = opt[i].cdnUrl;
+         option.push(opt[i]);
       }
       setOption(option);
    }
 
-   const updateAfterImage = (e) => {
-      if (!e.allEntries.length) {
-         let uuid = questionImageAfter.split("/");
-         deleteFromUploadCare(uuid[uuid.length - 2])
-            .then(() => {
-               setQuestionImageAfter(undefined);
-            })
-            .catch((error) => {
-               console.log(error);
-            })
-         return;
-      }
-      if (e.allEntries[0].isUploading) {
-         setQuestionImageAfter(0);
-         return;
-      }
-      setQuestionImageAfter(e.allEntries[0].cdnUrl);
-   }
    const updateAnswerImage = (e) => {
       if (!e.allEntries.length) {
          let uuid = answerImage.split("/");
@@ -346,7 +311,7 @@ const AddQuestion = () => {
       setMultiCorrectAnswer(selectedOptions);
    }
 
-   const handleQuestionSubmission = (e) => {
+   const handleQuestionSubmission = async (e) => {
       if (quesCategory === "Select question category") {
          toast.warn("Please choose category");
          return;
@@ -386,25 +351,34 @@ const AddQuestion = () => {
             correctAnswers.push(`${matches[i].left.val}-${matches[i].right}`)
          }
       }
-      let submission = {
-         quesCategory,
-         ageGroup,
-         question: {
-            structure: workingStructure,
-            questionText,
-            questionType: ((workingStructure >= 1 && workingStructure <= 6) && workingStructure !== 5) ? "single" : workingStructure === 8 ? "draw" : "multi",
-            totalOptions: workingStructure === 8 ? -1 : (workingStructure === 6 ? 4 : totalOptions),
-            correctAnswer: workingStructure === 5 || workingStructure === 7 ? correctAnswers : workingStructure === 8 ? ["draw"] : workingStructure === 2 && totalOptions > 2 && quesCategory.includes("6729d6893ae29c44e7450897") ? [correctAnswer, neutralAnswer] : [correctAnswer],
-         }
-      };
+
+      const formData = new FormData();
+
+      formData.append("quesCategory", quesCategory || "")
+      formData.append("ageGroup", ageGroup || "")
+      formData.append("structure", workingStructure || -1)
+      formData.append("questionText", questionText || "")
+      formData.append("questionType", ((workingStructure >= 1 && workingStructure <= 6) && workingStructure !== 5) ? "single" : workingStructure === 8 ? "draw" : "multi")
+      formData.append("totalOptions", workingStructure === 8 ? -1 : (workingStructure === 6 ? 4 : totalOptions))
+      formData.append("correctAnswer", workingStructure === 5 || workingStructure === 7 ? correctAnswers : workingStructure === 8 ? ["draw"] : workingStructure === 2 && totalOptions > 2 && quesCategory.includes("6729d6893ae29c44e7450897") ? [correctAnswer, neutralAnswer] : [correctAnswer])
+      let submission;
       switch (workingStructure) {
-         case 1: submission = {
-            ...submission, question: { ...submission.question, option, questionImage: { before: questionImageBefore, after: questionImageAfter } }
-         }
+         case 1:
+            // console.log(totalOptions)
+            for (let index = 0; index < totalOptions; index++) {
+               const element = option[index];
+               formData.append(`option.` + index, element)
+            }
+            formData.append("questionImageBefore", questionImageBefore)
+            formData.append("questionImageAfter", questionImageAfter)
             break;
-         case 2: submission = {
-            ...submission, question: { ...submission.question, option, questionImage: { after: questionImageAfter } }
-         }
+         case 2:
+            // console.log(totalOptions)
+            for (let index = 0; index < totalOptions; index++) {
+               const element = option[index];
+               formData.append(`option.` + index, element)
+            }
+            formData.append("questionImageAfter", questionImageAfter)
             break;
          case 4:
             if (enabledSound && enabledText)
@@ -434,16 +408,27 @@ const AddQuestion = () => {
          default:
             break;
       }
-      axios.post(apiUrl + "assessment", submission)
-         .then(({ data }) => {
-            console.log(data);
-            dispatch(addQuestion(data?.question))
-            navigate("/questions")
+
+      // console.log(formData.entries());
+      try {
+         const response = await fetch(apiUrl + "assessment", {
+            method: "POST",
+            body: formData
          })
-         .catch((error) => {
-            console.error(error);
-         })
-      console.log(submission);
+         const data = await response.json();
+         // console.log("Response", data);
+         dispatch(addQuestion(data?.question))
+         navigate("/questions")
+      } catch (error) {
+         console.error("Upload Failed", error)
+      }
+      // axios.post(apiUrl + "assessment", formData)
+      //    .then(({ data }) => {
+      //       console.log(data);
+      //    })
+      //    .catch((error) => {
+      //       console.error(error);
+      //    })
    }
 
    const getCategoryName = (id) => {
@@ -524,8 +509,8 @@ const AddQuestion = () => {
       <div className='banner flex-jc'>
          <div className='banner w-45'>
             <div className='formFieldContainer'>
-               <label className='fieldLabel'>Category</label>
-               <select name="category" value={quesCategory} className='formField' onChange={(e) => {
+               <label htmlFor='category' className='fieldLabel'>Category</label>
+               <select id="category" name="category" value={quesCategory} className='formField' onChange={(e) => {
                   setQuesCategory(e.target.value);
                   if (categories.filter((cat) => cat._id === e.target.value)[0]?.structure === 6) {
                      setTotalOptions(4);
@@ -534,7 +519,7 @@ const AddQuestion = () => {
                      setTotalOptions(5);
                   }
                   setWorkingStructure(categories.filter((cat) => cat._id === e.target.value)[0]?.structure);
-               }} id="category">
+               }}>
                   <option value="Select question category">Select question category</option>
                   {
                      categories.map((category, index) => {
@@ -548,7 +533,7 @@ const AddQuestion = () => {
                quesCategory !== "Select question category" ? (
                   <>
                      <div className='formFieldContainer'>
-                        <label className='fieldLabel'>Age Group</label>
+                        <label htmlFor='ageGroup' className='fieldLabel'>Age Group</label>
                         <select name="ageGroup" value={ageGroup} className='formField' onChange={(e) => {
                            setAgeGroup(e.target.value);
                         }} id="ageGroup">
@@ -562,47 +547,33 @@ const AddQuestion = () => {
                      {
                         workingStructure === 1 ?
                            <div className='formFieldContainer'>
-                              <label className='fieldLabel'>Question Title Image</label>
+                              <span className='fieldLabel'>Question Title Image</span>
                               <div className='customFileUploadContainer'>
-                                 <FileUploaderRegular
-                                    pubkey="f0b48dbfeaff1298ebed"
-                                    maxLocalFileSizeBytes={1500000}
-                                    multiple={false}
-                                    imgOnly={true}
-                                    sourceList="local, camera, gdrive, gphotos"
-                                    useCloudImageEditor={false}
-                                    classNameUploader="my-config uc-light"
-                                    onChange={(e) => updateBeforeImage(e)}
+                                 <FileUploader
+                                    updateFileFunc={setQuestionImageBefore}
                                  />
-                                 {questionImageBefore !== undefined ?
-                                    questionImageBefore === 0 ?
-                                       <FaSpinner className='spin ml-12' />
-                                       :
-                                       <FaCheck className='ml-12' />
-                                    :
-                                    ""}
                               </div>
                            </div>
                            : ""
                      }
                      <div className='formFieldContainer'>
-                        <label className='fieldLabel'>Question Text</label>
+                        <label htmlFor='questionText' className='fieldLabel'>Question Text</label>
                         <input type="text" name="questionText" id="questionText" className='formField' value={questionText} onChange={(e) => setQuestionText(e.target.value)} />
                      </div>
                      {
                         workingStructure === 4 ?
                            <>
                               <div>
-                                 <label className='fieldLabel'>Audio</label>
+                                 <label htmlFor='audio' className='fieldLabel'>Audio</label>
                                  <input type="checkbox" name="audioText" id="audio" checked={enabledSound} onChange={() => { if (enabledText === false && enabledSound === true) { return; } setEnabledSound(!enabledSound); setQuestionSoundText(""); setQuestionOnlyText(""); }} />
-                                 <label className='fieldLabel'>Text</label>
+                                 <label htmlFor='text' className='fieldLabel'>Text</label>
                                  <input type="checkbox" name="audioText" id="text" checked={enabledText} onChange={() => { if (enabledText === true && enabledSound === false) { return; } setEnabledText(!enabledText) }} />
                               </div>
                               {
                                  enabledText ?
                                     <div className='formFieldContainer'>
-                                       <label className='fieldLabel'>Question {enabledSound || !enabledText ? "Sound" : "Sub"} Text</label>
-                                       <input type="text" name="questionText" id="questionText" className='formField' value={enabledSound || !enabledText ? questionSoundText : questionOnlyText} onChange={(e) => { enabledSound || !enabledText ? setQuestionSoundText(e.target.value) : setQuestionOnlyText(e.target.value) }} />
+                                       <label htmlFor='questionTextAudio' className='fieldLabel'>Question {enabledSound || !enabledText ? "Sound" : "Sub"} Text</label>
+                                       <input type="text" name="questionText" id="questionTextAudio" className='formField' value={enabledSound || !enabledText ? questionSoundText : questionOnlyText} onChange={(e) => { enabledSound || !enabledText ? setQuestionSoundText(e.target.value) : setQuestionOnlyText(e.target.value) }} />
                                     </div>
                                     : ""
                               }
@@ -614,32 +585,18 @@ const AddQuestion = () => {
                         workingStructure === 1 || workingStructure === 2 || workingStructure === 6 || workingStructure === 8 ?
                            <>
                               <div className='formFieldContainer'>
-                                 <label className='fieldLabel'>Question Image</label>
+                                 <span className='fieldLabel'>Question Image</span>
                                  <div className='customFileUploadContainer'>
-                                    <FileUploaderRegular
-                                       pubkey="f0b48dbfeaff1298ebed"
-                                       maxLocalFileSizeBytes={1500000}
-                                       multiple={false}
-                                       imgOnly={true}
-                                       sourceList="local, camera, gdrive, gphotos"
-                                       useCloudImageEditor={false}
-                                       classNameUploader="my-config uc-light"
-                                       onChange={(e) => updateAfterImage(e)}
+                                    <FileUploader
+                                       updateFileFunc={setQuestionImageAfter}
                                     />
-                                    {questionImageAfter !== undefined ?
-                                       questionImageAfter === 0 ?
-                                          <FaSpinner className='spin ml-12' />
-                                          :
-                                          <FaCheck className='ml-12' />
-                                       :
-                                       ""}
                                  </div>
                               </div>
                               {
                                  workingStructure === 6 ?
                                     <>
                                        <div className='formFieldContainer'>
-                                          <label className='fieldLabel'>Answer Image</label>
+                                          <label htmlFor='fileInput' className='fieldLabel'>Answer Image</label>
                                           <div className='customFileUploadContainer'>
                                              <FileUploaderRegular
                                                 pubkey="f0b48dbfeaff1298ebed"
@@ -661,7 +618,7 @@ const AddQuestion = () => {
                                           </div>
                                        </div>
                                        <div className='formFieldContainer'>
-                                          <label className='fieldLabel'>Inactive Image</label>
+                                          <label htmlFor='fileInput' className='fieldLabel'>Inactive Image</label>
                                           <div className='customFileUploadContainer'>
                                              <FileUploaderRegular
                                                 pubkey="f0b48dbfeaff1298ebed"
@@ -683,7 +640,7 @@ const AddQuestion = () => {
                                           </div>
                                        </div>
                                        <div className='formFieldContainer'>
-                                          <label className='fieldLabel'>Active Image</label>
+                                          <label htmlFor='fileInput' className='fieldLabel'>Active Image</label>
                                           <div className='customFileUploadContainer'>
                                              <FileUploaderRegular
                                                 pubkey="f0b48dbfeaff1298ebed"
@@ -710,7 +667,7 @@ const AddQuestion = () => {
                            </>
                            : workingStructure === 4 && enabledSound ?
                               <div className='formFieldContainer'>
-                                 <label className='fieldLabel'>Audio</label>
+                                 <label htmlFor='fileInput' className='fieldLabel'>Audio</label>
                                  <div className='customFileUploadContainer'>
                                     <FileUploaderRegular
                                        pubkey="f0b48dbfeaff1298ebed"
@@ -728,7 +685,7 @@ const AddQuestion = () => {
                      {
                         workingStructure !== 6 && workingStructure !== 7 && workingStructure !== 8 ?
                            <div className="formFieldContainer">
-                              <label className="fieldLabel">Select Total Options</label>
+                              <label htmlFor='totalOptions' className="fieldLabel">Select Total Options</label>
                               <select name="totalOptions" disabled={option !== undefined ? true : false} id="totalOptions" value={totalOptions} onChange={(e) => setTotalOptions(e.target.value)} className="formField">
                                  <option value={0}>Select Total Options</option>
                                  {
@@ -756,19 +713,13 @@ const AddQuestion = () => {
                                  {
                                     workingStructure !== 6 && workingStructure !== 7 && workingStructure !== 8 ?
                                        <div className="formFieldContainer">
-                                          <label className='fieldLabel'> {totalOptions !== 0 ? "Select " + totalOptions + " photos as options" : ""}</label>
+                                          <span className='fieldLabel'> {totalOptions !== 0 ? "Select " + totalOptions + " photos as options" : ""}</span>
                                           <div className='customFileUploadContainer'>
-                                             <FileUploaderRegular
-                                                pubkey="f0b48dbfeaff1298ebed"
-                                                maxLocalFileSizeBytes={1500000}
-                                                multipleMax={totalOptions}
-                                                multipleMin={totalOptions}
-                                                imgOnly={true}
-                                                confirmUpload={true}
-                                                sourceList="local, camera, gdrive, gphotos"
-                                                useCloudImageEditor={false}
-                                                classNameUploader="my-config uc-light"
-                                                onChange={(e) => updateOptions(e.allEntries)}
+
+                                             <FileUploader
+                                                multiple
+                                                updateFileFunc={updateOptions}
+                                             // updateStatus={updateOptions}
                                              />
                                           </div>
                                        </div>
@@ -780,7 +731,7 @@ const AddQuestion = () => {
                                        workingStructure !== 5 && workingStructure !== 7 && workingStructure !== 8 ?
                                           <>
                                              <div className="formFieldContainer">
-                                                <label className="fieldLabel">Select Correct Answer</label>
+                                                <label htmlFor='correctAnswer' className="fieldLabel">Select Correct Answer</label>
                                                 <select name="correctAnswer" id="correctAnswer" value={correctAnswer} onChange={(e) => setCorrectAnswer(e.target.value)} className="formField">
                                                    <option value="-">Select Correct Answer</option>
                                                    {
@@ -795,9 +746,10 @@ const AddQuestion = () => {
                                                 </select>
                                              </div>
                                              {
+                                                // ANCHOR need to fix this as the category id wont be fixed always
                                                 totalOptions > 2 && quesCategory.includes("6729d6893ae29c44e7450897") ?
                                                    <div className="formFieldContainer">
-                                                      <label className="fieldLabel">Select Neutral Answer</label>
+                                                      <label htmlFor='neutralAnswer' className="fieldLabel">Select Neutral Answer</label>
                                                       <select name="neutralAnswer" id="neutralAnswer" value={neutralAnswer} onChange={(e) => setNeutralAnswer(e.target.value)} className="formField">
                                                          <option value="-">Select Neutral Answer</option>
                                                          {

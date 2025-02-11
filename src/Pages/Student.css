@@ -12,196 +12,145 @@ h1 {
    display: flex;
 }
 
-.download-btn {
-   background-color: #4caf50;
-   /* Green */
-   color: white;
+.actionBtn {
+   font-weight: bold;
+   background-color: var(--primary-color);
+   color: var(--white);
    padding: 10px 15px;
-   border: none;
-   border-radius: 5px;
+   border: 2px solid var(--primary-color);
+   border-radius: 8px;
+   width: 130px;
    cursor: pointer;
-   font-weight: bold;
-
-   &:hover {
-      background-color: #45a049;
-   }
 }
 
-table {
-   width: calc(100% - 150px);
-   /* margin-left: 150px; */
-   width: 100%;
-   border-collapse: collapse;
-   margin-bottom: 20px;
+.refreshBtn {
+   display: flex;
+   justify-content: center;
+   align-items: center;
+   margin-right: 12px;
+   height: 32px;
+   width: 32px;
+   cursor: pointer;
+   border-radius: 8px;
+   background-color: var(--table-header-color);
+   padding: 5px;
 }
 
-th,
-td {
-   border: 1px solid #ddd;
-   padding: 8px;
-   text-align: left;
-}
-
-th {
-   background-color: #f2f2f2;
-   font-weight: bold;
-}
-
-tr:nth-child(even) {
-   background-color: #f9f9f9;
-}
-
-tr:hover {
-   background-color: #f1f1f1;
+.refreshIcon {
+   color: var(--primary-color);
 }
 
 /* Centered pagination styles */
 .pagination {
    display: flex;
-   justify-content: center;
+   justify-content: right;
    align-items: center;
-   margin-top: 20px;
+   margin-top: 40px;
 }
 
-.pagination span {
+.paginationSubCont {
+   display: flex;
+   justify-content: space-around;
+   align-items: center;
+}
+
+.pagination .pageCount {
    font-size: 16px;
+   font-style: italic;
    margin: 0px 10px;
+   color: var(--grey);
 }
 
-.pagination button {
-   margin: 0 5px;
-   padding: 5px 10px;
-   border: 1px solid #007bff;
-   /* Blue */
-   background-color: white;
-   color: #007bff;
-   border-radius: 5px;
+.pagination .prev,
+.pagination .next {
+   font-size: 28px;
+   background-color: transparent;
+   border: none;
+   outline: none;
+   border-radius: 2px;
    cursor: pointer;
+   color: var(--primary-color);
 }
 
-.pagination button:hover {
-   background-color: #007bff;
-   /* Blue */
-   color: white;
+.pagination .prev:hover,
+.pagination .next:hover {
+   background-color: var(--table-header-color);
 }
 
-.pagination button:disabled {
-   background-color: #e9ecef;
-   color: #6c757d;
+.pagination .next.disabled,
+.pagination .prev.disabled {
+   background-color: transparent;
+   border: none;
+   outline: none;
    cursor: not-allowed;
+   color: grey;
+}
+
+.pagination .next {
+   margin-left: 10px;
+}
+
+.pagination .movementIcons {
+   display: flex;
+   align-items: center;
 }
 
 .pagination-top {
    display: flex;
    align-items: center;
-   margin: 20px 0;
+   margin: 0 20px;
    /* Space above and below the pagination */
+}
+
+.pagination-top .pageNavDrop {
+   outline: none;
+   border: none;
+   width: 40px;
+   font-family: "Onest", serif !important;
+   background-color: transparent;
+   text-align: center;
+   font-size: 20px;
+   /* padding-right: 5px; */
 }
 
 .pagination-top span {
    margin-right: 10px;
-   /* Space between the label and input */
-   font-weight: bold;
-   /* Make the label bold */
-}
-
-.pagination-top input {
-   width: 60px;
-   /* Set a fixed width for the input */
-   padding: 5px;
-   /* Add some padding for better touch target */
-   margin-right: 10px;
-   /* Space between the input and button */
-   border: 1px solid #ccc;
-   /* Light gray border */
-   border-radius: 4px;
-   /* Rounded corners */
-   font-size: 14px;
-   /* Font size for readability */
-}
-
-.pagination-top button {
-   padding: 6px 12px;
-   /* Padding for the button */
-   background-color: #007bff;
-   /* Bootstrap primary color */
-   color: white;
-   /* Text color */
-   border: none;
-   /* Remove border */
-   border-radius: 4px;
-   /* Rounded corners */
-   cursor: pointer;
-   /* Pointer cursor on hover */
-   transition: background-color 0.3s;
-   /* Smooth transition for hover effect */
-}
-
-.pagination-top button:hover {
-   background-color: #0056b3;
-   /* Darker blue on hover */
-}
-
-.pagination-top button:disabled {
-   background-color: #ccc;
-   /* Gray background for disabled state */
-   cursor: not-allowed;
-   /* Not allowed cursor */
-}
-
-/* Download button styles */
-.download-btn {
-   background-color: #4caf50;
-   /* Green */
-   color: white;
-   padding: 10px 15px;
-   border: none;
-   border-radius: 5px;
-   cursor: pointer;
-}
-
-.download-btn:hover {
-   background-color: #45a049;
-   /* Darker green */
-}
-
-/* Table styles */
-.table-container {
-   width: 100%;
-   /* Ensure it takes the full width of the container */
-   margin-top: 20px;
-   /* Space above the table */
-}
-
-.table-container th,
-.table-container td {
-   padding: 10px;
-   text-align: left;
-   border-bottom: 1px solid #ddd;
-   /* Add a bottom border for rows */
 }
 
 .table-container {
-   /* Adjust according to sidebar width */
-   /* margin-left: 100px; */
    /* Space for sidebar */
    overflow-x: auto;
    padding: 20px;
-   margin-top: 20px;
-   /* Allow horizontal scrolling */
-}
-
-table {
    width: 100%;
+   /* Ensure it takes the full width of the container */
+   margin-top: 20px;
    border-collapse: collapse;
+   margin-bottom: 20px;
+
+   /* Space above the table */
 }
 
-th,
-td {
-   margin-left: 150px;
-   padding: 8px;
+.table-container td {
+   padding: 12px 15px;
+   /* border: 1px solid #ddd; */
    text-align: left;
-   border: 1px solid #ddd;
+}
+
+.table-container th {
+   font-weight: bold;
+   margin-left: 150px;
+   color: var(--primary-color);
+   padding: 12px 15px;
+   text-align: left;
+   background-color: var(--table-header-color);
+}
+
+.table-container tr:first-child th:first-child {
+   border-top-left-radius: 12px;
+}
+
+.table-container tr:first-child th:last-child {
+   border-top-right-radius: 12px;
 }
 
 .tick {
@@ -210,4 +159,27 @@ td {
 
 .cross {
    color: red;
+}
+.center {
+   text-align: center !important;
+}
+
+.action-icon {
+   cursor: pointer;
+   font-size: 20px;
+   color: #333;
+   transition: color 0.3s;
+}
+
+.action-icon.edit {
+   color: var(--darkGrey);
+   margin-right: 14px;
+}
+
+.action-icon.delete {
+   color: var(--danger-red);
+}
+
+.action-icon:hover {
+   color: var(--primary-color);
 }

@@ -3,22 +3,21 @@ import React, { useCallback, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 // import { FaEye } from "react-icons/fa";
-import { CiEdit } from "react-icons/ci";
-import { MdDelete } from "react-icons/md";
-import "./Category.css";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import adminApiUrl from "../adminApiUrl";
 import { deleteCategory, setCategory } from "../redux/actions/actions";
 import { TbRefresh } from "react-icons/tb";
+import { HiOutlineTrash } from "react-icons/hi";
+import { FiEdit3 } from "react-icons/fi";
+import { MdOutlineKeyboardArrowLeft, MdOutlineKeyboardArrowRight } from "react-icons/md";
 
 const Category = () => {
    const categories = useSelector((state) => state.categories);
-   const [currentPage, setCurrentPage] = useState(1);
    const [contentRefresh, setContentRefresh] = useState(false);
-   const [pageInput, setPageInput] = useState(1);
    const recordsPerPage = 10;
    const totalPages = Math.ceil(categories.length / recordsPerPage);
+   const [currentPage, setCurrentPage] = useState(totalPages ? 1 : 0);
    const navigate = useNavigate();
    const dispatch = useDispatch();
 
@@ -31,8 +30,8 @@ const Category = () => {
    };
 
    // eslint-disable-next-line
-   const handleGoToPage = () => {
-      const pageNum = parseInt(pageInput);
+   const handleGoToPage = (e) => {
+      const pageNum = parseInt(e);
       if (pageNum >= 1 && pageNum <= totalPages) {
          setCurrentPage(pageNum);
       } else {
@@ -87,50 +86,41 @@ const Category = () => {
             <h1>
                Category Data
                <span style={{ display: "flex", alignItems: "center" }}>
-                  <span style={{ border: "2px solid #333", marginRight: "12px", cursor: "pointer" }} onClick={() => {
+                  <span className="refreshBtn" onClick={() => {
                      setContentRefresh(true);
                      fetchCategories()
                   }}>
-                     <TbRefresh style={{ padding: "5px" }} className={contentRefresh ? 'spin2' : ''} />
+                     <TbRefresh className={contentRefresh ? 'spin2 refreshIcon' : 'refreshIcon'} />
                   </span>
-                  <button onClick={handleAddCategory} className="download-btn">Add Category</button>
+                  <button onClick={handleAddCategory} className="actionBtn">Add Category</button>
                </span>
             </h1>
-            <div className="pagination-top">
-               <span>Go To </span>
-               <input
-                  type="number"
-                  min={1}
-                  max={totalPages}
-                  value={pageInput}
-                  onChange={(e) => setPageInput(e.target.value)}
-                  onKeyUp={(e) => e.key === 'Enter' && handleGoToPage()}
-               />
-               <button onClick={handleGoToPage}>Go</button>
-            </div>
-
             <table className="table-container">
                <thead>
                   <tr>
-                     <th>S.No</th>
+                     <th className="center">S.No</th>
                      <th>Category</th>
-                     <th>Structure Name</th>
-                     <th>Total Questions</th>
-                     <th>Action</th>
+                     <th>Sub Category</th>
+                     <th>Type</th>
+                     <th className="center">Structure Name</th>
+                     <th className="center">Total Questions</th>
+                     <th className="center">Action</th>
                   </tr>
                </thead>
                <tbody>
                   {currentRecords.length > 0 ? (
                      currentRecords.map((category, index) => (
                         <tr key={index}>
-                           <td>{startIndex + index + 1}</td>
-                           <td>{category.categoryName.includes("AAA") ? category.categoryName.split(": ")[0] + ": Demo" : category.categoryName}</td>
-                           <td>{category.structure}</td>
-                           <td>{category.totalQuestions}</td>
-                           <td>
+                           <td className="center">{startIndex + index + 1}</td>
+                           <td>{category.categoryName.split(" kush ")[0]}</td>
+                           <td>{category.categoryName.split(" kush ")[1].split(" : ")[0]}</td>
+                           <td>{category.categoryName.split(" kush ")[1].split(" : ")[1]}</td>
+                           <td className="center">{category.structure}</td>
+                           <td className="center">{category.totalQuestions}</td>
+                           <td className="center">
                               {/* <FaEye className="action-icon" title="View" /> */}
-                              <CiEdit className="action-icon" title="Edit" onClick={() => handleCategoryEdit(category._id, category.categoryName, category.structure, category.totalQuestions)} />
-                              <MdDelete className="action-icon" title="Delete" onClick={() => handleCategoryDelete(category._id)} />
+                              <FiEdit3 className="action-icon edit" title="Edit" onClick={() => handleCategoryEdit(category._id, category.categoryName, category.structure, category.totalQuestions)} />
+                              <HiOutlineTrash className="action-icon delete" title="Delete" onClick={() => handleCategoryDelete(category._id)} />
                            </td>
 
                         </tr>
@@ -144,24 +134,48 @@ const Category = () => {
             </table>
 
             <div className="pagination">
-               <button
-                  onClick={() => handlePageChange(currentPage - 1)}
-                  disabled={currentPage === 1}
-               >
-                  Previous
-               </button>
-               <span>
-                  Page {currentPage} of {totalPages}
-               </span>
-               <button
-                  onClick={() => handlePageChange(currentPage + 1)}
-                  disabled={currentPage === totalPages}
-               >
-                  Next
-               </button>
+               <div className="paginationSubCont">
+                  <span className="pageCount">{totalPages ? currentPage + "-" + totalPages : 0} of {totalPages}</span>
+                  <div className="pagination-top">
+                     <span>Page </span>
+                     <select className="pageNavDrop" value={currentPage} name="pages" id="page" onChange={(e) => {
+                        handleGoToPage(e.target.value)
+                     }}
+                        onKeyUp={(e) => e.key === 'Enter' && handleGoToPage()}
+                     >
+                        {
+                           Array(totalPages).fill(" ").map((_, index) => {
+                              return <option key={index} value={index + 1}>{index + 1}</option>
+                           })
+                        }
+                     </select>
+                  </div>
+                  <div className="movementIcons">
+
+                     <MdOutlineKeyboardArrowLeft
+                        className={(!totalPages || currentPage === 0 || (currentPage === 1 || totalPages === 1)) ? 'prev disabled' : 'prev'}
+                        onClick={
+                           () => {
+                              if (!(!totalPages || currentPage === 0 || (currentPage === 1 || totalPages === 1)))
+                                 handlePageChange(currentPage - 1)
+                           }
+                        }
+                     />
+                     <MdOutlineKeyboardArrowRight
+                        className={(!totalPages || currentPage === totalPages) ? 'next disabled' : 'next'}
+                        onClick={
+                           () => {
+                              if (!(!totalPages || currentPage === totalPages))
+                                 handlePageChange(currentPage + 1)
+                           }
+                        }
+                        disabled={!totalPages || currentPage === totalPages}
+                     />
+                  </div>
+               </div>
             </div>
          </div>
-      </section>
+      </section >
    );
 };
 
