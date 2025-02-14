@@ -389,26 +389,35 @@ const AddQuestion = () => {
                submission = { ...submission, question: { ...submission.question, option, questionOnlyText } }
             break;
          case 3:
-         case 5: submission = {
-            ...submission,
-            question: { ...submission.question, option }
-         }
-            break;
-         case 6: submission = {
-            ...submission, question: { ...submission.question, questionImage: { after: questionImageAfter }, answerImage, option: { active: activeAnswerImage, inactive: inactiveAnswerImage } }
-         }
-            break;
-         case 8: submission = {
-            ...submission,
-            question: {
-               ...submission.question, questionImage: { after: questionImageAfter }
+         case 5:
+            for (let index = 0; index < totalOptions; index++) {
+               const element = option[index];
+               formData.append(`option.` + index, element)
             }
-         }
+            break;
+         case 6:
+            submission = {
+               ...submission,
+               question: {
+                  ...submission.question,
+                  questionImage: {
+                     after: questionImageAfter
+                  },
+                  answerImage,
+                  option: {
+                     active: activeAnswerImage,
+                     inactive: inactiveAnswerImage
+                  }
+               }
+            }
+            break;
+         case 8:
+            formData.append("questionImageAfter", questionImageAfter)
             break;
          default:
             break;
       }
-
+      console.log(submission);
       // console.log(formData.entries());
       try {
          const response = await fetch(apiUrl + "assessment", {

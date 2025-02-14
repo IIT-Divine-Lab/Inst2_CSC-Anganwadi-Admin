@@ -16,10 +16,11 @@ const Category = () => {
    const categories = useSelector((state) => state.categories);
    const [contentRefresh, setContentRefresh] = useState(false);
    const recordsPerPage = 10;
-   const totalPages = Math.ceil(categories.length / recordsPerPage);
-   const [currentPage, setCurrentPage] = useState(totalPages ? 1 : 0);
+   const totalPages = (Math.ceil(categories.length / recordsPerPage));
+   const [currentPage, setCurrentPage] = useState(totalPages !== 0 ? 1 : 0);
    const navigate = useNavigate();
    const dispatch = useDispatch();
+
 
    const handleAddCategory = () => {
       navigate("./addcategory");
@@ -44,12 +45,19 @@ const Category = () => {
       startIndex,
       startIndex + recordsPerPage
    );
+   // console.log("Categories ", categories);
+   // console.log("Start Index", startIndex);
+   // console.log("Current Page", currentPage);
+   // console.log("Total Page", totalPages);
+   // console.log("Record Per Page", recordsPerPage);
 
    const fetchCategories = useCallback(async () => {
       axios.get(adminApiUrl + "category")
          .then((({ data }) => {
-            if (data.message !== "No Data")
+            if (data.message !== "No Data") {
                dispatch(setCategory(data.categories));
+               setCurrentPage(1);
+            }
          }))
          .catch((error) => {
             console.log(error);
@@ -104,32 +112,34 @@ const Category = () => {
                      <th>Type</th>
                      <th className="center">Structure Name</th>
                      <th className="center">Total Questions</th>
-                     <th className="center">Action</th>
+                     <th className="center">Actions</th>
                   </tr>
                </thead>
                <tbody>
-                  {currentRecords.length > 0 ? (
-                     currentRecords.map((category, index) => (
-                        <tr key={index}>
-                           <td className="center">{startIndex + index + 1}</td>
-                           <td>{category.categoryName.split(" kush ")[0]}</td>
-                           <td>{category.categoryName.split(" kush ")[1].split(" : ")[0]}</td>
-                           <td>{category.categoryName.split(" kush ")[1].split(" : ")[1]}</td>
-                           <td className="center">{category.structure}</td>
-                           <td className="center">{category.totalQuestions}</td>
-                           <td className="center">
-                              {/* <FaEye className="action-icon" title="View" /> */}
-                              <FiEdit3 className="action-icon edit" title="Edit" onClick={() => handleCategoryEdit(category._id, category.categoryName, category.structure, category.totalQuestions)} />
-                              <HiOutlineTrash className="action-icon delete" title="Delete" onClick={() => handleCategoryDelete(category._id)} />
-                           </td>
+                  {
 
+                     currentRecords.length > 0 ? (
+                        currentRecords.map((category, index) => (
+                           <tr key={index}>
+                              <td className="center">{startIndex + index + 1}</td>
+                              <td>{category.categoryName.split(" kush ")[0]}</td>
+                              <td>{category.categoryName.split(" kush ")[1].split(" : ")[0]}</td>
+                              <td>{category.categoryName.split(" kush ")[1].split(" : ")[1]}</td>
+                              <td className="center">{category.structure}</td>
+                              <td className="center">{category.totalQuestions}</td>
+                              <td className="center">
+                                 {/* <FaEye className="action-icon" title="View" /> */}
+                                 <FiEdit3 className="action-icon edit" title="Edit" onClick={() => handleCategoryEdit(category._id, category.categoryName, category.structure, category.totalQuestions)} />
+                                 <HiOutlineTrash className="action-icon delete" title="Delete" onClick={() => handleCategoryDelete(category._id)} />
+                              </td>
+
+                           </tr>
+                        ))
+                     ) : (
+                        <tr>
+                           <td colSpan="5">No Category Records Found!</td>
                         </tr>
-                     ))
-                  ) : (
-                     <tr>
-                        <td colSpan="5">No Category Records Found!</td>
-                     </tr>
-                  )}
+                     )}
                </tbody>
             </table>
 

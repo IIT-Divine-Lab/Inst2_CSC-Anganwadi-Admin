@@ -6,7 +6,7 @@ import { deleteQuestion, setQuestion } from '../redux/actions/actions';
 import { useNavigate } from "react-router-dom";
 import { FaEye } from "react-icons/fa";
 // import { CiEdit } from "react-icons/ci";
-import { MdDelete } from "react-icons/md";
+import { MdDelete, MdOutlineKeyboardArrowLeft, MdOutlineKeyboardArrowRight } from "react-icons/md";
 import axios from "axios";
 import { apiUrl } from "../adminApiUrl";
 import { TbRefresh } from "react-icons/tb";
@@ -15,6 +15,8 @@ import Structure5 from '../Components/Structure5';
 import Structure6 from '../Components/Structure6';
 import Structure7 from '../Components/Structure7';
 import ReactModal from "react-modal";
+import { FiEdit3 } from "react-icons/fi";
+import { HiOutlineTrash } from "react-icons/hi";
 
 ReactModal.setAppElement('#root');
 
@@ -137,68 +139,6 @@ const Questions = () => {
          })
    }, [dispatch])
 
-   // eslint-disable-next-line
-   const deleteFromUploadCare = (uuid) => {
-      return fetch(`https://api.uploadcare.com/files/${uuid}/`, {
-         method: 'DELETE',
-         headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Uploadcare.Simple f0b48dbfeaff1298ebed:bc3d9f9926fcc6926aec'
-         }
-      })
-   }
-
-   // eslint-disable-next-line
-   // const handleQuestionDelete = (id, question) => {
-   //    let uuids = [];
-   //    let option, uuid;
-   //    if (question.structure !== 6 && question.structure !== 7) {
-   //       for (let i = 0; i < question.totalOptions; i++) {
-   //          option = question?.option["o" + (i + 1)]?.split("/");
-   //          uuid = option[option?.length - 2];
-   //          uuids.push(uuid);
-   //       }
-   //       if (question.structure === 1) {
-   //          option = question.questionImage.before.split("/");
-   //          uuid = option[option?.length - 2];
-   //          uuids.push(uuid);
-   //          option = question.questionImage.after.split("/");
-   //          uuid = option[option?.length - 2];
-   //          uuids.push(uuid);
-   //       }
-   //       else if (question.structure === 2) {
-   //          option = question.questionImage.after.split("/");
-   //          uuid = option[option?.length - 2];
-   //          uuids.push(uuid);
-   //       }
-   //       else if (question.structure === 4) {
-   //          option = question.questionSound.split("/");
-   //          uuid = option[option?.length - 2];
-   //          uuids.push(uuid);
-   //       }
-   //    }
-   //    axios.delete(apiUrl + "assessment/" + id)
-   //       .then(({ data }) => {
-   //          dispatch(deleteQuestion(data?.question))
-   //       })
-   //       .catch((error) => {
-   //          console.log(error);
-   //       })
-   //       .finally(() => {
-   //          uuids.forEach(async (uuid) => {
-   //             deleteFromUploadCare(uuid)
-   //                .then(() => {
-   //                   toast.success("Deleted Successfully!!", {
-   //                      autoClose: 1000
-   //                   })
-   //                })
-   //                .catch((error) => {
-   //                   console.error(error);
-   //                })
-   //          })
-   //       })
-   // }
-
    const handleQuestionDelete = (id, question) => {
       axios.delete(apiUrl + "assessment/" + id)
          .then(({ data }) => {
@@ -251,18 +191,6 @@ const Questions = () => {
                   <button onClick={handleAddQuestion} className="actionBtn">Add Questions</button>
                </span>
             </h1>
-            <div className="pagination-top">
-               <span>Go To </span>
-               <input
-                  type="number"
-                  min={1}
-                  max={totalPages}
-                  value={pageInput}
-                  onChange={(e) => setPageInput(e.target.value)}
-                  onKeyUp={(e) => e.key === 'Enter' && handleGoToPage()}
-               />
-               <button onClick={handleGoToPage}>Go</button>
-            </div>
 
             <table className="table-container">
                <thead>
@@ -271,10 +199,10 @@ const Questions = () => {
                      <th>Question Text</th>
                      <th>Question Category</th>
                      <th>Question Sub Category</th>
-                     <th>Question Type</th>
-                     <th>Age Group</th>
-                     <th>Total Options</th>
-                     <th>Actions</th>
+                     <th className="center">Question Type</th>
+                     <th className="center">Age Group</th>
+                     <th className="center">Total Options</th>
+                     <th className="center">Actions</th>
                   </tr>
                </thead>
                <tbody>
@@ -283,16 +211,15 @@ const Questions = () => {
                         <tr key={index}>
                            <td>{startIndex + index + 1}</td>
                            <td style={{ width: "350px" }}>{data.question.questionText}</td>
-                           <td>{data.quesCategory.categoryName.split(" kush ")[0]}</td>
-                           <td>{data.quesCategory.categoryName.split(" kush ")[1].split(" : ")[0]}</td>
-                           <td>{data.quesCategory.categoryName.split(" kush ")[1].split(" : ")[1]}</td>
-                           <td>{data.ageGroup}</td>
-                           <td>{data.question.totalOptions}</td>
-                           <td>
-                              <FaEye className="action-icon" title="View" onClick={() => openModal(modalStructure(data.question?.structure), data, data.question?.structure)} />
-                              {/* <CiEdit className="action-icon" title="Edit" onClick={() => { handleQuestionEdit(data._id) }} /> */}
-                              <MdDelete className="action-icon" title="Delete" onClick={() => { handleQuestionDelete(data._id, data.question) }} />
-                              {/* <MdDelete className="action-icon" title="Delete" onClick={() => { handleQuestionDelete(data._id, data.question) }} /> */}
+                           <td>{data?.quesCategory?.categoryName?.split(" kush ")[0]}</td>
+                           <td>{data?.quesCategory?.categoryName?.split(" kush ")[1].split(" : ")[0]}</td>
+                           <td className="center">{data?.quesCategory?.categoryName?.split(" kush ")[1].split(" : ")[1]}</td>
+                           <td className="center">{data.ageGroup}</td>
+                           <td className="center">{data.question.totalOptions}</td>
+                           <td className="center">
+                              <FaEye className="action-icon view" title="View" onClick={() => openModal(modalStructure(data.question?.structure), data, data.question?.structure)} />
+                              <FiEdit3 className="action-icon edit" title="Edit" onClick={() => handleQuestionEdit()} />
+                              <HiOutlineTrash className="action-icon delete" title="Delete" onClick={() => handleQuestionDelete(data._id, data.question)} />
                            </td>
                         </tr>
                      ))
@@ -304,22 +231,48 @@ const Questions = () => {
                </tbody>
             </table>
             <div className="pagination">
-               <button
-                  onClick={() => handlePageChange(currentPage - 1)}
-                  disabled={!totalPages || currentPage === 0 || (currentPage === 1 || totalPages === 1)}
-               >
-                  Previous
-               </button>
-               <span>Page {totalPages ? currentPage : 0} of {totalPages}</span>
-               <button
-                  onClick={() => handlePageChange(currentPage + 1)}
-                  disabled={!totalPages || currentPage === totalPages}
-               >
-                  Next
-               </button>
+               <div className="paginationSubCont">
+                  <span className="pageCount">{totalPages ? currentPage + "-" + totalPages : 0} of {totalPages}</span>
+                  <div className="pagination-top">
+                     <span>Page </span>
+                     <select className="pageNavDrop" value={currentPage} name="pages" id="page" onChange={(e) => {
+                        handleGoToPage(e.target.value)
+                     }}
+                        onKeyUp={(e) => e.key === 'Enter' && handleGoToPage()}
+                     >
+                        {
+                           Array(totalPages).fill(" ").map((_, index) => {
+                              return <option key={index} value={index + 1}>{index + 1}</option>
+                           })
+                        }
+                     </select>
+                  </div>
+                  <div className="movementIcons">
+
+                     <MdOutlineKeyboardArrowLeft
+                        className={(!totalPages || currentPage === 0 || (currentPage === 1 || totalPages === 1)) ? 'prev disabled' : 'prev'}
+                        onClick={
+                           () => {
+                              if (!(!totalPages || currentPage === 0 || (currentPage === 1 || totalPages === 1)))
+                                 handlePageChange(currentPage - 1)
+                           }
+                        }
+                     />
+                     <MdOutlineKeyboardArrowRight
+                        className={(!totalPages || currentPage === totalPages) ? 'next disabled' : 'next'}
+                        onClick={
+                           () => {
+                              if (!(!totalPages || currentPage === totalPages))
+                                 handlePageChange(currentPage + 1)
+                           }
+                        }
+                        disabled={!totalPages || currentPage === totalPages}
+                     />
+                  </div>
+               </div>
             </div>
          </div>
-      </section>
+      </section >
    );
 };
 

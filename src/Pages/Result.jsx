@@ -210,8 +210,23 @@ const Result = () => {
                         <th rowSpan={2}>Age Group</th>
                         {
                            category.map((headData, index) => {
-                              if (headData?.totalQuestions && !headData?.categoryName.includes("AAA"))
-                                 return <th key={index} style={{ textAlign: "center" }} colSpan={headData?.totalQuestions || 0}>{headData.categoryName}</th>
+                              if (headData?.totalQuestions && !headData?.categoryName.includes("Demo"))
+                                 return (
+                                    <th
+                                       key={index}
+                                       style={{
+                                          textAlign: "center",
+                                          borderLeft: "2px solid var(--primary-color)",
+                                          borderBottom: "2px solid var(--primary-color)"
+                                       }}
+                                       colSpan={
+                                          headData?.totalQuestions || 0
+                                       }>
+                                       {
+                                          headData.categoryName?.split(" kush ")[0] + " - " + headData.categoryName?.split(" kush ")[1].split(" : ")[0]
+                                       }
+                                    </th>
+                                 )
                               else
                                  return () => {
                                  }
@@ -221,9 +236,19 @@ const Result = () => {
                      <tr>
                         {
                            category.flatMap((headData, index) => {
-                              if (headData?.totalQuestions && !headData?.categoryName.includes("AAA"))
+                              if (headData?.totalQuestions && !headData?.categoryName.includes("Demo"))
                                  return Array.from({ length: headData?.totalQuestions || 0 }, (_, i) => (
-                                    <th style={{ textAlign: "center" }} key={`${index}-${i}`}>Trial {i + 1}</th>
+                                    <th
+                                       style={{
+                                          textAlign: "center",
+                                          borderLeftColor: "var(--primary-color)",
+                                          borderLeftWidth: i === 0 ? "2px" : "1px",
+                                          borderLeftStyle: "solid"
+                                       }}
+                                       key={`${index}-${i}`}
+                                    >
+                                       Trial {i + 1}
+                                    </th>
                                  ))
                               else
                                  return () => {

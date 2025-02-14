@@ -3,9 +3,11 @@
    padding: 20px;
    border-radius: 8px;
    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+   margin-left: 10px;
 }
 
 h1 {
+   color: #333;
    font-size: 24px;
    margin-bottom: 20px;
    justify-content: space-between;
@@ -169,6 +171,10 @@ h1 {
    font-size: 20px;
    color: #333;
    transition: color 0.3s;
+}
+
+.action-icon.view {
+   margin-right: 14px;
 }
 
 .action-icon.edit {

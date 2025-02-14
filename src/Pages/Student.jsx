@@ -11,6 +11,7 @@ import { setStudents } from '../redux/actions/actions.js';
 import axios from "axios";
 import { apiUrl } from "../adminApiUrl.jsx";
 import { TbRefresh } from "react-icons/tb";
+import { MdOutlineKeyboardArrowLeft, MdOutlineKeyboardArrowRight } from "react-icons/md";
 
 const Student = () => {
    const dispatch = useDispatch();
@@ -118,19 +119,6 @@ const Student = () => {
                </span>
             </h1>
 
-            <div className="pagination-top">
-               <span>Go To </span>
-               <input
-                  type="number"
-                  min={1}
-                  max={totalPages}
-                  value={pageInput}
-                  onChange={(e) => setPageInput(e.target.value)}
-                  onKeyUp={(e) => e.key === 'Enter' && handleGoToPage()}
-               />
-               <button onClick={handleGoToPage}>Go</button>
-            </div>
-
             <table className="table-container">
                <thead>
                   <tr>
@@ -161,21 +149,45 @@ const Student = () => {
             </table>
 
             <div className="pagination">
-               <button
-                  onClick={() => handlePageChange(currentPage - 1)}
-                  className="prev"
-                  disabled={!totalPages || currentPage === 0 || (currentPage === 1 || totalPages === 1)}
-               >
-                  Previous
-               </button>
-               <span>Page {totalPages ? currentPage : 0} of {totalPages}</span>
-               <button
-                  className="next"
-                  onClick={() => handlePageChange(currentPage + 1)}
-                  disabled={!totalPages || currentPage === totalPages}
-               >
-                  Next
-               </button>
+               <div className="paginationSubCont">
+                  <span className="pageCount">{totalPages ? currentPage + "-" + totalPages : 0} of {totalPages}</span>
+                  <div className="pagination-top">
+                     <span>Page </span>
+                     <select className="pageNavDrop" value={currentPage} name="pages" id="page" onChange={(e) => {
+                        handleGoToPage(e.target.value)
+                     }}
+                        onKeyUp={(e) => e.key === 'Enter' && handleGoToPage()}
+                     >
+                        {
+                           Array(totalPages).fill(" ").map((_, index) => {
+                              return <option key={index} value={index + 1}>{index + 1}</option>
+                           })
+                        }
+                     </select>
+                  </div>
+                  <div className="movementIcons">
+
+                     <MdOutlineKeyboardArrowLeft
+                        className={(!totalPages || currentPage === 0 || (currentPage === 1 || totalPages === 1)) ? 'prev disabled' : 'prev'}
+                        onClick={
+                           () => {
+                              if (!(!totalPages || currentPage === 0 || (currentPage === 1 || totalPages === 1)))
+                                 handlePageChange(currentPage - 1)
+                           }
+                        }
+                     />
+                     <MdOutlineKeyboardArrowRight
+                        className={(!totalPages || currentPage === totalPages) ? 'next disabled' : 'next'}
+                        onClick={
+                           () => {
+                              if (!(!totalPages || currentPage === totalPages))
+                                 handlePageChange(currentPage + 1)
+                           }
+                        }
+                        disabled={!totalPages || currentPage === totalPages}
+                     />
+                  </div>
+               </div>
             </div>
          </div>
       </section>
