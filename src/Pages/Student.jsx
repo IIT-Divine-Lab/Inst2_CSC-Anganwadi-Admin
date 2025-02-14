@@ -16,6 +16,7 @@ import { MdOutlineKeyboardArrowLeft, MdOutlineKeyboardArrowRight } from "react-i
 const Student = () => {
    const dispatch = useDispatch();
    const students = useSelector((state) => (state.student));
+   // eslint-disable-next-line
    const [pageInput, setPageInput] = useState(1);
    const [contentRefresh, setContentRefresh] = useState(false);
    const recordsPerPage = 10;

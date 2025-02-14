@@ -6,7 +6,7 @@ import { deleteQuestion, setQuestion } from '../redux/actions/actions';
 import { useNavigate } from "react-router-dom";
 import { FaEye } from "react-icons/fa";
 // import { CiEdit } from "react-icons/ci";
-import { MdDelete, MdOutlineKeyboardArrowLeft, MdOutlineKeyboardArrowRight } from "react-icons/md";
+import {MdOutlineKeyboardArrowLeft, MdOutlineKeyboardArrowRight } from "react-icons/md";
 import axios from "axios";
 import { apiUrl } from "../adminApiUrl";
 import { TbRefresh } from "react-icons/tb";
@@ -23,6 +23,7 @@ ReactModal.setAppElement('#root');
 const Questions = () => {
    const dispatch = useDispatch();
    const questions = useSelector((state) => state.questions || []);
+   // eslint-disable-next-line
    const [pageInput, setPageInput] = useState(1);
    const [contentRefresh, setContentRefresh] = useState(false);
    const recordsPerPage = 10;
