@@ -34,14 +34,15 @@ import Teddy from "../Components/Images/teddyBear.png"
 import DemoSpeaker from "../Components/Images/demoSpeaker.png"
 import Tongue from "../Components/Images/tongue.png"
 import Structure8 from '../Components/Structure8';
+import Input from "../Components/Input Field"
 
 const AddQuestion = () => {
    const categories = useSelector((state) => state.categories);
    const navigate = useNavigate();
    const dispatch = useDispatch();
-   // const location = useLocation();
-   // const id = location?.state?.id || undefined;
-   // const [existingData, setExistingData] = useState({});
+   const location = useLocation();
+   const id = location?.state?.id || undefined;
+   const [existingData, setExistingData] = useState({});
    const [quesCategory, setQuesCategory] = useState("Select question category");
    const [ageGroup, setAgeGroup] = useState("Select age group");
    const [questionImageBefore, setQuestionImageBefore] = useState(undefined);
@@ -444,46 +445,46 @@ const AddQuestion = () => {
       return categories.filter((cat) => cat._id === id)[0].categoryName
    }
 
-   // const fetchEditableQuestion = useCallback(async () => {
-   //    axios.get(apiUrl + "assessment/" + id)
-   //       .then(({ data }) => {
-   //          let { ageGroup, quesCategory, question } = data.questions;
-   //          setExistingData(data.questions);
+   const fetchEditableQuestion = useCallback(async () => {
+      axios.get(apiUrl + "assessment/" + id)
+         .then(({ data }) => {
+            let { ageGroup, quesCategory, question } = data.questions;
+            setExistingData(data.questions);
 
-   //          setQuesCategory(quesCategory);
-   //          setAgeGroup(ageGroup);
-   //          setWorkingStructure(question?.structure);
-   //          setTotalOptions(question?.totalOptions);
-   //          setQuestionText(question?.questionText);
-   //          setOption(question?.option)
-   //          setCorrectAnswer(question?.questionType !== "multi" ? question?.correctAnswer[0] : question?.correctAnswer)
-   //          if (question?.structure === 1 || question?.structure === 2) {
-   //             setQuestionImageAfter(question?.questionImage?.after || undefined);
-   //             if (question.structure === 1)
-   //                setQuestionImageBefore(question?.questionImage?.before || undefined);
-   //          } else if (question?.structure === 4) {
-   //             if (question?.questionSound) {
-   //                setQuestionSound(question?.questionSound)
-   //                if (question?.questionSoundText){
-   //                   setQuestionSoundText(question?.questionSoundText)
-   //                   setEnabledText(true)
-   //                }
-   //                else {
-   //                   setEnabledText(false)
-   //                }
-   //                setEnabledSound(true)
-   //             } else if (question?.questionOnlyText) {
-   //                setQuestionOnlyText(question?.questionOnlyText)
-   //                setEnabledText(true)
-   //                setEnabledSound(false)
-   //             }
-   //          }
+            setQuesCategory(quesCategory);
+            setAgeGroup(ageGroup);
+            setWorkingStructure(question?.structure);
+            setTotalOptions(question?.totalOptions);
+            setQuestionText(question?.questionText);
+            setOption(question?.option)
+            setCorrectAnswer(question?.questionType !== "multi" ? question?.correctAnswer[0] : question?.correctAnswer)
+            if (question?.structure === 1 || question?.structure === 2) {
+               setQuestionImageAfter(question?.questionImage?.after || undefined);
+               if (question.structure === 1)
+                  setQuestionImageBefore(question?.questionImage?.before || undefined);
+            } else if (question?.structure === 4) {
+               if (question?.questionSound) {
+                  setQuestionSound(question?.questionSound)
+                  if (question?.questionSoundText) {
+                     setQuestionSoundText(question?.questionSoundText)
+                     setEnabledText(true)
+                  }
+                  else {
+                     setEnabledText(false)
+                  }
+                  setEnabledSound(true)
+               } else if (question?.questionOnlyText) {
+                  setQuestionOnlyText(question?.questionOnlyText)
+                  setEnabledText(true)
+                  setEnabledSound(false)
+               }
+            }
 
-   //       })
-   //       .catch(error => {
-   //          console.error(error);
-   //       })
-   // }, [id])
+         })
+         .catch(error => {
+            console.error(error);
+         })
+   }, [id])
 
    const fetchCategory = useCallback(async () => {
       axios.get(adminApiUrl + "category")
@@ -503,11 +504,15 @@ const AddQuestion = () => {
       return options;
    }
 
-   // useEffect(() => {
-   //    if (id !== undefined) {
-   //       fetchEditableQuestion()
-   //    }
-   // }, [fetchEditableQuestion, id])
+   const handleEditQuestion = () => {
+
+   }
+
+   useEffect(() => {
+      if (id !== undefined) {
+         fetchEditableQuestion()
+      }
+   }, [fetchEditableQuestion, id])
 
    useEffect(() => {
       if (categories.length === 0)
@@ -541,34 +546,50 @@ const AddQuestion = () => {
             {
                quesCategory !== "Select question category" ? (
                   <>
-                     <div className='formFieldContainer'>
-                        <label htmlFor='ageGroup' className='fieldLabel'>Age Group</label>
-                        <select name="ageGroup" value={ageGroup} className='formField' onChange={(e) => {
-                           setAgeGroup(e.target.value);
-                        }} id="ageGroup">
-                           <option value="Select age group">Select age group</option>
-                           <option value="3-4">3-4</option>
-                           <option value="4-5">4-5</option>
-                           <option value="5-6">5-6</option>
-                           <option value="common">For all groups</option>
-                        </select>
-                     </div>
+                     <Input
+                        labelFor='ageGroup'
+                        labelText='Age Group'
+                        id="ageGroup"
+                        name="ageGroup"
+                        value={ageGroup}
+                        onChange={(e) => setAgeGroup(e.target.value)}
+                        options={
+                           [{
+                              value: "Select age group",
+                              label: "Select age group"
+                           }, {
+                              value: "3-4",
+                              label: "3-4"
+                           }, {
+                              value: "4-5",
+                              label: "4-5"
+                           }, {
+                              value: "5-6",
+                              label: "5-6"
+                           }, {
+                              value: "common",
+                              label: "For all groups"
+                           }]
+                        }
+                     />
+
                      {
                         workingStructure === 1 ?
-                           <div className='formFieldContainer'>
-                              <span className='fieldLabel'>Question Title Image</span>
-                              <div className='customFileUploadContainer'>
-                                 <FileUploader
-                                    updateFileFunc={setQuestionImageBefore}
-                                 />
-                              </div>
-                           </div>
+                           <Input
+                              spanText='Question Title Image'
+                              uploadFunc={setQuestionImageBefore}
+                           />
                            : ""
                      }
-                     <div className='formFieldContainer'>
-                        <label htmlFor='questionText' className='fieldLabel'>Question Text</label>
-                        <input type="text" name="questionText" id="questionText" className='formField' value={questionText} onChange={(e) => setQuestionText(e.target.value)} />
-                     </div>
+                     <Input
+                        labelFor='questionText'
+                        labelText='Question Text'
+                        inputType='text'
+                        name='questionText'
+                        id='questionText'
+                        value={questionText}
+                        onChange={(e) => setQuestionText(e.target.value)}
+                     />
                      {
                         workingStructure === 4 ?
                            <>
@@ -815,7 +836,7 @@ const AddQuestion = () => {
                      </>
 
                      {/* Submit Button */}
-                     <div className='formFieldContainer' onClick={handleQuestionSubmission} style={{ width: "max-content", marginTop: "40px" }}>
+                     <div className='formFieldContainer' onClick={id === undefined ? handleQuestionSubmission : handleEditQuestion} style={{ width: "max-content", marginTop: "40px" }}>
                         <Button form="true">Save Question</Button>
                      </div>
                   </>

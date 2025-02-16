@@ -13,6 +13,7 @@ const FileUploader = ({ updateFileFunc, updateStatus, multiple = false, maxFiles
    const processFile = async (files) => {
       if (multiple) {
          let processedFiles = [];
+         let processFileName = "";
          for (let index = 0; index < files.length; index++) {
             var file = files[index];
             console.log(file);
@@ -30,7 +31,7 @@ const FileUploader = ({ updateFileFunc, updateStatus, multiple = false, maxFiles
                      maxWidthOrHeight: 800,
                      useWebWorker: true,
                   });
-                  console.log(compressedFile);
+                  processFileName += compressedFile.name + ","
                   processedFiles.push(compressedFile);
                } else if (type.startsWith('audio')) {
                   // Process audio with FFmpeg
@@ -49,6 +50,7 @@ const FileUploader = ({ updateFileFunc, updateStatus, multiple = false, maxFiles
                }
             }
          }
+         setName(processFileName);
          return updateFileFunc(processedFiles);
       }
       else {

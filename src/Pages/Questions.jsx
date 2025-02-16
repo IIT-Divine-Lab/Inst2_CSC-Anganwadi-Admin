@@ -6,7 +6,7 @@ import { deleteQuestion, setQuestion } from '../redux/actions/actions';
 import { useNavigate } from "react-router-dom";
 import { FaEye } from "react-icons/fa";
 // import { CiEdit } from "react-icons/ci";
-import {MdOutlineKeyboardArrowLeft, MdOutlineKeyboardArrowRight } from "react-icons/md";
+import { MdOutlineKeyboardArrowLeft, MdOutlineKeyboardArrowRight } from "react-icons/md";
 import axios from "axios";
 import { apiUrl } from "../adminApiUrl";
 import { TbRefresh } from "react-icons/tb";
@@ -127,7 +127,7 @@ const Questions = () => {
          .then(({ data }) => {
             if (data.message !== "No questions found.") {
                dispatch(setQuestion(data?.questions))
-               // console.log(data?.questions)
+               setCurrentPage(1);
             }
          })
          .catch((error) => {
@@ -140,7 +140,7 @@ const Questions = () => {
          })
    }, [dispatch])
 
-   const handleQuestionDelete = (id, question) => {
+   const handleQuestionDelete = (id) => {
       axios.delete(apiUrl + "assessment/" + id)
          .then(({ data }) => {
             dispatch(deleteQuestion(data?.question))
@@ -219,7 +219,7 @@ const Questions = () => {
                            <td className="center">{data.question.totalOptions}</td>
                            <td className="center">
                               <FaEye className="action-icon view" title="View" onClick={() => openModal(modalStructure(data.question?.structure), data, data.question?.structure)} />
-                              <FiEdit3 className="action-icon edit" title="Edit" onClick={() => handleQuestionEdit()} />
+                              <FiEdit3 className="action-icon edit" title="Edit" onClick={() => handleQuestionEdit(data._id)} />
                               <HiOutlineTrash className="action-icon delete" title="Delete" onClick={() => handleQuestionDelete(data._id, data.question)} />
                            </td>
                         </tr>
