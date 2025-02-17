@@ -12,7 +12,7 @@ import { HiOutlineTrash } from "react-icons/hi";
 import { FiEdit3 } from "react-icons/fi";
 import { MdOutlineKeyboardArrowLeft, MdOutlineKeyboardArrowRight } from "react-icons/md";
 
-const Category = () => {
+const Category = ({ loggedIn }) => {
    const categories = useSelector((state) => state.categories);
    const [contentRefresh, setContentRefresh] = useState(false);
    const recordsPerPage = 10;
@@ -21,6 +21,10 @@ const Category = () => {
    const navigate = useNavigate();
    const dispatch = useDispatch();
 
+   useEffect(() => {
+      if (!loggedIn)
+         navigate("/");
+   }, [loggedIn, navigate])
 
    const handleAddCategory = () => {
       navigate("./addcategory");
@@ -55,6 +59,7 @@ const Category = () => {
       axios.get(adminApiUrl + "category")
          .then((({ data }) => {
             if (data.message !== "No Data") {
+               console.log(data);
                dispatch(setCategory(data.categories));
                setCurrentPage(1);
             }
@@ -145,7 +150,7 @@ const Category = () => {
 
             <div className="pagination">
                <div className="paginationSubCont">
-                  <span className="pageCount">{totalPages ? currentPage + "-" + totalPages : 0} of {totalPages}</span>
+                  <span className="pageCount">{totalPages ? currentPage : 0} of {totalPages}</span>
                   <div className="pagination-top">
                      <span>Page </span>
                      <select className="pageNavDrop" value={currentPage} name="pages" id="page" onChange={(e) => {

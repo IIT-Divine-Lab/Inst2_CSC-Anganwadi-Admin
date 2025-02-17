@@ -9,27 +9,31 @@ import Category from "./Pages/Category";
 import AddQuestion from "./Pages/AddQuestion";
 import Questions from "./Pages/Questions";
 import Result from "./Pages/Result";
+import Dashboard from "./Pages/Dashboard";
+import Login from "./Pages/Login";
 
 
 const App = () => {
    const [isCollapsed, setIsCollapsed] = useState(false);
+   const [loggedin, setLoggedIn] = useState(false);
    return (
       <Router>
-         <Sidebar isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed} />
+
+         {loggedin && <Sidebar isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed} />}
          <div
             className="content"
-            style={isCollapsed ? { marginLeft: "110px" } : { marginLeft: "200px" }}
+            style={loggedin ? isCollapsed ? { marginLeft: "110px" } : { marginLeft: "200px" } : {}}
          >
             <Routes>
-               <Route path="/" element={<div>Welcome Home!</div>} />
-               <Route path="/student" element={<StudentData />} />
-               <Route path="/questions" element={<Questions />} />
-               <Route path="/questions/addquestion" element={<AddQuestion />} />
-               <Route path="/questions/editquestion" element={<AddQuestion />} />
-               <Route path="/category" element={<Category />} />
-               <Route path="/category/addcategory" element={<AddCategoryPage />} />
-               <Route path="/category/editcategory" element={<AddCategoryPage />} />
-               <Route path="/result" element={<Result />} />
+               <Route path="/" element={loggedin ? <Dashboard loggedIn={loggedin} /> : <Login loggedIn={loggedin} setLoggedIn={setLoggedIn} />} />
+               <Route path="/student" element={<StudentData loggedIn={loggedin} />} />
+               <Route path="/questions" element={<Questions loggedIn={loggedin} />} />
+               <Route path="/questions/addquestion" element={<AddQuestion loggedIn={loggedin} />} />
+               <Route path="/questions/editquestion" element={<AddQuestion loggedIn={loggedin} />} />
+               <Route path="/category" element={<Category loggedIn={loggedin} />} />
+               <Route path="/category/addcategory" element={<AddCategoryPage loggedIn={loggedin} />} />
+               <Route path="/category/editcategory" element={<AddCategoryPage loggedIn={loggedin} />} />
+               <Route path="/result" element={<Result loggedIn={loggedin} />} />
             </Routes>
          </div>
       </Router>

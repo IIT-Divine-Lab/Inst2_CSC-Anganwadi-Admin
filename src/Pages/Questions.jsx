@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { deleteQuestion, setQuestion } from '../redux/actions/actions';
 // import questionsData from '../data/QuestionData.json';
 import { useNavigate } from "react-router-dom";
-import { FaEye } from "react-icons/fa";
+import { IoEyeOutline } from "react-icons/io5";
 // import { CiEdit } from "react-icons/ci";
 import { MdOutlineKeyboardArrowLeft, MdOutlineKeyboardArrowRight } from "react-icons/md";
 import axios from "axios";
@@ -20,7 +20,7 @@ import { HiOutlineTrash } from "react-icons/hi";
 
 ReactModal.setAppElement('#root');
 
-const Questions = () => {
+const Questions = ({loggedIn}) => {
    const dispatch = useDispatch();
    const questions = useSelector((state) => state.questions || []);
    // eslint-disable-next-line
@@ -32,6 +32,11 @@ const Questions = () => {
    const navigate = useNavigate();
 
    const [modalContent, setModalContent] = useState(null);
+
+   useEffect(() => {
+      if (!loggedIn)
+         navigate("/");
+   }, [loggedIn, navigate])
 
    const handleAddQuestion = () => {
       navigate("./addquestion");
@@ -218,7 +223,7 @@ const Questions = () => {
                            <td className="center">{data.ageGroup}</td>
                            <td className="center">{data.question.totalOptions}</td>
                            <td className="center">
-                              <FaEye className="action-icon view" title="View" onClick={() => openModal(modalStructure(data.question?.structure), data, data.question?.structure)} />
+                              <IoEyeOutline className="action-icon view" title="View" onClick={() => openModal(modalStructure(data.question?.structure), data, data.question?.structure)} />
                               <FiEdit3 className="action-icon edit" title="Edit" onClick={() => handleQuestionEdit(data._id)} />
                               <HiOutlineTrash className="action-icon delete" title="Delete" onClick={() => handleQuestionDelete(data._id, data.question)} />
                            </td>
@@ -233,7 +238,7 @@ const Questions = () => {
             </table>
             <div className="pagination">
                <div className="paginationSubCont">
-                  <span className="pageCount">{totalPages ? currentPage + "-" + totalPages : 0} of {totalPages}</span>
+                  <span className="pageCount">{totalPages ? currentPage : 0} of {totalPages}</span>
                   <div className="pagination-top">
                      <span>Page </span>
                      <select className="pageNavDrop" value={currentPage} name="pages" id="page" onChange={(e) => {

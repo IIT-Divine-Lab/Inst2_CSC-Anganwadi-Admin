@@ -23,6 +23,7 @@ h1 {
    border-radius: 8px;
    width: 130px;
    cursor: pointer;
+   font-size: 13px;
 }
 
 .refreshBtn {
@@ -85,7 +86,7 @@ h1 {
    border: none;
    outline: none;
    cursor: not-allowed;
-   color: grey;
+   color: var(--light-grey);
 }
 
 .pagination .next {
@@ -111,12 +112,13 @@ h1 {
    font-family: "Onest", serif !important;
    background-color: transparent;
    text-align: center;
-   font-size: 20px;
+   font-size: 18px;
    /* padding-right: 5px; */
 }
 
 .pagination-top span {
-   margin-right: 10px;
+   /* margin-right: 5px; */
+   font-size: 16px;
 }
 
 .table-container {

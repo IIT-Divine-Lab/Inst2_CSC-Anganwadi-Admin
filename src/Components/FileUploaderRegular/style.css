@@ -1,13 +1,14 @@
 .uploadContainer {
    cursor: pointer;
-   background-color: #ebebeb;
+   background-color: var(--table-header-color);
    gap: 0.5em;
    display: flex;
    justify-content: center;
    align-items: center;
    font-size: 14px;
-   color: #161616;
+   color: var(--primary-color);
    border-radius: 8px;
+   font-weight: 500;
 }
 
 /* .overlayContainer {

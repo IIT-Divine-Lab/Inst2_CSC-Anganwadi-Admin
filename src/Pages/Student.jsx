@@ -12,8 +12,9 @@ import axios from "axios";
 import { apiUrl } from "../adminApiUrl.jsx";
 import { TbRefresh } from "react-icons/tb";
 import { MdOutlineKeyboardArrowLeft, MdOutlineKeyboardArrowRight } from "react-icons/md";
+import { useNavigate } from "react-router-dom";
 
-const Student = () => {
+const Student = ({ loggedIn }) => {
    const dispatch = useDispatch();
    const students = useSelector((state) => (state.student));
    // eslint-disable-next-line
@@ -21,10 +22,16 @@ const Student = () => {
    const [contentRefresh, setContentRefresh] = useState(false);
    const recordsPerPage = 10;
    const totalPages = Math.ceil(students.length / recordsPerPage);
+   const navigate = useNavigate();
    const [currentPage, setCurrentPage] = useState(totalPages ? 1 : 0);
 
    const startIndex = (currentPage - 1) * recordsPerPage;
    const currentRecords = students.slice(startIndex, startIndex + recordsPerPage);
+
+   useEffect(() => {
+      if (!loggedIn)
+         navigate("/");
+   }, [loggedIn, navigate])
 
    const handleDownloadExcel = () => {
       if (students.length === 0) {
@@ -151,7 +158,7 @@ const Student = () => {
 
             <div className="pagination">
                <div className="paginationSubCont">
-                  <span className="pageCount">{totalPages ? currentPage + "-" + totalPages : 0} of {totalPages}</span>
+                  <span className="pageCount">{totalPages ? currentPage : 0} of {totalPages}</span>
                   <div className="pagination-top">
                      <span>Page </span>
                      <select className="pageNavDrop" value={currentPage} name="pages" id="page" onChange={(e) => {

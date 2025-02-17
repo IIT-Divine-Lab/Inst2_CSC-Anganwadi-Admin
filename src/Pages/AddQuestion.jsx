@@ -9,6 +9,7 @@ import Structure7 from '../Components/Structure7';
 import { FileUploaderRegular } from '@uploadcare/react-uploader';
 import FileUploader from '../Components/FileUploaderRegular';
 import { FaSpinner, FaCheck } from "react-icons/fa6";
+// eslint-disable-next-line
 import Button from '../Components/Common/Button';
 import { toast } from 'react-toastify';
 // eslint-disable-next-line
@@ -36,12 +37,13 @@ import Tongue from "../Components/Images/tongue.png"
 import Structure8 from '../Components/Structure8';
 import Input from "../Components/Input Field"
 
-const AddQuestion = () => {
+const AddQuestion = ({ loggedIn }) => {
    const categories = useSelector((state) => state.categories);
    const navigate = useNavigate();
    const dispatch = useDispatch();
    const location = useLocation();
    const id = location?.state?.id || undefined;
+   // eslint-disable-next-line
    const [existingData, setExistingData] = useState({});
    const [quesCategory, setQuesCategory] = useState("Select question category");
    const [ageGroup, setAgeGroup] = useState("Select age group");
@@ -65,6 +67,11 @@ const AddQuestion = () => {
    // console.log("option at 64 ", option);
    // console.log("option at 65 ", typeof option);
    const [matches, setMatches] = useState([]);
+
+   useEffect(() => {
+      if (!loggedIn)
+         navigate("/");
+   }, [loggedIn, navigate])
 
    const leftColumn = {
       Demo: [
@@ -196,8 +203,8 @@ const AddQuestion = () => {
          />
          case 7: return <Structure7
             questionText={questionText}
-            leftColumn={getCategoryName(quesCategory).includes("AAA") ? leftColumn.Demo : leftColumn.Ques}
-            rightColumn={getCategoryName(quesCategory).includes("AAA") ? rightColumn.Demo : rightColumn.Ques}
+            leftColumn={getCategoryName(quesCategory).includes("Demo") ? leftColumn.Demo : leftColumn.Ques}
+            rightColumn={getCategoryName(quesCategory).includes("Demo") ? rightColumn.Demo : rightColumn.Ques}
             matches={matches}
             setMatches={setMatches}
          />
@@ -505,7 +512,30 @@ const AddQuestion = () => {
    }
 
    const handleEditQuestion = () => {
-
+      if (workingStructure === 1 && (ageGroup === "Select age group" || questionImageBefore === undefined || questionText === "" || questionImageAfter === undefined || totalOptions === 0 || option === undefined || correctAnswer === "-")) {
+         toast.warn("Please fill all details");
+         return;
+      }
+      else if (workingStructure === 2 && (ageGroup === "Select age group" || questionText === "" || questionImageAfter === undefined || totalOptions === 0 || option === undefined || correctAnswer === "-")) {
+         toast.warn("Please fill all details");
+         return;
+      }
+      else if (workingStructure === 3 && (ageGroup === "Select age group" || questionText === "" || totalOptions === 0 || option === undefined || correctAnswer === "-")) {
+         toast.warn("Please fill all details");
+         return;
+      }
+      else if (workingStructure === 4 && (ageGroup === "Select age group" || (enabledSound && questionSound === "") || (enabledText && enabledSound && questionSoundText === "") || (enabledText && !enabledSound && questionOnlyText === "") || questionText === "" || totalOptions === 0 || option === undefined || correctAnswer === "-")) {
+         toast.warn("Please fill all details");
+         return;
+      }
+      else if (workingStructure === 5 && (ageGroup === "Select age group" || questionText === "" || totalOptions === 0 || option === undefined || multiCorrectAnswer.length === 0)) {
+         toast.warn("Please fill all details");
+         return;
+      }
+      else if (workingStructure === 6 && (ageGroup === "Select age group" || questionText === "" || questionImageAfter === undefined || correctAnswer === "-" || answerImage === undefined || activeAnswerImage === undefined || inactiveAnswerImage === undefined)) {
+         toast.warn("Please fill all details");
+         return;
+      }
    }
 
    useEffect(() => {
@@ -520,336 +550,347 @@ const AddQuestion = () => {
    }, [fetchCategory, categories])
 
    return (
-      <div className='banner flex-jc'>
-         <div className='banner w-45'>
-            <div className='formFieldContainer'>
-               <label htmlFor='category' className='fieldLabel'>Category</label>
-               <select id="category" name="category" value={quesCategory} className='formField' onChange={(e) => {
-                  setQuesCategory(e.target.value);
-                  if (categories.filter((cat) => cat._id === e.target.value)[0]?.structure === 6) {
-                     setTotalOptions(4);
-                  }
-                  else if (categories.filter((cat) => cat._id === e.target.value)[0]?.structure === 7) {
-                     setTotalOptions(5);
-                  }
-                  setWorkingStructure(categories.filter((cat) => cat._id === e.target.value)[0]?.structure);
-               }}>
-                  <option value="Select question category">Select question category</option>
-                  {
-                     categories.map((category, index) => {
-                        return <option key={index} value={category._id}>{category.categoryName}</option>
-                     })
-                  }
-               </select>
-            </div>
-            <hr />
-            {
-               quesCategory !== "Select question category" ? (
-                  <>
-                     <Input
-                        labelFor='ageGroup'
-                        labelText='Age Group'
-                        id="ageGroup"
-                        name="ageGroup"
-                        value={ageGroup}
-                        onChange={(e) => setAgeGroup(e.target.value)}
-                        options={
-                           [{
-                              value: "Select age group",
-                              label: "Select age group"
-                           }, {
-                              value: "3-4",
-                              label: "3-4"
-                           }, {
-                              value: "4-5",
-                              label: "4-5"
-                           }, {
-                              value: "5-6",
-                              label: "5-6"
-                           }, {
-                              value: "common",
-                              label: "For all groups"
-                           }]
-                        }
-                     />
-
-                     {
-                        workingStructure === 1 ?
-                           <Input
-                              spanText='Question Title Image'
-                              uploadFunc={setQuestionImageBefore}
-                           />
-                           : ""
+      <div className='banner'>
+         <h1>
+            Questions Data / {id ? "Edit" : "Add"} Question
+         </h1>
+         <div className='flex-jc w-100'>
+            <div className='banner w-47'>
+               <div className='formFieldContainer'>
+                  <label htmlFor='category' className='fieldLabel'>Category</label>
+                  <select id="category" name="category" disabled={id ? true : false} value={quesCategory} className='formField' onChange={(e) => {
+                     setQuesCategory(e.target.value);
+                     if (categories.filter((cat) => cat._id === e.target.value)[0]?.structure === 6) {
+                        setTotalOptions(4);
                      }
-                     <Input
-                        labelFor='questionText'
-                        labelText='Question Text'
-                        inputType='text'
-                        name='questionText'
-                        id='questionText'
-                        value={questionText}
-                        onChange={(e) => setQuestionText(e.target.value)}
-                     />
-                     {
-                        workingStructure === 4 ?
-                           <>
-                              <div>
-                                 <label htmlFor='audio' className='fieldLabel'>Audio</label>
-                                 <input type="checkbox" name="audioText" id="audio" checked={enabledSound} onChange={() => { if (enabledText === false && enabledSound === true) { return; } setEnabledSound(!enabledSound); setQuestionSoundText(""); setQuestionOnlyText(""); }} />
-                                 <label htmlFor='text' className='fieldLabel'>Text</label>
-                                 <input type="checkbox" name="audioText" id="text" checked={enabledText} onChange={() => { if (enabledText === true && enabledSound === false) { return; } setEnabledText(!enabledText) }} />
-                              </div>
-                              {
-                                 enabledText ?
-                                    <div className='formFieldContainer'>
-                                       <label htmlFor='questionTextAudio' className='fieldLabel'>Question {enabledSound || !enabledText ? "Sound" : "Sub"} Text</label>
-                                       <input type="text" name="questionText" id="questionTextAudio" className='formField' value={enabledSound || !enabledText ? questionSoundText : questionOnlyText} onChange={(e) => { enabledSound || !enabledText ? setQuestionSoundText(e.target.value) : setQuestionOnlyText(e.target.value) }} />
-                                    </div>
-                                    : ""
-                              }
-                           </>
-                           :
-                           ""
+                     else if (categories.filter((cat) => cat._id === e.target.value)[0]?.structure === 7) {
+                        setTotalOptions(5);
                      }
+                     setWorkingStructure(categories.filter((cat) => cat._id === e.target.value)[0]?.structure);
+                  }}>
+                     <option value="Select question category">Select question category</option>
                      {
-                        workingStructure === 1 || workingStructure === 2 || workingStructure === 6 || workingStructure === 8 ?
-                           <>
-                              <div className='formFieldContainer'>
-                                 <span className='fieldLabel'>Question Image</span>
-                                 <div className='customFileUploadContainer'>
-                                    <FileUploader
-                                       updateFileFunc={setQuestionImageAfter}
-                                    />
-                                 </div>
-                              </div>
-                              {
-                                 workingStructure === 6 ?
-                                    <>
-                                       <div className='formFieldContainer'>
-                                          <label htmlFor='fileInput' className='fieldLabel'>Answer Image</label>
-                                          <div className='customFileUploadContainer'>
-                                             <FileUploaderRegular
-                                                pubkey="f0b48dbfeaff1298ebed"
-                                                maxLocalFileSizeBytes={1500000}
-                                                multiple={false}
-                                                imgOnly={true}
-                                                sourceList="local, camera, gdrive, gphotos"
-                                                useCloudImageEditor={false}
-                                                classNameUploader="my-config uc-light"
-                                                onChange={(e) => updateAnswerImage(e)}
-                                             />
-                                             {answerImage !== undefined ?
-                                                answerImage === 0 ?
-                                                   <FaSpinner className='spin ml-12' />
-                                                   :
-                                                   <FaCheck className='ml-12' />
-                                                :
-                                                ""}
-                                          </div>
-                                       </div>
-                                       <div className='formFieldContainer'>
-                                          <label htmlFor='fileInput' className='fieldLabel'>Inactive Image</label>
-                                          <div className='customFileUploadContainer'>
-                                             <FileUploaderRegular
-                                                pubkey="f0b48dbfeaff1298ebed"
-                                                maxLocalFileSizeBytes={1500000}
-                                                multiple={false}
-                                                imgOnly={true}
-                                                sourceList="local, camera, gdrive, gphotos"
-                                                useCloudImageEditor={false}
-                                                classNameUploader="my-config uc-light"
-                                                onChange={(e) => updateInctiveAnswerImage(e)}
-                                             />
-                                             {inactiveAnswerImage !== undefined ?
-                                                inactiveAnswerImage === 0 ?
-                                                   <FaSpinner className='spin ml-12' />
-                                                   :
-                                                   <FaCheck className='ml-12' />
-                                                :
-                                                ""}
-                                          </div>
-                                       </div>
-                                       <div className='formFieldContainer'>
-                                          <label htmlFor='fileInput' className='fieldLabel'>Active Image</label>
-                                          <div className='customFileUploadContainer'>
-                                             <FileUploaderRegular
-                                                pubkey="f0b48dbfeaff1298ebed"
-                                                maxLocalFileSizeBytes={1500000}
-                                                multiple={false}
-                                                imgOnly={true}
-                                                sourceList="local, camera, gdrive, gphotos"
-                                                useCloudImageEditor={false}
-                                                classNameUploader="my-config uc-light"
-                                                onChange={(e) => updateActiveAnswerImage(e)}
-                                             />
-                                             {activeAnswerImage !== undefined ?
-                                                activeAnswerImage === 0 ?
-                                                   <FaSpinner className='spin ml-12' />
-                                                   :
-                                                   <FaCheck className='ml-12' />
-                                                :
-                                                ""}
-                                          </div>
-                                       </div>
-                                    </>
-                                    : ""
-                              }
-                           </>
-                           : workingStructure === 4 && enabledSound ?
-                              <div className='formFieldContainer'>
-                                 <label htmlFor='fileInput' className='fieldLabel'>Audio</label>
-                                 <div className='customFileUploadContainer'>
-                                    <FileUploaderRegular
-                                       pubkey="f0b48dbfeaff1298ebed"
-                                       maxLocalFileSizeBytes={5000000}
-                                       multiple={false}
-                                       sourceList="local, url, gdrive"
-                                       useCloudImageEditor={false}
-                                       classNameUploader="my-config uc-light"
-                                       onChange={(e) => updateQuestionSound(e)}
-                                    />
-                                 </div>
-                              </div>
-                              : ""
+                        categories.map((category, index) => {
+                           return <option key={index} value={category._id}>{category.categoryName.split(" kush ")[0] + " - " + category.categoryName.split(" kush")[1]}</option>
+                        })
                      }
-                     {
-                        workingStructure !== 6 && workingStructure !== 7 && workingStructure !== 8 ?
-                           <div className="formFieldContainer">
-                              <label htmlFor='totalOptions' className="fieldLabel">Select Total Options</label>
-                              <select name="totalOptions" disabled={option !== undefined ? true : false} id="totalOptions" value={totalOptions} onChange={(e) => setTotalOptions(e.target.value)} className="formField">
-                                 <option value={0}>Select Total Options</option>
-                                 {
-                                    workingStructure !== 5 ?
-                                       <>
-                                          <option value={2}>2</option>
-                                          <option value={3}>3</option>
-                                          <option value={4}>4</option>
-                                       </>
-                                       :
-                                       <>
-                                          <option value={8}>8</option>
-                                          <option value={10}>10</option>
-                                       </>
-                                 }
-                              </select>
-                           </div>
-                           :
-                           ""
-                     }
+                  </select>
+               </div>
+               <hr />
+               {
+                  quesCategory !== "Select question category" ? (
                      <>
-                        {
-                           totalOptions !== 0 ?
-                              <>
-                                 {
-                                    workingStructure !== 6 && workingStructure !== 7 && workingStructure !== 8 ?
-                                       <div className="formFieldContainer">
-                                          <span className='fieldLabel'> {totalOptions !== 0 ? "Select " + totalOptions + " photos as options" : ""}</span>
-                                          <div className='customFileUploadContainer'>
+                        <Input
+                           labelFor='ageGroup'
+                           labelText='Age Group'
+                           disabled={id ? true : false}
+                           id="ageGroup"
+                           name="ageGroup"
+                           value={ageGroup}
+                           onChange={(e) => setAgeGroup(e.target.value)}
+                           options={
+                              [{
+                                 value: "Select age group",
+                                 label: "Select age group"
+                              }, {
+                                 value: "3-4",
+                                 label: "3-4"
+                              }, {
+                                 value: "4-5",
+                                 label: "4-5"
+                              }, {
+                                 value: "5-6",
+                                 label: "5-6"
+                              }, {
+                                 value: "common",
+                                 label: "For all groups"
+                              }]
+                           }
+                        />
 
-                                             <FileUploader
-                                                multiple
-                                                updateFileFunc={updateOptions}
-                                             // updateStatus={updateOptions}
-                                             />
-                                          </div>
+                        {
+                           workingStructure === 1 ?
+                              <Input
+                                 spanText='Question Title Image'
+                                 uploadFunc={setQuestionImageBefore}
+                              />
+                              : ""
+                        }
+                        <Input
+                           labelFor='questionText'
+                           labelText='Question Text'
+                           inputType='text'
+                           name='questionText'
+                           id='questionText'
+                           value={questionText}
+                           onChange={(e) => setQuestionText(e.target.value)}
+                        />
+                        {
+                           workingStructure === 4 ?
+                              <>
+                                 <div>
+                                    <label htmlFor='audio' className='fieldLabel'>Audio</label>
+                                    <input type="checkbox" name="audioText" id="audio" checked={enabledSound} onChange={() => { if (enabledText === false && enabledSound === true) { return; } setEnabledSound(!enabledSound); setQuestionSoundText(""); setQuestionOnlyText(""); }} />
+                                    <label htmlFor='text' className='fieldLabel'>Text</label>
+                                    <input type="checkbox" name="audioText" id="text" checked={enabledText} onChange={() => { if (enabledText === true && enabledSound === false) { return; } setEnabledText(!enabledText) }} />
+                                 </div>
+                                 {
+                                    enabledText ?
+                                       <div className='formFieldContainer'>
+                                          <label htmlFor='questionTextAudio' className='fieldLabel'>Question {enabledSound || !enabledText ? "Sound" : "Sub"} Text</label>
+                                          <input type="text" name="questionText" id="questionTextAudio" className='formField' value={enabledSound || !enabledText ? questionSoundText : questionOnlyText} onChange={(e) => { enabledSound || !enabledText ? setQuestionSoundText(e.target.value) : setQuestionOnlyText(e.target.value) }} />
                                        </div>
                                        : ""
                                  }
-                                 <>
-                                    {
-
-                                       workingStructure !== 5 && workingStructure !== 7 && workingStructure !== 8 ?
-                                          <>
-                                             <div className="formFieldContainer">
-                                                <label htmlFor='correctAnswer' className="fieldLabel">Select Correct Answer</label>
-                                                <select name="correctAnswer" id="correctAnswer" value={correctAnswer} onChange={(e) => setCorrectAnswer(e.target.value)} className="formField">
-                                                   <option value="-">Select Correct Answer</option>
-                                                   {
-                                                      [1, 2, 3, 4].map((num, index) => {
-                                                         if (totalOptions >= num) {
-                                                            return <option key={index} value={"o" + num}>{num}</option>
-                                                         }
-                                                         else return "";
-                                                      })
-                                                   }
-
-                                                </select>
-                                             </div>
-                                             {
-                                                // ANCHOR need to fix this as the category id wont be fixed always
-                                                totalOptions > 2 && quesCategory.includes("6729d6893ae29c44e7450897") ?
-                                                   <div className="formFieldContainer">
-                                                      <label htmlFor='neutralAnswer' className="fieldLabel">Select Neutral Answer</label>
-                                                      <select name="neutralAnswer" id="neutralAnswer" value={neutralAnswer} onChange={(e) => setNeutralAnswer(e.target.value)} className="formField">
-                                                         <option value="-">Select Neutral Answer</option>
-                                                         {
-                                                            [1, 2, 3, 4].map((num, index) => {
-                                                               if (totalOptions >= num && correctAnswer !== ("o" + num)) {
-                                                                  return <option key={index} value={"o" + num}>{num}</option>
-                                                               }
-                                                               else return "";
-                                                            })
-                                                         }
-
-                                                      </select>
-                                                   </div>
-
-                                                   : ``
-                                             }
-                                          </>
-
-
-                                          :
-                                          workingStructure === 5 ?
-                                             <div className="formFieldContainer">
-                                                <label className="fieldLabel">Select Correct Answer</label>
-                                                <Select
-                                                   isMulti
-                                                   options={generateOptions(totalOptions)}
-                                                   value={multiCorrectAnswer}
-                                                   onChange={handleSelection}
-                                                />
-                                             </div>
-                                             : workingStructure === 7 ?
-                                                <div className="formFieldContainer">
-                                                   <label className="fieldLabel">Correct Answers</label>
-                                                   {
-                                                      matches?.map((val, index) => {
-                                                         return <span key={index}>
-                                                            <span>Left: {val.left.val}</span>
-                                                            <span style={{
-                                                               marginLeft: "10px"
-                                                            }}>
-                                                               Right: {val.right}
-                                                            </span>
-                                                         </span>
-                                                      })
-                                                   }
-                                                </div>
-                                                : ""
-                                    }
-                                 </>
                               </>
                               :
                               ""
                         }
+                        {
+                           workingStructure === 1 || workingStructure === 2 || workingStructure === 6 || workingStructure === 8 ?
+                              <>
+                                 <div className='formFieldContainer'>
+                                    <span className='fieldLabel'>Question Image</span>
+                                    <div className='customFileUploadContainer'>
+                                       <FileUploader
+                                          updateFileFunc={setQuestionImageAfter}
+                                       />
+                                    </div>
+                                 </div>
+                                 {
+                                    workingStructure === 6 ?
+                                       <>
+                                          <div className='formFieldContainer'>
+                                             <label htmlFor='fileInput' className='fieldLabel'>Answer Image</label>
+                                             <div className='customFileUploadContainer'>
+                                                <FileUploaderRegular
+                                                   pubkey="f0b48dbfeaff1298ebed"
+                                                   maxLocalFileSizeBytes={1500000}
+                                                   multiple={false}
+                                                   imgOnly={true}
+                                                   sourceList="local, camera, gdrive, gphotos"
+                                                   useCloudImageEditor={false}
+                                                   classNameUploader="my-config uc-light"
+                                                   onChange={(e) => updateAnswerImage(e)}
+                                                />
+                                                {answerImage !== undefined ?
+                                                   answerImage === 0 ?
+                                                      <FaSpinner className='spin ml-12' />
+                                                      :
+                                                      <FaCheck className='ml-12' />
+                                                   :
+                                                   ""}
+                                             </div>
+                                          </div>
+                                          <div className='formFieldContainer'>
+                                             <label htmlFor='fileInput' className='fieldLabel'>Inactive Image</label>
+                                             <div className='customFileUploadContainer'>
+                                                <FileUploaderRegular
+                                                   pubkey="f0b48dbfeaff1298ebed"
+                                                   maxLocalFileSizeBytes={1500000}
+                                                   multiple={false}
+                                                   imgOnly={true}
+                                                   sourceList="local, camera, gdrive, gphotos"
+                                                   useCloudImageEditor={false}
+                                                   classNameUploader="my-config uc-light"
+                                                   onChange={(e) => updateInctiveAnswerImage(e)}
+                                                />
+                                                {inactiveAnswerImage !== undefined ?
+                                                   inactiveAnswerImage === 0 ?
+                                                      <FaSpinner className='spin ml-12' />
+                                                      :
+                                                      <FaCheck className='ml-12' />
+                                                   :
+                                                   ""}
+                                             </div>
+                                          </div>
+                                          <div className='formFieldContainer'>
+                                             <label htmlFor='fileInput' className='fieldLabel'>Active Image</label>
+                                             <div className='customFileUploadContainer'>
+                                                <FileUploaderRegular
+                                                   pubkey="f0b48dbfeaff1298ebed"
+                                                   maxLocalFileSizeBytes={1500000}
+                                                   multiple={false}
+                                                   imgOnly={true}
+                                                   sourceList="local, camera, gdrive, gphotos"
+                                                   useCloudImageEditor={false}
+                                                   classNameUploader="my-config uc-light"
+                                                   onChange={(e) => updateActiveAnswerImage(e)}
+                                                />
+                                                {activeAnswerImage !== undefined ?
+                                                   activeAnswerImage === 0 ?
+                                                      <FaSpinner className='spin ml-12' />
+                                                      :
+                                                      <FaCheck className='ml-12' />
+                                                   :
+                                                   ""}
+                                             </div>
+                                          </div>
+                                       </>
+                                       : ""
+                                 }
+                              </>
+                              : workingStructure === 4 && enabledSound ?
+                                 <div className='formFieldContainer'>
+                                    <label htmlFor='fileInput' className='fieldLabel'>Audio</label>
+                                    <div className='customFileUploadContainer'>
+                                       <FileUploaderRegular
+                                          pubkey="f0b48dbfeaff1298ebed"
+                                          maxLocalFileSizeBytes={5000000}
+                                          multiple={false}
+                                          sourceList="local, url, gdrive"
+                                          useCloudImageEditor={false}
+                                          classNameUploader="my-config uc-light"
+                                          onChange={(e) => updateQuestionSound(e)}
+                                       />
+                                    </div>
+                                 </div>
+                                 : ""
+                        }
+                        {
+                           workingStructure !== 6 && workingStructure !== 7 && workingStructure !== 8 ?
+                              <div className="formFieldContainer">
+                                 <label htmlFor='totalOptions' className="fieldLabel">Select Total Options</label>
+                                 <select name="totalOptions" disabled={id ? false : option !== undefined ? true : false} id="totalOptions" value={totalOptions} onChange={(e) => {
+                                    if (id) {
+                                       setOption(undefined);
+                                    }
+                                    setTotalOptions(e.target.value)
+                                 }} className="formField">
+                                    <option value={0}>Select Total Options</option>
+                                    {
+                                       workingStructure !== 5 ?
+                                          <>
+                                             <option value={2}>2</option>
+                                             <option value={3}>3</option>
+                                             <option value={4}>4</option>
+                                          </>
+                                          :
+                                          <>
+                                             <option value={8}>8</option>
+                                             <option value={10}>10</option>
+                                          </>
+                                    }
+                                 </select>
+                              </div>
+                              :
+                              ""
+                        }
+                        <>
+                           {
+                              totalOptions !== 0 ?
+                                 <>
+                                    {
+                                       workingStructure !== 6 && workingStructure !== 7 && workingStructure !== 8 ?
+                                          <div className="formFieldContainer">
+                                             <span className='fieldLabel'> {totalOptions !== 0 ? "Select " + totalOptions + " photos as options" : ""}</span>
+                                             <div className='customFileUploadContainer'>
+
+                                                <FileUploader
+                                                   multiple
+                                                   updateFileFunc={updateOptions}
+                                                // updateStatus={updateOptions}
+                                                />
+                                             </div>
+                                          </div>
+                                          : ""
+                                    }
+                                    <>
+                                       {
+
+                                          workingStructure !== 5 && workingStructure !== 7 && workingStructure !== 8 ?
+                                             <>
+                                                <div className="formFieldContainer">
+                                                   <label htmlFor='correctAnswer' className="fieldLabel">Select Correct Answer</label>
+                                                   <select name="correctAnswer" id="correctAnswer" value={correctAnswer} onChange={(e) => setCorrectAnswer(e.target.value)} className="formField">
+                                                      <option value="-">Select Correct Answer</option>
+                                                      {
+                                                         [1, 2, 3, 4].map((num, index) => {
+                                                            if (totalOptions >= num) {
+                                                               return <option key={index} value={"o" + num}>{num}</option>
+                                                            }
+                                                            else return "";
+                                                         })
+                                                      }
+
+                                                   </select>
+                                                </div>
+                                                {
+                                                   // ANCHOR need to fix this as the category id wont be fixed always
+                                                   totalOptions > 2 && quesCategory.includes("6729d6893ae29c44e7450897") ?
+                                                      <div className="formFieldContainer">
+                                                         <label htmlFor='neutralAnswer' className="fieldLabel">Select Neutral Answer</label>
+                                                         <select name="neutralAnswer" id="neutralAnswer" value={neutralAnswer} onChange={(e) => setNeutralAnswer(e.target.value)} className="formField">
+                                                            <option value="-">Select Neutral Answer</option>
+                                                            {
+                                                               [1, 2, 3, 4].map((num, index) => {
+                                                                  if (totalOptions >= num && correctAnswer !== ("o" + num)) {
+                                                                     return <option key={index} value={"o" + num}>{num}</option>
+                                                                  }
+                                                                  else return "";
+                                                               })
+                                                            }
+
+                                                         </select>
+                                                      </div>
+
+                                                      : ``
+                                                }
+                                             </>
+
+
+                                             :
+                                             workingStructure === 5 ?
+                                                <div className="formFieldContainer">
+                                                   <label className="fieldLabel">Select Correct Answer</label>
+                                                   <Select
+                                                      isMulti
+                                                      options={generateOptions(totalOptions)}
+                                                      value={multiCorrectAnswer}
+                                                      onChange={handleSelection}
+                                                   />
+                                                </div>
+                                                : workingStructure === 7 ?
+                                                   <div className="formFieldContainer">
+                                                      <label className="fieldLabel">Correct Answers</label>
+                                                      {
+                                                         matches?.map((val, index) => {
+                                                            return <span key={index}>
+                                                               <span>Left: {val.left.val}</span>
+                                                               <span style={{
+                                                                  marginLeft: "10px"
+                                                               }}>
+                                                                  Right: {val.right}
+                                                               </span>
+                                                            </span>
+                                                         })
+                                                      }
+                                                   </div>
+                                                   : ""
+                                       }
+                                    </>
+                                 </>
+                                 :
+                                 ""
+                           }
+                        </>
+
+                        {/* Submit Button */}
+                        <div className='formFieldContainer' onClick={id === undefined ? handleQuestionSubmission : handleEditQuestion} style={{ width: "max-content", marginTop: "40px" }}>
+                           <button style={{ fontSize: "14px", width: "unset" }} className="actionBtn">Save Question</button>
+                        </div>
                      </>
+                  )
+                     : ""
 
-                     {/* Submit Button */}
-                     <div className='formFieldContainer' onClick={id === undefined ? handleQuestionSubmission : handleEditQuestion} style={{ width: "max-content", marginTop: "40px" }}>
-                        <Button form="true">Save Question</Button>
-                     </div>
-                  </>
-               )
-                  : ""
+               }
 
-            }
-
-         </div>
-         <div className='banner w-45'>
-            {
-               quesCategory !== "Select question category" && struct()
-            }
+            </div>
+            <div className='banner w-47'>
+               {
+                  quesCategory !== "Select question category" && struct()
+               }
+            </div>
          </div>
       </div >
    )

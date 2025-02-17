@@ -1,3 +1,4 @@
+// eslint-disable-next-line
 import React, { useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { PiStudent, PiStudentFill } from "react-icons/pi";
@@ -10,11 +11,11 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
    const navigate = useNavigate();
    const location = useLocation();
 
-   useEffect(() => {
-      if (location.pathname === "/questions/addquestion") {
-         setIsCollapsed(true);
-      }
-   }, [location.pathname, setIsCollapsed]);
+   // useEffect(() => {
+   //    if (location.pathname === "/questions/addquestion" || location.pathname === "/questions/editquestion") {
+   //       setIsCollapsed(true);
+   //    }
+   // }, [location.pathname, setIsCollapsed]);
 
    const handleQuestionsClick = () => {
       setIsCollapsed(false);
@@ -70,12 +71,12 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
             }
             {!isCollapsed && <span className="description">Student</span>}
          </div>
-         <div className={location.pathname === "/category" ? 'active link-item' : 'link-item'} onClick={handleCategoryClick}>
+         <div className={location.pathname === "/category" || location.pathname === "/category/addcategory" || location.pathname === "/category/editcategory" ? 'active link-item' : 'link-item'} onClick={handleCategoryClick}>
             {/* {location.pathname === "/category" && (
                <div className="active"></div>
             )} */}
             {
-               location.pathname === "/category" ?
+               location.pathname === "/category" || location.pathname === "/category/addcategory" || location.pathname === "/category/editcategory" ?
                   <>
                      <div className="appearLine">&nbsp;</div>
                      <MdCategory className="icon" />
@@ -87,12 +88,12 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
             }
             {!isCollapsed && <span className="description">Category</span>}
          </div>
-         <div className={location.pathname === "/questions" ? 'active link-item' : 'link-item'} onClick={handleQuestionsClick}>
+         <div className={location.pathname === "/questions" || location.pathname === "/questions/addquestion" || location.pathname === "/questions/editquestion" ? 'active link-item' : 'link-item'} onClick={handleQuestionsClick}>
             {/* {location.pathname === "/questions" && (
                <div className="active"></div>
             )} */}
             {
-               location.pathname === "/questions" ?
+               location.pathname === "/questions" || location.pathname === "/questions/addquestion" || location.pathname === "/questions/editquestion" ?
                   <>
                      <div className="appearLine">&nbsp;</div>
                      <BsQuestionCircleFill className="icon" />

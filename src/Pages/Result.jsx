@@ -7,11 +7,13 @@ import axios from 'axios';
 import { setCategory, setResults } from '../redux/actions/actions';
 import { TbRefresh } from 'react-icons/tb';
 import * as XLSX from "xlsx"
+import { useNavigate } from 'react-router-dom';
 
-const Result = () => {
+const Result = ({ loggedIn }) => {
    // eslint-disable-next-line
    const [pageInput, setPageInput] = useState(1);
    const dispatch = useDispatch()
+   const navigate = useNavigate();
 
    const result = useSelector((state) => state?.result || []);
    const category = useSelector((state) => state?.categories || []);
@@ -23,6 +25,11 @@ const Result = () => {
    // eslint-disable-next-line
    const currentRecords = result?.slice(startIndex, startIndex + recordsPerPage);
    const tableRef = useRef();
+
+   useEffect(() => {
+      if (!loggedIn)
+         navigate("/");
+   }, [loggedIn, navigate])
 
    // Export function
    const exportToXLSX = () => {
@@ -216,8 +223,8 @@ const Result = () => {
                                        key={index}
                                        style={{
                                           textAlign: "center",
-                                          borderLeft: "2px solid var(--primary-color)",
-                                          borderBottom: "2px solid var(--primary-color)"
+                                          borderLeft: "10px solid var(--white)",
+                                          borderBottom: "1px solid var(--primary-color)",
                                        }}
                                        colSpan={
                                           headData?.totalQuestions || 0
@@ -241,8 +248,8 @@ const Result = () => {
                                     <th
                                        style={{
                                           textAlign: "center",
-                                          borderLeftColor: "var(--primary-color)",
-                                          borderLeftWidth: i === 0 ? "2px" : "1px",
+                                          borderLeftColor: i === 0 ? "var(--white)" : "var(--primary-color)",
+                                          borderLeftWidth: i === 0 ? "10px" : "1px",
                                           borderLeftStyle: "solid"
                                        }}
                                        key={`${index}-${i}`}
