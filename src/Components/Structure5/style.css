@@ -15,6 +15,10 @@
    align-items: center;
 }
 
+.s5option > div > img {
+   max-height: 200px;
+   max-width: 220px;
+}
 .s5option > div {
    height: 110px;
    width: 110px;

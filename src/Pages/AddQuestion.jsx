@@ -369,63 +369,34 @@ const AddQuestion = ({ loggedIn }) => {
       formData.append("questionType", ((workingStructure >= 1 && workingStructure <= 6) && workingStructure !== 5) ? "single" : workingStructure === 8 ? "draw" : "multi")
       formData.append("totalOptions", workingStructure === 8 ? -1 : (workingStructure === 6 ? 4 : totalOptions))
       formData.append("correctAnswer", workingStructure === 5 || workingStructure === 7 ? correctAnswers : workingStructure === 8 ? ["draw"] : workingStructure === 2 && totalOptions > 2 && quesCategory.includes("6729d6893ae29c44e7450897") ? [correctAnswer, neutralAnswer] : [correctAnswer])
-      let submission;
-      switch (workingStructure) {
-         case 1:
-            // console.log(totalOptions)
-            for (let index = 0; index < totalOptions; index++) {
-               const element = option[index];
-               formData.append(`option.` + index, element)
-            }
+
+      if (workingStructure !== 6 || workingStructure !== 8)
+         for (let index = 0; index < totalOptions; index++) {
+            const element = option[index];
+            formData.append(`option.` + index, element)
+         }
+
+      if (workingStructure === 1 || workingStructure === 2 || workingStructure === 6 || workingStructure === 8) {
+         formData.append("questionImageAfter", questionImageAfter)
+         if (workingStructure === 1)
             formData.append("questionImageBefore", questionImageBefore)
-            formData.append("questionImageAfter", questionImageAfter)
-            break;
-         case 2:
-            // console.log(totalOptions)
-            for (let index = 0; index < totalOptions; index++) {
-               const element = option[index];
-               formData.append(`option.` + index, element)
-            }
-            formData.append("questionImageAfter", questionImageAfter)
-            break;
-         case 4:
-            if (enabledSound && enabledText)
-               submission = { ...submission, question: { ...submission.question, option, questionSound, questionSoundText } }
-            else if (enabledSound)
-               submission = { ...submission, question: { ...submission.question, option, questionSound } }
-            if (!enabledSound && enabledText)
-               submission = { ...submission, question: { ...submission.question, option, questionOnlyText } }
-            break;
-         case 3:
-         case 5:
-            for (let index = 0; index < totalOptions; index++) {
-               const element = option[index];
-               formData.append(`option.` + index, element)
-            }
-            break;
-         case 6:
-            submission = {
-               ...submission,
-               question: {
-                  ...submission.question,
-                  questionImage: {
-                     after: questionImageAfter
-                  },
-                  answerImage,
-                  option: {
-                     active: activeAnswerImage,
-                     inactive: inactiveAnswerImage
-                  }
-               }
-            }
-            break;
-         case 8:
-            formData.append("questionImageAfter", questionImageAfter)
-            break;
-         default:
-            break;
       }
-      console.log(submission);
+
+      if(workingStructure === 4){
+         if (enabledSound) {
+            formData.append("questionSound", questionSound)
+            if (enabledText)
+               formData.append("questionSoundText", questionSoundText)
+         }
+         else
+            formData.append("questionOnlyText", questionOnlyText)
+      }
+
+      if(workingStructure === 6){
+         formData.append(`option.active`, activeAnswerImage)
+         formData.append(`option.inactive`, inactiveAnswerImage)
+      }
+      
       // console.log(formData.entries());
       try {
          const response = await fetch(apiUrl + "assessment", {
@@ -628,7 +599,7 @@ const AddQuestion = ({ loggedIn }) => {
                         {
                            workingStructure === 4 ?
                               <>
-                                 <div>
+                                 <div style={{ marginTop: "10px" }}>
                                     <label htmlFor='audio' className='fieldLabel'>Audio</label>
                                     <input type="checkbox" name="audioText" id="audio" checked={enabledSound} onChange={() => { if (enabledText === false && enabledSound === true) { return; } setEnabledSound(!enabledSound); setQuestionSoundText(""); setQuestionOnlyText(""); }} />
                                     <label htmlFor='text' className='fieldLabel'>Text</label>
@@ -636,10 +607,16 @@ const AddQuestion = ({ loggedIn }) => {
                                  </div>
                                  {
                                     enabledText ?
-                                       <div className='formFieldContainer'>
-                                          <label htmlFor='questionTextAudio' className='fieldLabel'>Question {enabledSound || !enabledText ? "Sound" : "Sub"} Text</label>
-                                          <input type="text" name="questionText" id="questionTextAudio" className='formField' value={enabledSound || !enabledText ? questionSoundText : questionOnlyText} onChange={(e) => { enabledSound || !enabledText ? setQuestionSoundText(e.target.value) : setQuestionOnlyText(e.target.value) }} />
-                                       </div>
+                                       <Input
+                                          labelFor='questionTextAudio'
+                                          labelText={`Question ${enabledSound || !enabledText ? "Sound" : "Sub"} Text`}
+
+                                          inputType="text"
+                                          name="questionTextAudio"
+                                          id="questionTextAudio"
+                                          value={enabledSound || !enabledText ? questionSoundText : questionOnlyText}
+                                          onChange={(e) => { enabledSound || !enabledText ? setQuestionSoundText(e.target.value) : setQuestionOnlyText(e.target.value) }}
+                                       />
                                        : ""
                                  }
                               </>
@@ -649,14 +626,10 @@ const AddQuestion = ({ loggedIn }) => {
                         {
                            workingStructure === 1 || workingStructure === 2 || workingStructure === 6 || workingStructure === 8 ?
                               <>
-                                 <div className='formFieldContainer'>
-                                    <span className='fieldLabel'>Question Image</span>
-                                    <div className='customFileUploadContainer'>
-                                       <FileUploader
-                                          updateFileFunc={setQuestionImageAfter}
-                                       />
-                                    </div>
-                                 </div>
+                                 <Input
+                                    spanText='Question Image'
+                                    uploadFunc={setQuestionImageAfter}
+                                 />
                                  {
                                     workingStructure === 6 ?
                                        <>
@@ -731,20 +704,12 @@ const AddQuestion = ({ loggedIn }) => {
                                  }
                               </>
                               : workingStructure === 4 && enabledSound ?
-                                 <div className='formFieldContainer'>
-                                    <label htmlFor='fileInput' className='fieldLabel'>Audio</label>
-                                    <div className='customFileUploadContainer'>
-                                       <FileUploaderRegular
-                                          pubkey="f0b48dbfeaff1298ebed"
-                                          maxLocalFileSizeBytes={5000000}
-                                          multiple={false}
-                                          sourceList="local, url, gdrive"
-                                          useCloudImageEditor={false}
-                                          classNameUploader="my-config uc-light"
-                                          onChange={(e) => updateQuestionSound(e)}
-                                       />
-                                    </div>
-                                 </div>
+                                 <Input
+                                    labelFor='fileInput'
+                                    labelText='Audio'
+                                    uploadFunc={setQuestionSound}
+                                    uploadAccept='audio/*'
+                                 />
                                  : ""
                         }
                         {

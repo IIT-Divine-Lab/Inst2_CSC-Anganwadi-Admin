@@ -13,9 +13,23 @@ const Structure1to4 = ({ view, structure, questionText, questionImageBefore, que
       aud.play();
    }
    // console.log("option at 15", option)
-   const getSourceURL = (obj) => {
+   const getSourceURL = (obj, type = "image") => {
       // console.log("get source url : ", obj)
+      console.log(option, type);
       try {
+         if (obj && type === "audio") {
+            let blobData = obj;
+            if (typeof (obj) === "string") {
+               console.log(obj.split(","))
+               blobData = new Uint8Array(obj.split(","))
+            }
+            console.log(obj);
+            console.log(blobData);
+            console.log(typeof (obj), typeof (blobData));
+            const blob = new Blob([blobData], { type: "audio/mp3" });
+            console.log(blob);
+            return URL.createObjectURL(blob);
+         }
          return URL.createObjectURL(obj)
       }
       catch (error) {
@@ -52,7 +66,7 @@ const Structure1to4 = ({ view, structure, questionText, questionImageBefore, que
                      <>
                         {
                            enabledSound === true ?
-                              <audio loops={false} id='audioQues' className='audioQues' src={questionSound !== undefined ? getSourceURL(questionSound) : undefined}></audio>
+                              <audio loops={false} id='audioQues' className='audioQues' src={questionSound !== undefined ? getSourceURL(questionSound, "audio") : undefined}></audio>
                               : ""
                         }
                         <div className='audioContainer'>

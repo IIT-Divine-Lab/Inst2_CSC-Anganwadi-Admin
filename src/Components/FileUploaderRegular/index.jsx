@@ -3,9 +3,10 @@ import React, { useId, useState } from 'react'
 import { GoUpload } from "react-icons/go";
 import "./style.css"
 import imageCompression from "browser-image-compression"
-import { FFmpeg } from "@ffmpeg/ffmpeg"
+import { FFmpeg } from '@ffmpeg/ffmpeg';
 
-const FileUploader = ({ updateFileFunc, updateStatus, multiple = false, maxFiles, minFiles }) => {
+
+const FileUploader = ({ updateFileFunc, uploadAccept, updateStatus, multiple = false, maxFiles, minFiles }) => {
    const uniqueId = useId()
 
    const [name, setName] = useState("");
@@ -16,10 +17,7 @@ const FileUploader = ({ updateFileFunc, updateStatus, multiple = false, maxFiles
          let processFileName = "";
          for (let index = 0; index < files.length; index++) {
             var file = files[index];
-            console.log(file);
             let type = file.type;
-            console.log(type);
-            console.log(index);
             if (file === undefined || type === undefined) {
 
             }
@@ -31,11 +29,11 @@ const FileUploader = ({ updateFileFunc, updateStatus, multiple = false, maxFiles
                      maxWidthOrHeight: 800,
                      useWebWorker: true,
                   });
-                  processFileName += compressedFile.name + ","
+                  processFileName += compressedFile.name + ",";
                   processedFiles.push(compressedFile);
                } else if (type.startsWith('audio')) {
                   // Process audio with FFmpeg
-                  const ffmpegInstance = FFmpeg.createFFmpeg({ log: true });
+                  const ffmpegInstance = ({ log: true });
                   await ffmpegInstance.load();
 
                   const audioData = new Uint8Array(await file.arrayBuffer());
@@ -44,7 +42,11 @@ const FileUploader = ({ updateFileFunc, updateStatus, multiple = false, maxFiles
                   await ffmpegInstance.run('-i', 'input.mp3', '-b:a', '64k', 'output.mp3');
                   const output = ffmpegInstance.FS('readFile', 'output.mp3');
 
-                  return Buffer.from(output).toString('base64');
+                  const finalOutput = Buffer.from(output).toString('base64');
+
+                  console.log(JSON.stringify(finalOutput))
+
+                  return JSON.stringify(finalOutput);
                } else {
                   throw new Error('Unsupported file type');
                }
@@ -73,16 +75,24 @@ const FileUploader = ({ updateFileFunc, updateStatus, multiple = false, maxFiles
                return updateFileFunc(compressedFile);
             } else if (type.startsWith('audio')) {
                // Process audio with FFmpeg
-               const ffmpegInstance = FFmpeg.createFFmpeg({ log: true });
+               const ffmpegInstance = new FFmpeg({ log: true });
                await ffmpegInstance.load();
 
+               console.log(ffmpegInstance)
+
                const audioData = new Uint8Array(await file.arrayBuffer());
-               ffmpegInstance.FS('writeFile', 'input.mp3', audioData);
+               await ffmpegInstance.writeFile('./input.mp3', audioData);
+               // ffmpegInstance.FS('writeFile', 'input.mp3', audioData);
 
-               await ffmpegInstance.run('-i', 'input.mp3', '-b:a', '64k', 'output.mp3');
-               const output = ffmpegInstance.FS('readFile', 'output.mp3');
+               await ffmpegInstance.exec(['-i', 'input.mp3', '-b:a', '64k', 'output.mp3']);
+               const output = await ffmpegInstance.readFile("./output.mp3");
+               console.log(output);
+               return updateFileFunc(output);
 
-               return Buffer.from(output).toString('base64');
+               // await ffmpegInstance.run('-i', 'input.mp3', '-b:a', '64k', 'output.mp3');
+               // const output = ffmpegInstance.FS('readFile', 'output.mp3');
+
+               // return Buffer.from(output).toString('base64');
             } else {
                throw new Error('Unsupported file type');
             }
@@ -97,7 +107,7 @@ const FileUploader = ({ updateFileFunc, updateStatus, multiple = false, maxFiles
                style={{ width: "120px", height: "100% ", display: "none", cursor: "pointer" }}
                type="file"
                multiple={multiple}
-               accept='image/*,audio/*'
+               accept={uploadAccept}
                id={`fileInput${uniqueId}`}
                min={multiple ? minFiles : 1}
                max={multiple ? maxFiles : 1}

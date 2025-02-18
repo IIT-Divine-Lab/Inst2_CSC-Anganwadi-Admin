@@ -20,7 +20,7 @@ import { HiOutlineTrash } from "react-icons/hi";
 
 ReactModal.setAppElement('#root');
 
-const Questions = ({loggedIn}) => {
+const Questions = ({ loggedIn }) => {
    const dispatch = useDispatch();
    const questions = useSelector((state) => state.questions || []);
    // eslint-disable-next-line
@@ -216,16 +216,16 @@ const Questions = ({loggedIn}) => {
                      currentRecords.map((data, index) => (
                         <tr key={index}>
                            <td>{startIndex + index + 1}</td>
-                           <td style={{ width: "350px" }}>{data.question.questionText}</td>
+                           <td style={{ width: "350px" }}>{data?.question?.questionText}</td>
                            <td>{data?.quesCategory?.categoryName?.split(" kush ")[0]}</td>
                            <td>{data?.quesCategory?.categoryName?.split(" kush ")[1].split(" : ")[0]}</td>
                            <td className="center">{data?.quesCategory?.categoryName?.split(" kush ")[1].split(" : ")[1]}</td>
-                           <td className="center">{data.ageGroup}</td>
-                           <td className="center">{data.question.totalOptions}</td>
+                           <td className="center">{data?.ageGroup}</td>
+                           <td className="center">{data?.question?.totalOptions}</td>
                            <td className="center">
-                              <IoEyeOutline className="action-icon view" title="View" onClick={() => openModal(modalStructure(data.question?.structure), data, data.question?.structure)} />
-                              <FiEdit3 className="action-icon edit" title="Edit" onClick={() => handleQuestionEdit(data._id)} />
-                              <HiOutlineTrash className="action-icon delete" title="Delete" onClick={() => handleQuestionDelete(data._id, data.question)} />
+                              <IoEyeOutline className="action-icon view" title="View" onClick={() => openModal(modalStructure(data?.question?.structure), data, data?.question?.structure)} />
+                              <FiEdit3 className="action-icon edit" title="Edit" onClick={() => handleQuestionEdit(data?._id)} />
+                              <HiOutlineTrash className="action-icon delete" title="Delete" onClick={() => handleQuestionDelete(data?._id, data?.question)} />
                            </td>
                         </tr>
                      ))

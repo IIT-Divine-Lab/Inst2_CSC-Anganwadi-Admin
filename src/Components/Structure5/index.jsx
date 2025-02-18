@@ -9,6 +9,31 @@ const Structure5 = ({ view, options = [], totalOptions, questionText, selected }
    // console.log(options);
    // console.log(totalOptions);
 
+   // console.log("option at 15", option)
+   const getSourceURL = (obj, type = "image") => {
+      // console.log("get source url : ", obj)
+      console.log(options, type);
+      try {
+         if (obj && type === "audio") {
+            let blobData = obj;
+            if (typeof (obj) === "string") {
+               console.log(obj.split(","))
+               blobData = new Uint8Array(obj.split(","))
+            }
+            console.log(obj);
+            console.log(blobData);
+            console.log(typeof (obj), typeof (blobData));
+            const blob = new Blob([blobData], { type: "audio/mp3" });
+            console.log(blob);
+            return URL.createObjectURL(blob);
+         }
+         return URL.createObjectURL(obj)
+      }
+      catch (error) {
+         return `data:image/png;base64,${obj?.filePath}`
+      }
+   }
+
    useEffect(() => {
       let quotient = totalOptions / 5;
       console.log(selected);
@@ -23,11 +48,11 @@ const Structure5 = ({ view, options = [], totalOptions, questionText, selected }
          <div className='s5optionContainer' style={{ gridTemplateColumns: `repeat(${column},1fr)`, gap: options["o1"] === undefined ? "20px" : 0 }}>
             {
                Array.from({ length: totalOptions ? totalOptions : 10 }, (_, i) => (
-                  <div className='s5option' style={options["o" + (i + 1)] === undefined ? { backgroundColor: "#cacaca" } : {}} key={i}>
+                  <div className='s5option' style={options["o" + (i)] === undefined ? { backgroundColor: "#cacaca" } : {}} key={i}>
                      <div>
                         <img
-                           src={options["o" + (i + 1)]}
-                           className={selected[selected.findIndex((val) => val?.value === ("o" + (i + 1)))]?.value === ("o" + (i + 1)) || selected.includes("o" + (i + 1)) ? 'selected' : ''}
+                           src={getSourceURL(options[(i)])}
+                           className={selected[selected.findIndex((val) => val?.value === ((i)))]?.value === ((i)) || selected.includes((i)) ? 'selected' : ''}
                            alt=""
                         />
                      </div>

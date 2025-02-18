@@ -1,7 +1,7 @@
 import React from 'react'
 import FileUploader from '../FileUploaderRegular'
 
-const Input = ({ spanText, labelFor, labelText, name, value, onChange, id, options, uploadFunc, inputType }) => {
+const Input = ({ spanText, labelFor, uploadAccept = "image/*", disabled, labelText, name, value, onChange, id, options, uploadFunc, inputType }) => {
    return (
       <div className='formFieldContainer'>
          {
@@ -21,6 +21,7 @@ const Input = ({ spanText, labelFor, labelText, name, value, onChange, id, optio
                   className="formField"
                   onChange={onChange}
                   id={id}
+                  disabled={disabled}
                >
                   {
                      options?.map((opt, index) => {
@@ -41,6 +42,7 @@ const Input = ({ spanText, labelFor, labelText, name, value, onChange, id, optio
                <div className='customFileUploadContainer'>
                   <FileUploader
                      updateFileFunc={uploadFunc}
+                     uploadAccept={uploadAccept}
                   />
                </div>
                :
