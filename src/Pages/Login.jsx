@@ -8,8 +8,8 @@ const Login = ({ loggedIn, setLoggedIn }) => {
       password: "IitD@123"
    }
 
-   const [username, setUsername] = useState("");
-   const [password, setPassword] = useState("");
+   const [username, setUsername] = useState("IIT Delhi");
+   const [password, setPassword] = useState("IitD@123");
 
    const handleLogin = () => {
       if (username === credential.username && password === credential.password) {

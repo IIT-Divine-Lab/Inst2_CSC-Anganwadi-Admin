@@ -191,3 +191,46 @@ h1 {
 .action-icon:hover {
    color: var(--primary-color);
 }
+
+.loadingContainer {
+   display: flex;
+   justify-content: center;
+   align-items: center;
+   width: 100%;
+   min-height: 88px;
+}
+
+.loadingContainer > div {
+   width: 14px;
+   height: 14px;
+   border-radius: 100%;
+   animation: move 2s infinite;
+
+   &:not(:first-child) {
+      margin-left: 10px;
+   }
+}
+
+.loadingContainer > div:first-child {
+   background-color: #cbc2f9;
+}
+.loadingContainer > div:nth-child(2) {
+   background-color: #b3a8ef;
+   animation-delay: 0.2s;
+}
+.loadingContainer > div:nth-child(3) {
+   background-color: #9b8ee6;
+   animation-delay: 0.4s;
+}
+
+@keyframes move {
+   0% {
+      transform: translateY(35px);
+   }
+   50% {
+      transform: translateY(0px);
+   }
+   100% {
+      transform: translateY(35px);
+   }
+}

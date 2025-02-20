@@ -48,7 +48,6 @@ const Student = ({ loggedIn }) => {
       const workbook = XLSX.utils.book_new();
       for (let i = 0; i < allCentre.length; i++) {
          let str = allCentre[i];
-         console.log(str);
          let centre = [];
          for (let j = 0; j < students.length; j++) {
             if (students[j].awcentre === str) {
@@ -62,7 +61,6 @@ const Student = ({ loggedIn }) => {
             "Age Group": student.age,
             "Assessment Submitted": student.assessmentId ? '✔️' : '❌'
          })))
-         console.log(worksheet);
          let sinCentre = str.split(" ");
          let centreName = "";
          for (let i = 0; i < sinCentre.length; i++) {
@@ -92,7 +90,6 @@ const Student = ({ loggedIn }) => {
    const fetchStudentData = useCallback(async () => {
       axios.get(apiUrl + "user")
          .then(({ data }) => {
-            // console.log(data);
             if (data.message !== "No Data")
                dispatch(setStudents(data.students));
          })

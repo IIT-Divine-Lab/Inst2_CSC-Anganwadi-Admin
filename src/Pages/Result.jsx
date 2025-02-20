@@ -86,7 +86,6 @@ const Result = ({ loggedIn }) => {
    }, [dispatch])
 
    const regrouping = (resQues) => {
-      // console.log(resQues)
       let categories = [];
       for (let i = 0; i < resQues?.length; i++) {
          let cat = resQues[i]?.quesCategory?.categoryName
@@ -100,7 +99,6 @@ const Result = ({ loggedIn }) => {
          for (let i = 0; i < resQues?.length; i++) {
             let obj;
             if (cat === resQues[i]?.quesCategory?.categoryName) {
-               // console.log(resQues[i]?.quesId)
                obj = {
                   quesId: resQues[i].quesId?._id,
                   answerMarked: resQues[i].AnswerMarked,

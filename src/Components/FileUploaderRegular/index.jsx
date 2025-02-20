@@ -44,8 +44,6 @@ const FileUploader = ({ updateFileFunc, uploadAccept, updateStatus, multiple = f
 
                   const finalOutput = Buffer.from(output).toString('base64');
 
-                  console.log(JSON.stringify(finalOutput))
-
                   return JSON.stringify(finalOutput);
                } else {
                   throw new Error('Unsupported file type');
@@ -78,7 +76,6 @@ const FileUploader = ({ updateFileFunc, uploadAccept, updateStatus, multiple = f
                const ffmpegInstance = new FFmpeg({ log: true });
                await ffmpegInstance.load();
 
-               console.log(ffmpegInstance)
 
                const audioData = new Uint8Array(await file.arrayBuffer());
                await ffmpegInstance.writeFile('./input.mp3', audioData);
@@ -86,7 +83,6 @@ const FileUploader = ({ updateFileFunc, uploadAccept, updateStatus, multiple = f
 
                await ffmpegInstance.exec(['-i', 'input.mp3', '-b:a', '64k', 'output.mp3']);
                const output = await ffmpegInstance.readFile("./output.mp3");
-               console.log(output);
                return updateFileFunc(output);
 
                // await ffmpegInstance.run('-i', 'input.mp3', '-b:a', '64k', 'output.mp3');

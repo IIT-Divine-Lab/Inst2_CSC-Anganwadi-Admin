@@ -1,22 +1,18 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import "./AddQuestion.css"
-// eslint-disable-next-line
 import { useDispatch, useSelector } from 'react-redux'
 import Structure1to4 from '../Components/Structure1-4';
 import Structure5 from '../Components/Structure5';
 import Structure6 from '../Components/Structure6';
 import Structure7 from '../Components/Structure7';
-import { FileUploaderRegular } from '@uploadcare/react-uploader';
+import Structure8 from '../Components/Structure8';
+import Input from "../Components/Input Field"
 import FileUploader from '../Components/FileUploaderRegular';
-import { FaSpinner, FaCheck } from "react-icons/fa6";
-// eslint-disable-next-line
-import Button from '../Components/Common/Button';
 import { toast } from 'react-toastify';
-// eslint-disable-next-line
 import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import adminApiUrl, { apiUrl } from '../adminApiUrl';
-import { addQuestion, setCategory } from '../redux/actions/actions';
+import { addQuestion, modifyQuestion, setCategory } from '../redux/actions/actions';
 import Select from 'react-select';
 
 import Agarbatti from "../Components/Images/Agarbatti.png"
@@ -34,8 +30,6 @@ import Perfume from "../Components/Images/perfume.png"
 import Teddy from "../Components/Images/teddyBear.png"
 import DemoSpeaker from "../Components/Images/demoSpeaker.png"
 import Tongue from "../Components/Images/tongue.png"
-import Structure8 from '../Components/Structure8';
-import Input from "../Components/Input Field"
 
 const AddQuestion = ({ loggedIn }) => {
    const categories = useSelector((state) => state.categories);
@@ -43,7 +37,7 @@ const AddQuestion = ({ loggedIn }) => {
    const dispatch = useDispatch();
    const location = useLocation();
    const id = location?.state?.id || undefined;
-   // eslint-disable-next-line
+
    const [existingData, setExistingData] = useState({});
    const [quesCategory, setQuesCategory] = useState("Select question category");
    const [ageGroup, setAgeGroup] = useState("Select age group");
@@ -64,8 +58,6 @@ const AddQuestion = ({ loggedIn }) => {
    const [answerImage, setAnswerImage] = useState(undefined);
    const [activeAnswerImage, setActiveAnswerImage] = useState(undefined);
    const [inactiveAnswerImage, setInactiveAnswerImage] = useState(undefined);
-   // console.log("option at 64 ", option);
-   // console.log("option at 65 ", typeof option);
    const [matches, setMatches] = useState([]);
 
    useEffect(() => {
@@ -179,10 +171,11 @@ const AddQuestion = ({ loggedIn }) => {
                questionText={questionText}
                questionImageAfter={questionImageAfter}
                totalOptions={totalOptions || 10}
-               option={option}
+               options={option}
                enabledSound={enabledSound}
                enabledText={enabledText}
                questionSound={questionSound}
+               correctAnswer={correctAnswer}
                questionOnlyText={questionOnlyText}
                questionSoundText={questionSoundText}
             />
@@ -217,16 +210,6 @@ const AddQuestion = ({ loggedIn }) => {
       }
    }
 
-   const deleteFromUploadCare = (uuid) => {
-      return fetch(`https://api.uploadcare.com/files/${uuid}/`, {
-         method: 'DELETE',
-         headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Uploadcare.Simple f0b48dbfeaff1298ebed:bc3d9f9926fcc6926aec'
-         }
-      })
-   }
-
    const updateOptions = (opt = []) => {
       let option = []
       for (let i = 0; i < opt.length; i++) {
@@ -235,87 +218,11 @@ const AddQuestion = ({ loggedIn }) => {
       setOption(option);
    }
 
-   const updateAnswerImage = (e) => {
-      if (!e.allEntries.length) {
-         let uuid = answerImage.split("/");
-         deleteFromUploadCare(uuid[uuid.length - 2])
-            .then(() => {
-               setAnswerImage(undefined);
-            })
-            .catch((error) => {
-               console.log(error);
-            })
-         return;
-      }
-      if (e.allEntries[0].isUploading) {
-         setAnswerImage(0);
-         return;
-      }
-      setAnswerImage(e.allEntries[0].cdnUrl);
-   }
-
-   const updateActiveAnswerImage = (e) => {
-      if (!e.allEntries.length) {
-         let uuid = activeAnswerImage.split("/");
-         deleteFromUploadCare(uuid[uuid.length - 2])
-            .then(() => {
-               setActiveAnswerImage(undefined);
-            })
-            .catch((error) => {
-               console.log(error);
-            })
-         return;
-      }
-      if (e.allEntries[0].isUploading) {
-         setActiveAnswerImage(0);
-         return;
-      }
-      setActiveAnswerImage(e.allEntries[0].cdnUrl);
-   }
-
-   const updateInctiveAnswerImage = (e) => {
-      if (!e.allEntries.length) {
-         let uuid = inactiveAnswerImage.split("/");
-         deleteFromUploadCare(uuid[uuid.length - 2])
-            .then(() => {
-               setInactiveAnswerImage(undefined);
-            })
-            .catch((error) => {
-               console.log(error);
-            })
-         return;
-      }
-      if (e.allEntries[0].isUploading) {
-         setInactiveAnswerImage(0);
-         return;
-      }
-      setInactiveAnswerImage(e.allEntries[0].cdnUrl);
-   }
-
-   const updateQuestionSound = (e) => {
-      if (!e.allEntries.length) {
-         let uuid = questionSound?.split("/");
-         deleteFromUploadCare(uuid[uuid.length - 2])
-            .then(() => {
-               setQuestionSound(undefined);
-            })
-            .catch((error) => {
-               console.log(error);
-            })
-         return;
-      }
-      if (e.allEntries[0].isUploading) {
-         setQuestionSound(0);
-         return;
-      }
-      setQuestionSound(e.allEntries[0].cdnUrl);
-   }
-
    const handleSelection = (selectedOptions) => {
-      console.log(selectedOptions);
       if (option === undefined) {
          return;
       }
+      selectedOptions.sort((a, b) => Number(a.value) - Number(b.value));
       setMultiCorrectAnswer(selectedOptions);
    }
 
@@ -359,7 +266,6 @@ const AddQuestion = ({ loggedIn }) => {
             correctAnswers.push(`${matches[i].left.val}-${matches[i].right}`)
          }
       }
-
       const formData = new FormData();
 
       formData.append("quesCategory", quesCategory || "")
@@ -370,19 +276,22 @@ const AddQuestion = ({ loggedIn }) => {
       formData.append("totalOptions", workingStructure === 8 ? -1 : (workingStructure === 6 ? 4 : totalOptions))
       formData.append("correctAnswer", workingStructure === 5 || workingStructure === 7 ? correctAnswers : workingStructure === 8 ? ["draw"] : workingStructure === 2 && totalOptions > 2 && quesCategory.includes("6729d6893ae29c44e7450897") ? [correctAnswer, neutralAnswer] : [correctAnswer])
 
-      if (workingStructure !== 6 || workingStructure !== 8)
+      if (workingStructure === 6) {
+         formData.append(`answerImage`, answerImage)
+         formData.append(`option.active`, activeAnswerImage)
+         formData.append(`option.inactive`, inactiveAnswerImage)
+      }
+      else if (workingStructure !== 6 || workingStructure !== 8) {
          for (let index = 0; index < totalOptions; index++) {
-            const element = option[index];
-            formData.append(`option.` + index, element)
+            formData.append(`option.` + index, option[index]);
          }
-
+      }
       if (workingStructure === 1 || workingStructure === 2 || workingStructure === 6 || workingStructure === 8) {
          formData.append("questionImageAfter", questionImageAfter)
          if (workingStructure === 1)
             formData.append("questionImageBefore", questionImageBefore)
       }
-
-      if(workingStructure === 4){
+      if (workingStructure === 4) {
          if (enabledSound) {
             formData.append("questionSound", questionSound)
             if (enabledText)
@@ -392,31 +301,17 @@ const AddQuestion = ({ loggedIn }) => {
             formData.append("questionOnlyText", questionOnlyText)
       }
 
-      if(workingStructure === 6){
-         formData.append(`option.active`, activeAnswerImage)
-         formData.append(`option.inactive`, inactiveAnswerImage)
-      }
-      
-      // console.log(formData.entries());
       try {
          const response = await fetch(apiUrl + "assessment", {
             method: "POST",
             body: formData
          })
          const data = await response.json();
-         // console.log("Response", data);
          dispatch(addQuestion(data?.question))
          navigate("/questions")
       } catch (error) {
          console.error("Upload Failed", error)
       }
-      // axios.post(apiUrl + "assessment", formData)
-      //    .then(({ data }) => {
-      //       console.log(data);
-      //    })
-      //    .catch((error) => {
-      //       console.error(error);
-      //    })
    }
 
    const getCategoryName = (id) => {
@@ -428,18 +323,22 @@ const AddQuestion = ({ loggedIn }) => {
          .then(({ data }) => {
             let { ageGroup, quesCategory, question } = data.questions;
             setExistingData(data.questions);
-
-            setQuesCategory(quesCategory);
+            setQuesCategory(quesCategory._id);
             setAgeGroup(ageGroup);
             setWorkingStructure(question?.structure);
             setTotalOptions(question?.totalOptions);
             setQuestionText(question?.questionText);
             setOption(question?.option)
             setCorrectAnswer(question?.questionType !== "multi" ? question?.correctAnswer[0] : question?.correctAnswer)
-            if (question?.structure === 1 || question?.structure === 2) {
+            if (question?.structure === 1 || question?.structure === 2 || question?.structure === 6) {
                setQuestionImageAfter(question?.questionImage?.after || undefined);
                if (question.structure === 1)
                   setQuestionImageBefore(question?.questionImage?.before || undefined);
+               if (question?.structure === 6) {
+                  setActiveAnswerImage(question?.option[0])
+                  setInactiveAnswerImage(question?.option[1])
+                  setAnswerImage(question?.answerImage)
+               }
             } else if (question?.structure === 4) {
                if (question?.questionSound) {
                   setQuestionSound(question?.questionSound)
@@ -457,7 +356,15 @@ const AddQuestion = ({ loggedIn }) => {
                   setEnabledSound(false)
                }
             }
-
+            else if (question?.structure === 5) {
+               let a = []
+               let b = question.correctAnswer[0].split(",");
+               for (let i = 0; i < b.length; i++) {
+                  a.push({ value: b[i], label: "option " + (Number(b[i]) + 1) })
+               }
+               a.sort((a, b) => Number(a.value) - Number(b.value));
+               setMultiCorrectAnswer(a);
+            }
          })
          .catch(error => {
             console.error(error);
@@ -477,36 +384,162 @@ const AddQuestion = ({ loggedIn }) => {
    const generateOptions = (len) => {
       let options = []
       for (let i = 0; i < len; i++) {
-         options.push({ value: "o" + (i + 1), label: "option " + (i + 1) })
+         if (id) {
+            if (multiCorrectAnswer !== undefined) {
+               if (!(multiCorrectAnswer.some((option) => option.value === i.toString())))
+                  options.push({ value: i.toString(), label: "option " + (i + 1) })
+            }
+         }
+         else
+            options.push({ value: (i), label: "option " + (i + 1) })
       }
       return options;
    }
 
-   const handleEditQuestion = () => {
-      if (workingStructure === 1 && (ageGroup === "Select age group" || questionImageBefore === undefined || questionText === "" || questionImageAfter === undefined || totalOptions === 0 || option === undefined || correctAnswer === "-")) {
-         toast.warn("Please fill all details");
-         return;
+   const handleEditQuestion = async () => {
+      // console.log(existingData)
+      const structure = workingStructure;
+      let question = {
+         structure,
+         questionText,
+         questionType: existingData.question.questionType,
       }
-      else if (workingStructure === 2 && (ageGroup === "Select age group" || questionText === "" || questionImageAfter === undefined || totalOptions === 0 || option === undefined || correctAnswer === "-")) {
-         toast.warn("Please fill all details");
-         return;
+      if (structure === 1 || structure === 2) {
+         if (structure === 1)
+            question = { ...question, questionImage: { before: questionImageBefore } }
+         question = { ...question, questionImage: { ...question.questionImage, after: questionImageAfter } }
       }
-      else if (workingStructure === 3 && (ageGroup === "Select age group" || questionText === "" || totalOptions === 0 || option === undefined || correctAnswer === "-")) {
-         toast.warn("Please fill all details");
-         return;
+      if (structure === 4) {
+         if (enabledSound) {
+            question = { ...question, questionSound }
+         }
+         if (enabledText) {
+            question = { ...question, questionSoundText }
+         }
+      } else if (enabledText) {
+         question = { ...question, questionOnlyText }
       }
-      else if (workingStructure === 4 && (ageGroup === "Select age group" || (enabledSound && questionSound === "") || (enabledText && enabledSound && questionSoundText === "") || (enabledText && !enabledSound && questionOnlyText === "") || questionText === "" || totalOptions === 0 || option === undefined || correctAnswer === "-")) {
-         toast.warn("Please fill all details");
-         return;
+      question = {
+         ...question,
+         totalOptions,
+         option,
+         correctAnswer: structure === 5 || structure === 7 ? correctAnswer : [correctAnswer]
       }
-      else if (workingStructure === 5 && (ageGroup === "Select age group" || questionText === "" || totalOptions === 0 || option === undefined || multiCorrectAnswer.length === 0)) {
-         toast.warn("Please fill all details");
-         return;
+      let newData = {
+         question,
+         _id: existingData._id,
+         ageGroup,
+         quesCategory,
+         __v: 0,
       }
-      else if (workingStructure === 6 && (ageGroup === "Select age group" || questionText === "" || questionImageAfter === undefined || correctAnswer === "-" || answerImage === undefined || activeAnswerImage === undefined || inactiveAnswerImage === undefined)) {
-         toast.warn("Please fill all details");
-         return;
+      if (!(JSON.stringify(existingData) === JSON.stringify(newData))) {
+         let correctAnswers = [];
+         if (workingStructure === 5) {
+            for (let i = 0; i < multiCorrectAnswer.length; i++) {
+               correctAnswers.push(multiCorrectAnswer[i].value)
+            }
+         }
+         if (workingStructure === 7) {
+            for (let i = 0; i < matches.length; i++) {
+               correctAnswers.push(`${matches[i].left.val}-${matches[i].right}`)
+            }
+         }
+         const formData = new FormData();
+
+         formData.append("quesCategory", quesCategory)
+         formData.append("ageGroup", ageGroup)
+         formData.append("structure", structure)
+         formData.append("questionText", questionText)
+         formData.append("questionType", ((structure >= 1 && structure <= 6) && structure !== 5) ? "single" : structure === 8 ? "draw" : "multi")
+         formData.append("totalOptions", structure === 8 ? -1 : (structure === 6 ? 4 : totalOptions))
+         formData.append("correctAnswer", structure === 5 || structure === 7 ? correctAnswers : structure === 8 ? ["draw"] : structure === 2 && totalOptions > 2 && quesCategory.includes("6729d6893ae29c44e7450897") ? [correctAnswer, neutralAnswer] : [correctAnswer])
+
+         // console.log(option);
+         if (structure === 6) {
+            formData.append(`answerImage`, answerImage === existingData.question.answerImage ? JSON.stringify(answerImage) : answerImage)
+            if (JSON.stringify(activeAnswerImage) === JSON.stringify(existingData.question.option[0]) || JSON.stringify(inactiveAnswerImage) === JSON.stringify(existingData.question.option[1])) {
+               formData.append(`option`, JSON.stringify([activeAnswerImage, inactiveAnswerImage]))
+            }
+            else {
+               formData.append(`option.active`, activeAnswerImage)
+               formData.append(`option.inactive`, inactiveAnswerImage)
+            }
+         }
+         else if (structure !== 6 || structure !== 8) {
+            if (JSON.stringify(totalOptions) === JSON.stringify(existingData.question.totalOptions)) {
+               if (JSON.stringify(option) === JSON.stringify(existingData.question.option)) {
+                  let a = [];
+                  for (let index = 0; index < totalOptions; index++) {
+                     a.push(option[index]);
+                  }
+                  formData.append(`option`, JSON.stringify(a));
+               }
+               else {
+                  for (let index = 0; index < totalOptions; index++) {
+                     formData.append(`option.` + index, option[index]);
+                  }
+               }
+            }
+            else {
+               if (option === undefined) {
+                  toast("Options is required.", {
+                     autoClose: 1500,
+                     type: "warning"
+                  })
+                  return;
+               }
+               for (let index = 0; index < totalOptions; index++) {
+                  formData.append(`option.` + index, option[index]);
+               }
+            }
+         }
+         if (structure === 1 || structure === 2 || structure === 6 || structure === 8) {
+            formData.append("questionImageAfter", JSON.stringify(questionImageAfter))
+            if (structure === 1)
+               formData.append("questionImageBefore", JSON.stringify(questionImageBefore))
+         }
+         if (structure === 4) {
+            if (enabledSound) {
+               formData.append("questionSound", questionSound)
+               if (enabledText)
+                  formData.append("questionSoundText", questionSoundText)
+            }
+            else
+               formData.append("questionOnlyText", questionOnlyText)
+         }
+         if (structure === 5) {
+            let originalAnswer = existingData.question.correctAnswer[0].split(",");
+            originalAnswer.sort((a, b) => Number(a) - Number(b));
+            if (JSON.stringify(originalAnswer) === JSON.stringify(correctAnswers)) {
+               toast("No Changes", {
+                  autoClose: 1500,
+                  type: "info"
+               })
+               return;
+            }
+            // existingData.question.option.sort((a, b) => Number(a.value) - Number(b.value));
+         }
+
+         try {
+            const response = await fetch(apiUrl + `assessment/${id}`, {
+               method: "PUT",
+               body: formData
+            })
+            const data = await response.json();
+            console.log(data);
+            dispatch(modifyQuestion(data?.question))
+            navigate("/questions")
+         } catch (error) {
+            console.error("Upload Failed", error)
+         }
       }
+      else {
+         toast("No Changes", {
+            autoClose: 1500,
+            type: "info"
+         })
+      }
+
    }
 
    useEffect(() => {
@@ -599,18 +632,17 @@ const AddQuestion = ({ loggedIn }) => {
                         {
                            workingStructure === 4 ?
                               <>
-                                 <div style={{ marginTop: "10px" }}>
-                                    <label htmlFor='audio' className='fieldLabel'>Audio</label>
-                                    <input type="checkbox" name="audioText" id="audio" checked={enabledSound} onChange={() => { if (enabledText === false && enabledSound === true) { return; } setEnabledSound(!enabledSound); setQuestionSoundText(""); setQuestionOnlyText(""); }} />
-                                    <label htmlFor='text' className='fieldLabel'>Text</label>
+                                 <div style={{ display: "flex", marginTop: "10px" }}>
+                                    <Input
+                                       labelFor='questionTextAudio'
+                                       labelText="Sub Text"
+                                    />
                                     <input type="checkbox" name="audioText" id="text" checked={enabledText} onChange={() => { if (enabledText === true && enabledSound === false) { return; } setEnabledText(!enabledText) }} />
                                  </div>
                                  {
                                     enabledText ?
                                        <Input
-                                          labelFor='questionTextAudio'
-                                          labelText={`Question ${enabledSound || !enabledText ? "Sound" : "Sub"} Text`}
-
+                                          containerStyle={{ marginTop: "0" }}
                                           inputType="text"
                                           name="questionTextAudio"
                                           id="questionTextAudio"
@@ -633,90 +665,48 @@ const AddQuestion = ({ loggedIn }) => {
                                  {
                                     workingStructure === 6 ?
                                        <>
-                                          <div className='formFieldContainer'>
-                                             <label htmlFor='fileInput' className='fieldLabel'>Answer Image</label>
-                                             <div className='customFileUploadContainer'>
-                                                <FileUploaderRegular
-                                                   pubkey="f0b48dbfeaff1298ebed"
-                                                   maxLocalFileSizeBytes={1500000}
-                                                   multiple={false}
-                                                   imgOnly={true}
-                                                   sourceList="local, camera, gdrive, gphotos"
-                                                   useCloudImageEditor={false}
-                                                   classNameUploader="my-config uc-light"
-                                                   onChange={(e) => updateAnswerImage(e)}
-                                                />
-                                                {answerImage !== undefined ?
-                                                   answerImage === 0 ?
-                                                      <FaSpinner className='spin ml-12' />
-                                                      :
-                                                      <FaCheck className='ml-12' />
-                                                   :
-                                                   ""}
-                                             </div>
-                                          </div>
-                                          <div className='formFieldContainer'>
-                                             <label htmlFor='fileInput' className='fieldLabel'>Inactive Image</label>
-                                             <div className='customFileUploadContainer'>
-                                                <FileUploaderRegular
-                                                   pubkey="f0b48dbfeaff1298ebed"
-                                                   maxLocalFileSizeBytes={1500000}
-                                                   multiple={false}
-                                                   imgOnly={true}
-                                                   sourceList="local, camera, gdrive, gphotos"
-                                                   useCloudImageEditor={false}
-                                                   classNameUploader="my-config uc-light"
-                                                   onChange={(e) => updateInctiveAnswerImage(e)}
-                                                />
-                                                {inactiveAnswerImage !== undefined ?
-                                                   inactiveAnswerImage === 0 ?
-                                                      <FaSpinner className='spin ml-12' />
-                                                      :
-                                                      <FaCheck className='ml-12' />
-                                                   :
-                                                   ""}
-                                             </div>
-                                          </div>
-                                          <div className='formFieldContainer'>
-                                             <label htmlFor='fileInput' className='fieldLabel'>Active Image</label>
-                                             <div className='customFileUploadContainer'>
-                                                <FileUploaderRegular
-                                                   pubkey="f0b48dbfeaff1298ebed"
-                                                   maxLocalFileSizeBytes={1500000}
-                                                   multiple={false}
-                                                   imgOnly={true}
-                                                   sourceList="local, camera, gdrive, gphotos"
-                                                   useCloudImageEditor={false}
-                                                   classNameUploader="my-config uc-light"
-                                                   onChange={(e) => updateActiveAnswerImage(e)}
-                                                />
-                                                {activeAnswerImage !== undefined ?
-                                                   activeAnswerImage === 0 ?
-                                                      <FaSpinner className='spin ml-12' />
-                                                      :
-                                                      <FaCheck className='ml-12' />
-                                                   :
-                                                   ""}
-                                             </div>
-                                          </div>
+                                          <Input
+                                             spanText='Answer Image'
+                                             uploadFunc={setAnswerImage}
+                                          />
+                                          <Input
+                                             spanText='Inactive Image'
+                                             uploadFunc={setInactiveAnswerImage}
+                                          />
+                                          <Input
+                                             spanText='Active Image'
+                                             uploadFunc={setActiveAnswerImage}
+                                          />
                                        </>
                                        : ""
                                  }
                               </>
-                              : workingStructure === 4 && enabledSound ?
-                                 <Input
-                                    labelFor='fileInput'
-                                    labelText='Audio'
-                                    uploadFunc={setQuestionSound}
-                                    uploadAccept='audio/*'
-                                 />
+                              : workingStructure === 4 ?
+                                 <>
+                                    <div style={{ display: "flex", marginTop: "10px" }}>
+                                       <Input
+                                          labelFor='questionTextAudio'
+                                          labelText='Audio'
+                                       />
+                                       <input type="checkbox" name="audioText" id="audio" checked={enabledSound} onChange={() => { if (enabledText === false && enabledSound === true) { return; } setEnabledSound(!enabledSound); setQuestionSoundText(""); setQuestionOnlyText(""); }} />
+                                    </div>
+                                    {
+
+                                       enabledSound ?
+                                          <Input
+                                             containerStyle={{ marginTop: "0" }}
+                                             uploadFunc={setQuestionSound}
+                                             uploadAccept='audio/*'
+                                          /> : ""
+                                    }
+                                 </>
                                  : ""
                         }
                         {
                            workingStructure !== 6 && workingStructure !== 7 && workingStructure !== 8 ?
                               <div className="formFieldContainer">
                                  <label htmlFor='totalOptions' className="fieldLabel">Select Total Options</label>
-                                 <select name="totalOptions" disabled={id ? false : option !== undefined ? true : false} id="totalOptions" value={totalOptions} onChange={(e) => {
+                                 <select name="totalOptions" disabled={id ? workingStructure === 5 || workingStructure === 7 ? true : false : option !== undefined ? true : false} id="totalOptions" value={totalOptions} onChange={(e) => {
                                     if (id) {
                                        setOption(undefined);
                                     }
@@ -750,10 +740,10 @@ const AddQuestion = ({ loggedIn }) => {
                                           <div className="formFieldContainer">
                                              <span className='fieldLabel'> {totalOptions !== 0 ? "Select " + totalOptions + " photos as options" : ""}</span>
                                              <div className='customFileUploadContainer'>
-
                                                 <FileUploader
                                                    multiple
                                                    updateFileFunc={updateOptions}
+                                                   uploadAccept='image/*'
                                                 // updateStatus={updateOptions}
                                                 />
                                              </div>
@@ -772,7 +762,7 @@ const AddQuestion = ({ loggedIn }) => {
                                                       {
                                                          [1, 2, 3, 4].map((num, index) => {
                                                             if (totalOptions >= num) {
-                                                               return <option key={index} value={"o" + num}>{num}</option>
+                                                               return <option key={index} value={num}>{num}</option>
                                                             }
                                                             else return "";
                                                          })
@@ -802,8 +792,6 @@ const AddQuestion = ({ loggedIn }) => {
                                                       : ``
                                                 }
                                              </>
-
-
                                              :
                                              workingStructure === 5 ?
                                                 <div className="formFieldContainer">

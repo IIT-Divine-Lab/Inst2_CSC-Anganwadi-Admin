@@ -49,17 +49,11 @@ const Category = ({ loggedIn }) => {
       startIndex,
       startIndex + recordsPerPage
    );
-   // console.log("Categories ", categories);
-   // console.log("Start Index", startIndex);
-   // console.log("Current Page", currentPage);
-   // console.log("Total Page", totalPages);
-   // console.log("Record Per Page", recordsPerPage);
 
    const fetchCategories = useCallback(async () => {
       axios.get(adminApiUrl + "category")
          .then((({ data }) => {
             if (data.message !== "No Data") {
-               console.log(data);
                dispatch(setCategory(data.categories));
                setCurrentPage(1);
             }

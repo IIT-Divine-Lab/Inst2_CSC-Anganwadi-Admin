@@ -6,28 +6,13 @@ import ParentContainer from '../Common/ParentContainer';
 
 const Structure5 = ({ view, options = [], totalOptions, questionText, selected }) => {
    const [column, setColumn] = useState(2);
-   // console.log(options);
-   // console.log(totalOptions);
-
-   // console.log("option at 15", option)
    const getSourceURL = (obj, type = "image") => {
-      // console.log("get source url : ", obj)
-      console.log(options, type);
       try {
-         if (obj && type === "audio") {
-            let blobData = obj;
-            if (typeof (obj) === "string") {
-               console.log(obj.split(","))
-               blobData = new Uint8Array(obj.split(","))
-            }
-            console.log(obj);
-            console.log(blobData);
-            console.log(typeof (obj), typeof (blobData));
-            const blob = new Blob([blobData], { type: "audio/mp3" });
-            console.log(blob);
-            return URL.createObjectURL(blob);
+         if (typeof (obj?.filePath) === "object") {
+            let bufferURL = URL.createObjectURL(new Blob([new Uint8Array(obj.filePath.data)], { type: "image/png" }))
+            return bufferURL;
          }
-         return URL.createObjectURL(obj)
+         return URL.createObjectURL(obj);
       }
       catch (error) {
          return `data:image/png;base64,${obj?.filePath}`
@@ -36,27 +21,42 @@ const Structure5 = ({ view, options = [], totalOptions, questionText, selected }
 
    useEffect(() => {
       let quotient = totalOptions / 5;
-      console.log(selected);
       setColumn(quotient);
    }, [totalOptions, selected])
 
    return (
-      <ParentContainer view={view ? 0.65 : false}>
+      <ParentContainer view={view ? 0.7 : false}>
          <Heading>
             {questionText !== "" ? questionText : "Your question text will appear."}
          </Heading>
-         <div className='s5optionContainer' style={{ gridTemplateColumns: `repeat(${column},1fr)`, gap: options["o1"] === undefined ? "20px" : 0 }}>
+         <div className='s5optionContainer' style={{ gridTemplateColumns: `repeat(${column},1fr)`, gap: options[1] === undefined ? "20px" : 0 }}>
             {
                Array.from({ length: totalOptions ? totalOptions : 10 }, (_, i) => (
-                  <div className='s5option' style={options["o" + (i)] === undefined ? { backgroundColor: "#cacaca" } : {}} key={i}>
-                     <div>
-                        <img
-                           src={getSourceURL(options[(i)])}
-                           className={selected[selected.findIndex((val) => val?.value === ((i)))]?.value === ((i)) || selected.includes((i)) ? 'selected' : ''}
-                           alt=""
-                        />
+                  <>
+                     <div
+                        className='s5option'
+                        style={options[(i)] === undefined ? { backgroundColor: "#cacaca" } : {}}
+                        key={i}
+                     >
+                        <div
+                           className={
+                              selected[selected?.findIndex((val) => val?.value === i)]?.value === i
+                                 ||
+                                 selected[selected?.findIndex((val) => Number(val?.value) === i)]
+                                 ? 'selected' : ''
+                           }
+                           style={
+                              options[(i)] !== undefined
+                                 ? { marginBottom: "14px", marginLeft: i % 2 ? "14px" : 0, height: "unset", width: "unset" }
+                                 : {}}
+                        >
+                           <img
+                              src={getSourceURL(options[(i)])}
+                              alt=""
+                           />
+                        </div>
                      </div>
-                  </div>
+                  </>
 
                ))
             }

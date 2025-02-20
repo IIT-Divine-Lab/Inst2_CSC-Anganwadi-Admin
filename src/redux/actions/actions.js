@@ -56,7 +56,7 @@ export const deleteQuestion = (Questions) => {
    }
 }
 
-export const modifyQuestions = (Questions) => {
+export const modifyQuestion = (Questions) => {
    return {
       type: ActionTypes.MODIFY_QUESTION,
       payload: Questions

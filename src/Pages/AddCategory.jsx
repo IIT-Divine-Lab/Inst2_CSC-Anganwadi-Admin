@@ -24,8 +24,6 @@ const AddCategory = ({ loggedIn }) => {
    }, [loggedIn, navigate])
 
    const handleSave = () => {
-      // console.log('Category Name:', categoryName, typeof categoryName);
-      // console.log('Selected Number:', number, typeof number);
       let category = {
          categoryName: categoryName + " kush " + subCategoryName + " : " + catType,
          structure: number,
@@ -40,7 +38,6 @@ const AddCategory = ({ loggedIn }) => {
          }
          axios.put(adminApiUrl + "category/" + id, category)
             .then(({ data }) => {
-               // console.log(data);
                dispatch(modifyCategory(data?.category));
                navigate("/category");
             })
@@ -51,7 +48,6 @@ const AddCategory = ({ loggedIn }) => {
       else {
          axios.post(adminApiUrl + "category", category)
             .then(({ data }) => {
-               console.log(data);
                dispatch(addCategory(data?.category));
                navigate("/category");
             })
@@ -105,7 +101,7 @@ const AddCategory = ({ loggedIn }) => {
                   Structure Number:
                </label>
                <select value={number} onChange={(e) => setNumber(Number(e.target.value))}>
-                  {[1, 2, 3, 4, 5, 6, 7, 8].map((num) => (
+                  {[1, 2, 3, 4, 5, 6].map((num) => (
                      <option key={num} value={num}>
                         {num}
                      </option>

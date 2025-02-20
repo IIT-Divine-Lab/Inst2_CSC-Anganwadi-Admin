@@ -1,9 +1,9 @@
 import React from 'react'
 import FileUploader from '../FileUploaderRegular'
 
-const Input = ({ spanText, labelFor, uploadAccept = "image/*", disabled, labelText, name, value, onChange, id, options, uploadFunc, inputType }) => {
+const Input = ({ spanText, labelFor, uploadAccept = "image/*", disabled, labelText, name, value, onChange, id, options, uploadFunc, inputType, containerStyle }) => {
    return (
-      <div className='formFieldContainer'>
+      <div className='formFieldContainer' style={containerStyle}>
          {
             spanText ?
                <span className='fieldLabel'>{spanText}</span>
