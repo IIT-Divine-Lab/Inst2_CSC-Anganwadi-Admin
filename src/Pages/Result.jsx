@@ -116,12 +116,13 @@ const Result = ({ loggedIn }) => {
    const score = (category, resQues, total) => {
       let arr = new Array(total).fill("-");
       let cat = resQues[category];
+      // console.log(cat);
       if (cat !== undefined && !category.includes("Draw")) {
          for (let i = 0; i < cat?.length; i++) {
             if (cat[i].questionType === "single") {
                if (cat[i].answerMarked?.length === cat[i].correctAnswer?.length) {
                   for (let j = 0; j < cat[i].correctAnswer?.length; j++) {
-                     if (!(cat[i].correctAnswer.includes(cat[i].answerMarked[j]))) {
+                     if (!(cat[i].correctAnswer.includes(cat[i].answerMarked[j].split("o")[1]))) {
                         arr[i] = 0;
                      }
                      else {
@@ -130,7 +131,7 @@ const Result = ({ loggedIn }) => {
                   }
                }
                else if (cat[i].correctAnswer?.length === 2) {
-                  arr[i] = cat[i].answerMarked[0] === cat[i].correctAnswer[0] ? 2 : cat[i].answerMarked[0] === cat[i].correctAnswer[1] ? 1 : 0
+                  arr[i] = cat[i].answerMarked[0] === ("o" + cat[i].correctAnswer[0]) ? 2 : cat[i].answerMarked[0] === ("o" + cat[i].correctAnswer[1]) ? 1 : 0
                }
                else {
                   arr[i] = 0;
@@ -138,8 +139,8 @@ const Result = ({ loggedIn }) => {
             }
             else {
                let a = 0;
-               for (let j = 0; j < cat[i].correctAnswer?.length; j++) {
-                  if (!(cat[i].correctAnswer.includes(cat[i].answerMarked[j]))) {
+               for (let j = 0; j < cat[i].correctAnswer[0]?.split(",")?.length; j++) {
+                  if (!(cat[i].correctAnswer[0].split(",").includes((Number(cat[i].answerMarked[j].split("o")[1]) - 1).toString()))) {
                      a += 0;
                   }
                   else {
@@ -277,7 +278,7 @@ const Result = ({ loggedIn }) => {
                                  <td>{user.age}</td>
                                  {
                                     category.flatMap((headData, index) => {
-                                       if (headData?.categoryName.includes("AAA")) {
+                                       if (headData?.categoryName.includes("Demo")) {
                                           return () => {
 
                                           };
