@@ -17,6 +17,7 @@ import Structure7 from '../Components/Structure7';
 import ReactModal from "react-modal";
 import { FiEdit3 } from "react-icons/fi";
 import { HiOutlineTrash } from "react-icons/hi";
+import Structure8 from "../Components/Structure8";
 
 ReactModal.setAppElement('#root');
 
@@ -57,6 +58,7 @@ const Questions = ({ loggedIn }) => {
    const renderContent = () => {
       if (!modalContent) return null;
       const { component: Component, data, structure } = modalContent;
+      console.log(data)
       let props = {
          view: true,
          structure,
@@ -97,6 +99,10 @@ const Questions = ({ loggedIn }) => {
             break;
          case 7: return Structure7;
          case 8:
+            props = {
+               ...props,
+               questionImageAfter: data.question?.questionImage?.after
+            }
             break;
          default: console.log("Error");
       }
@@ -112,8 +118,7 @@ const Questions = ({ loggedIn }) => {
          case 5: return Structure5;
          case 6: return Structure6;
          case 7: return Structure7;
-         case 8:
-            break;
+         case 8: return Structure8;
          default: console.log("Error");
       }
    }

@@ -116,13 +116,14 @@ const Result = ({ loggedIn }) => {
    const score = (category, resQues, total) => {
       let arr = new Array(total).fill("-");
       let cat = resQues[category];
-      // console.log(cat);
-      if (cat !== undefined && !category.includes("Draw")) {
+      console.log(cat);
+      if (cat !== undefined) {
          for (let i = 0; i < cat?.length; i++) {
+            console.log()
             if (cat[i].questionType === "single") {
                if (cat[i].answerMarked?.length === cat[i].correctAnswer?.length) {
                   for (let j = 0; j < cat[i].correctAnswer?.length; j++) {
-                     if (!(cat[i].correctAnswer.includes(cat[i].answerMarked[j].split("o")[1]))) {
+                     if (!(cat[i].correctAnswer.includes(cat[i]?.answerMarked[j]?.split("o")[1]))) {
                         arr[i] = 0;
                      }
                      else {
@@ -137,10 +138,17 @@ const Result = ({ loggedIn }) => {
                   arr[i] = 0;
                }
             }
+            else if (cat[i].questionType === "Draw" || cat[i].questionType === "draw") {
+               for (let i = 0; i < cat.length; i++) {
+                  if (cat[i].answerMarked.length) {
+                     arr[i] = <img style={{ width: "150px" }} alt={cat[i]} src={cat[i].answerMarked[0]} />;
+                  }
+               }
+            }
             else {
                let a = 0;
                for (let j = 0; j < cat[i].correctAnswer[0]?.split(",")?.length; j++) {
-                  if (!(cat[i].correctAnswer[0].split(",").includes((Number(cat[i].answerMarked[j].split("o")[1]) - 1).toString()))) {
+                  if (!(cat[i].correctAnswer[0]?.split(",").includes((Number(cat[i].answerMarked[j]?.split("o")[1]) - 1).toString()))) {
                      a += 0;
                   }
                   else {
@@ -148,13 +156,6 @@ const Result = ({ loggedIn }) => {
                   }
                }
                arr[i] = a;
-            }
-         }
-      }
-      if (category.includes("Draw") && cat !== undefined) {
-         for (let i = 0; i < cat.length; i++) {
-            if (cat[i].answerMarked.length) {
-               arr[i] = <img style={{ width: "150px" }} alt={cat[i]} src={cat[i].answerMarked[0]} />;
             }
          }
       }
