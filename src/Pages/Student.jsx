@@ -90,8 +90,10 @@ const Student = ({ loggedIn }) => {
    const fetchStudentData = useCallback(async () => {
       axios.get(apiUrl + "user")
          .then(({ data }) => {
-            if (data.message !== "No Data")
+            if (data.message !== "No Data") {
                dispatch(setStudents(data.students));
+               setCurrentPage(1);
+            }
          })
          .catch(error => {
             console.error(error);
