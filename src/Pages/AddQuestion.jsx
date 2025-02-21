@@ -61,9 +61,10 @@ const AddQuestion = ({ loggedIn }) => {
    const [matches, setMatches] = useState([]);
 
    useEffect(() => {
+      console.log(quesCategory);
       if (!loggedIn)
          navigate("/");
-   }, [loggedIn, navigate])
+   }, [loggedIn, navigate, quesCategory])
 
    const leftColumn = {
       Demo: [
@@ -160,7 +161,7 @@ const AddQuestion = ({ loggedIn }) => {
 
    const struct = () => {
       let selectCategory = categories.filter((cat) => cat._id === quesCategory);
-      switch (selectCategory[0].structure) {
+      switch (selectCategory[0]?.structure) {
          case 1:
          case 2:
          case 3:
@@ -323,7 +324,7 @@ const AddQuestion = ({ loggedIn }) => {
          .then(({ data }) => {
             let { ageGroup, quesCategory, question } = data.questions;
             setExistingData(data.questions);
-            setQuesCategory(quesCategory._id);
+            setQuesCategory(typeof (quesCategory) === "object" ? quesCategory._id : quesCategory);
             setAgeGroup(ageGroup);
             setWorkingStructure(question?.structure);
             setTotalOptions(question?.totalOptions);
