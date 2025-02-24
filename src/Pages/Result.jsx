@@ -60,6 +60,7 @@ const Result = ({ loggedIn }) => {
          .then(({ data }) => {
             if (data.message !== "No Record Found")
                dispatch(setResults(data.result))
+            console.log(data.result)
          })
          .catch((error) => {
             console.error(error)
@@ -102,8 +103,8 @@ const Result = ({ loggedIn }) => {
                obj = {
                   quesId: resQues[i].quesId?._id,
                   answerMarked: resQues[i].AnswerMarked,
-                  correctAnswer: resQues[i].quesId?.question.correctAnswer,
-                  questionType: resQues[i].quesId?.question.questionType
+                  correctAnswer: resQues[i].quesId?.question?.correctAnswer,
+                  questionType: resQues[i].quesId?.question?.questionType
                }
                data.push(obj);
             }
