@@ -133,7 +133,7 @@ const Dashboard = ({ loggedIn }) => {
    //    ],
    // };
 
-   const [selectedState, setSelectedState] = useState("Chhattisgarh");
+   const [selectedState, setSelectedState] = useState("All");
 
    const [chartData, setChartData] = useState(null);
 
@@ -142,7 +142,9 @@ const Dashboard = ({ loggedIn }) => {
    useEffect(() => {
       axios
          .get(adminApiUrl + 'dashboard/gendercount/', { params: { state: selectedState } })
-         .then((res) => setChartData(res.data))
+         .then((res) => {
+            setChartData(res.data.datasets.length === 0 ? undefined : res.data)
+         })
          .catch((err) => console.error(err));
    }, [selectedState]);
 
@@ -257,25 +259,34 @@ const Dashboard = ({ loggedIn }) => {
          {/* Charts Section */}
          <div className='chartSection'>
             <div className='chartContainer'>
-               <div className="chartHeaderContainer">
-                  <div className="chartHeading">
-                     <p>Comparative Analysis</p>
-                     <p>Demographics</p>
-                  </div>
-                  <div className="chartFilters">
-                     <select className='standardFilter' value={selectedState} onChange={(e) => setSelectedState(e.target.value)} name="" id="">
-                        <option value={undefined}>All</option>
-                        {
-                           states.map((state) => {
-                              return <option key={state} value={state}>{state}</option>
-                           })
-                        }
-                     </select>
-                  </div>
-               </div>
-               <div className='chartDetailContainer'>
-                  {chartData && <Bar data={chartData} />}
-               </div>
+               {
+                  chartData ?
+                     <>
+                        <div className="chartHeaderContainer">
+                           <div className="chartHeading">
+                              <p>Comparative Analysis</p>
+                              <p>Demographics</p>
+                           </div>
+                           <div className="chartFilters">
+                              <select className='standardFilter' value={selectedState} onChange={(e) => setSelectedState(e.target.value)} name="" id="">
+                                 <option value={undefined}>All</option>
+                                 {
+                                    states.map((state) => {
+                                       return <option key={state} value={state}>{state}</option>
+                                    })
+                                 }
+                              </select>
+                           </div>
+                        </div>
+                        <div className='chartDetailContainer'>
+                           <Bar data={chartData} />
+                        </div>
+                     </>
+                     :
+                     <>
+                        No Valid Data
+                     </>
+               }
             </div>
             <div className='chartContainer'>
 
