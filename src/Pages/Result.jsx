@@ -117,12 +117,11 @@ const Result = ({ loggedIn }) => {
    const score = (category, resQues, total) => {
       let arr = new Array(total).fill("-");
       let cat = resQues[category];
-      console.log(cat);
       if (cat !== undefined) {
          for (let i = 0; i < cat?.length; i++) {
             console.log()
-            if (cat[i].questionType === "single") {
-               if (cat[i].answerMarked?.length === cat[i].correctAnswer?.length) {
+            if (cat[i]?.questionType === "single") {
+               if (cat[i]?.answerMarked?.length === cat[i].correctAnswer?.length) {
                   for (let j = 0; j < cat[i].correctAnswer?.length; j++) {
                      if (!(cat[i].correctAnswer.includes(cat[i]?.answerMarked[j]?.split("o")[1]))) {
                         arr[i] = 0;
@@ -148,8 +147,8 @@ const Result = ({ loggedIn }) => {
             }
             else {
                let a = 0;
-               for (let j = 0; j < cat[i].correctAnswer[0]?.split(",")?.length; j++) {
-                  if (!(cat[i].correctAnswer[0]?.split(",").includes((Number(cat[i].answerMarked[j]?.split("o")[1]) - 1).toString()))) {
+               for (let j = 0; j < cat[i]?.correctAnswer[0]?.split(",")?.length; j++) {
+                  if (!(cat[i]?.correctAnswer[0]?.split(",").includes((Number(cat[i].answerMarked[j]?.split("o")[1]) - 1).toString()))) {
                      a += 0;
                   }
                   else {
@@ -273,11 +272,11 @@ const Result = ({ loggedIn }) => {
                               let resQuestion = regrouping(res.questions);
                               return (<tr key={index}>
                                  <td>{index + 1}</td>
-                                 <td>{user.name}</td>
-                                 <td>{user.rollno}</td>
-                                 <td>{user.gender}</td>
-                                 <td>{user.awcentre}</td>
-                                 <td>{user.age}</td>
+                                 <td>{user?.name}</td>
+                                 <td>{user?.rollno}</td>
+                                 <td>{user?.gender}</td>
+                                 <td>{user?.awcentre}</td>
+                                 <td>{user?.age}</td>
                                  {
                                     category.flatMap((headData, index) => {
                                        if (headData?.categoryName.includes("Demo")) {
