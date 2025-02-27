@@ -105,6 +105,20 @@ const Student = ({ loggedIn }) => {
          })
    }, [dispatch])
 
+   const getRequiredAWCDetail = (awc, field) => {
+      const awcDetails = awc?.split(" - ");
+      switch (field) {
+         case "state": return awcDetails[0];
+         case "district": return awcDetails[1];
+         case "code": return awcDetails[2];
+         case "block": return awcDetails[3];
+         case "type": return awcDetails[4];
+         default:
+            break;
+
+      }
+   }
+
    useEffect(() => {
       if (students.length === 0)
          fetchStudentData()
@@ -133,7 +147,11 @@ const Student = ({ loggedIn }) => {
                      <th>Name</th>
                      <th>Roll No</th>
                      <th>Age Group</th>
-                     <th>Anganwadi Centre</th>
+                     <th>State</th>
+                     <th>District</th>
+                     <th>Centre Code</th>
+                     <th>Block</th>
+                     <th>Anganwadi Type</th>
                      <th>Assessment Submitted</th>
                   </tr>
                </thead>
@@ -145,7 +163,11 @@ const Student = ({ loggedIn }) => {
                            <td>{student.name}</td>
                            <td>{student.rollno}</td>
                            <td>{student.age}</td>
-                           <td>{student.awcentre}</td>
+                           <td>{getRequiredAWCDetail(student.awcentre, "state")}</td>
+                           <td>{getRequiredAWCDetail(student.awcentre, "district")}</td>
+                           <td>{getRequiredAWCDetail(student.awcentre, "code")}</td>
+                           <td>{getRequiredAWCDetail(student.awcentre, "block")}</td>
+                           <td>{getRequiredAWCDetail(student.awcentre, "type")}</td>
                            <td>{student.assessId ? <TiTick className="tick" /> : <RxCross2 className="cross" />}</td>
                         </tr>
                      ))
