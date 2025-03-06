@@ -310,21 +310,21 @@ const Dashboard = ({ loggedIn }) => {
                      </>
                }
             </div>
-            <div className='chartContainer'>
+            {/* <div className='chartContainer'>
 
-            </div>
-            <div className='chartContainer'>
+            </div> */}
+            {/* <div className='chartContainer'>
 
-            </div>
-            <div className='chartContainer'>
+            </div> */}
+            {/* <div className='chartContainer'>
 
-            </div>
-            <div className='chartContainer'>
+            </div> */}
+            {/* <div className='chartContainer'>
 
-            </div>
-            <div className='chartContainer'>
+            </div> */}
+            {/* <div className='chartContainer'>
 
-            </div>
+            </div> */}
          </div>
       </div>
       // <div className='banner'>
