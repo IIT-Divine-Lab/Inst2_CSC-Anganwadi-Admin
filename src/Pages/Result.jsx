@@ -220,7 +220,7 @@ const Result = ({ loggedIn }) => {
                <button onClick={handleGoToPage}>Go</button>
             </div> */}
             <div className='parentTableContainer'>
-               <table ref={tableRef} className='table-container' style={{ width: `calc(450px * ` + (category.length !== 0 ? category.length / 2 : 2) + `)` }}>
+               <table ref={tableRef} className='table-container' style={{ width: `calc(650px * ` + (category.length !== 0 ? category.length / 2 : 2) + `)` }}>
                   <thead>
                      <tr>
                         <th className='center' rowSpan={2}>S. No</th>

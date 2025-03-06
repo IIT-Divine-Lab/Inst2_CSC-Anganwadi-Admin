@@ -14,7 +14,7 @@ const AddCategory = ({ loggedIn }) => {
    const [subCategoryName, setSubCategoryName] = useState(id ? location.state.categoryName.split(" kush ")[1].split(" : ")[0] : '');
    const [catType, setCatType] = useState(id ? location.state.categoryName.split(" kush ")[1].split(" : ")[1] : 'Demo');
    const [number, setNumber] = useState(id ? location.state.number : 1);
-   const [totalQuestions, setTotalQuestions] = useState(id ? location.state.totalQuestions : 0);
+   const [totalQuestions, setTotalQuestions] = useState(id ? location.state.totalQuestions : catType === "Demo" ? 1 : 0);
    const dispatch = useDispatch();
    const navigate = useNavigate();
 
@@ -66,24 +66,24 @@ const AddCategory = ({ loggedIn }) => {
             </h1>
             <div>
                <label>
-                  Category Name:
+                  Domain Name:
                </label>
                <input
                   type="text"
                   value={categoryName}
                   onChange={(e) => setCategoryName(e.target.value)}
-                  placeholder="Enter category name"
+                  placeholder="Enter domain name"
                />
             </div>
             <div>
                <label>
-                  Sub Category Name:
+                  Category Name:
                </label>
                <input
                   type="text"
                   value={subCategoryName}
                   onChange={(e) => setSubCategoryName(e.target.value)}
-                  placeholder="Enter sub category name"
+                  placeholder="Enter category name"
                />
             </div>
             <div>
@@ -115,6 +115,7 @@ const AddCategory = ({ loggedIn }) => {
                <input
                   type="text"
                   value={totalQuestions}
+                  disabled={catType === "Demo"}
                   onChange={(e) => setTotalQuestions(e.target.value)}
                   placeholder="Enter total no. of Questions"
                />

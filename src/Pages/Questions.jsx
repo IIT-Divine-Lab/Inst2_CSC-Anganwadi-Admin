@@ -243,9 +243,9 @@ const Questions = ({ loggedIn }) => {
                   <tr>
                      <th>S.No</th>
                      <th>Question Text</th>
-                     <th>Question Category</th>
-                     <th>Question Sub Category</th>
-                     <th className="center">Question Type</th>
+                     <th>Domain</th>
+                     <th>Category</th>
+                     <th className="center">Type</th>
                      <th className="center">Age Group</th>
                      <th className="center">Total Options</th>
                      <th className="center">Actions</th>

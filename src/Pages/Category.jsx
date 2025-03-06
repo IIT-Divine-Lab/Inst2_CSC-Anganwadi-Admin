@@ -62,9 +62,7 @@ const Category = ({ loggedIn }) => {
             console.log(error);
          })
          .finally(() => {
-            setTimeout(() => {
-               setContentRefresh(false);
-            }, 3000);
+            setContentRefresh(false);
          })
    }, [dispatch])
 
@@ -106,8 +104,8 @@ const Category = ({ loggedIn }) => {
                <thead>
                   <tr>
                      <th className="center">S.No</th>
+                     <th>Domain</th>
                      <th>Category</th>
-                     <th>Sub Category</th>
                      <th>Type</th>
                      <th className="center">Structure Name</th>
                      <th className="center">Total Questions</th>
