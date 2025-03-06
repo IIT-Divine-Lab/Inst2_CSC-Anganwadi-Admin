@@ -12,7 +12,7 @@ const AddCategory = ({ loggedIn }) => {
    const id = location?.state?.id || false;
    const [categoryName, setCategoryName] = useState(id ? location.state.categoryName.split(" kush ")[0] : '');
    const [subCategoryName, setSubCategoryName] = useState(id ? location.state.categoryName.split(" kush ")[1].split(" : ")[0] : '');
-   const [catType, setCatType] = useState(id ? location.state.categoryName.split(" kush ")[1].split(" : ")[1] : '');
+   const [catType, setCatType] = useState(id ? location.state.categoryName.split(" kush ")[1].split(" : ")[1] : 'Demo');
    const [number, setNumber] = useState(id ? location.state.number : 1);
    const [totalQuestions, setTotalQuestions] = useState(id ? location.state.totalQuestions : 0);
    const dispatch = useDispatch();

@@ -1,11 +1,14 @@
+// eslint-disable-next-line
 import React, { useCallback, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import data from "../AnganwadiCentreData.json";
 import axios from 'axios';
+// eslint-disable-next-line
 import { Bar, Radar } from 'react-chartjs-2';
 import 'chart.js/auto'; // automatically registers Chart.js components
 import "./Dashboard.css"
 import adminApiUrl from '../adminApiUrl';
+// eslint-disable-next-line
 import { scales } from 'chart.js/auto';
 
 const Dashboard = ({ loggedIn }) => {
@@ -19,9 +22,11 @@ const Dashboard = ({ loggedIn }) => {
    })
 
    const states = [...new Set(data.map((item) => item.state))];
+   // eslint-disable-next-line
    const districts = filters.state
       ? [...new Set(data.filter((item) => item.state === filters.state).map((item) => item.district))]
       : [];
+   // eslint-disable-next-line
    const centres = filters.state
       ? [...new Set(data.filter((item) => item.district === filters.district).map((item) => item.awcentre))]
       : [];
@@ -74,6 +79,7 @@ const Dashboard = ({ loggedIn }) => {
    // }, [availableFilters]);
 
    // Update filter state on input change
+   // eslint-disable-next-line
    const handleFilterChange = (e) => {
       const { name, value } = e.target;
       switch (name) {
