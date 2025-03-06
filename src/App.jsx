@@ -11,6 +11,7 @@ import Questions from "./Pages/Questions";
 import Result from "./Pages/Result";
 import Dashboard from "./Pages/Dashboard";
 import Login from "./Pages/Login";
+import TimeTaken from "./Pages/TimeTaken";
 
 
 const App = () => {
@@ -34,6 +35,7 @@ const App = () => {
                <Route path="/category/addcategory" element={<AddCategoryPage loggedIn={loggedin} />} />
                <Route path="/category/editcategory" element={<AddCategoryPage loggedIn={loggedin} />} />
                <Route path="/result" element={<Result loggedIn={loggedin} />} />
+               <Route path="/result/time" element={<TimeTaken loggedIn={loggedin} />} />
             </Routes>
          </div>
       </Router>

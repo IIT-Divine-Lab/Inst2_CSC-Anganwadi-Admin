@@ -37,6 +37,11 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
       navigate("/result");
    };
 
+   const handleTimeClick = () => {
+      setIsCollapsed(false);
+      navigate("/result/time");
+   };
+
    return (
       <div className={`sidebar ${isCollapsed ? "collapsed" : ""}`}>
          <div className={location.pathname === "/" ? 'active link-item' : 'link-item'} onClick={() => navigate("/")}>
@@ -121,6 +126,23 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
                   </>
             }
             {!isCollapsed && <span className="description">Result</span>}
+         </div>
+         <div className={location.pathname === "/result/time" ? 'active link-item' : 'link-item'} onClick={handleTimeClick}>
+            {location.pathname === "/result/time" && (
+               <div className="active"></div>
+            )}
+            {
+               location.pathname === "/result/time" ?
+                  <>
+                     <div className="appearLine">&nbsp;</div>
+                     <HiDocumentReport className="icon" />
+                  </>
+                  :
+                  <>
+                     <HiOutlineDocumentReport className="icon" />
+                  </>
+            }
+            {!isCollapsed && <span className="description">Time</span>}
          </div>
       </div>
    );

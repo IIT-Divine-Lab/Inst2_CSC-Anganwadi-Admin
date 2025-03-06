@@ -6,6 +6,7 @@ import { Bar, Radar } from 'react-chartjs-2';
 import 'chart.js/auto'; // automatically registers Chart.js components
 import "./Dashboard.css"
 import adminApiUrl from '../adminApiUrl';
+import { scales } from 'chart.js/auto';
 
 const Dashboard = ({ loggedIn }) => {
    const navigate = useNavigate();
@@ -279,7 +280,22 @@ const Dashboard = ({ loggedIn }) => {
                            </div>
                         </div>
                         <div className='chartDetailContainer'>
-                           <Bar data={chartData} />
+                           <Bar
+                              options={{
+                                 scales: {
+                                    x: {
+                                    },
+                                    y: {
+                                       beginAtZero: true,
+                                       suggestedMax: 3,
+                                       ticks: {
+                                          stepSize: 1
+                                       },
+                                    }
+                                 }
+                              }}
+                              data={chartData}
+                           />
                         </div>
                      </>
                      :

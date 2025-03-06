@@ -9,7 +9,7 @@ import { TbRefresh } from 'react-icons/tb';
 import * as XLSX from "xlsx"
 import { useNavigate } from 'react-router-dom';
 
-const Result = ({ loggedIn }) => {
+const TimeTaken = ({ loggedIn }) => {
    // eslint-disable-next-line
    const [pageInput, setPageInput] = useState(1);
    const dispatch = useDispatch()
@@ -88,6 +88,7 @@ const Result = ({ loggedIn }) => {
 
    const regrouping = (resQues) => {
       let categories = [];
+
       for (let i = 0; i < resQues?.length; i++) {
          let cat = resQues[i]?.quesCategory?.categoryName
          if (!(categories.includes(cat)))
@@ -104,7 +105,8 @@ const Result = ({ loggedIn }) => {
                   quesId: resQues[i].quesId?._id,
                   answerMarked: resQues[i].AnswerMarked,
                   correctAnswer: resQues[i].quesId?.question?.correctAnswer,
-                  questionType: resQues[i].quesId?.question?.questionType
+                  questionType: resQues[i].quesId?.question?.questionType,
+                  timeTaken: resQues[i]?.timeTaken
                }
                data.push(obj);
             }
@@ -112,54 +114,6 @@ const Result = ({ loggedIn }) => {
          allQuestion[cat] = data;
       }
       return allQuestion;
-   }
-
-   const score = (category, resQues, total) => {
-      let arr = new Array(total).fill("-");
-      let cat = resQues[category];
-      if (cat !== undefined) {
-         for (let i = 0; i < cat?.length; i++) {
-            console.log()
-            if (cat[i]?.questionType === "single") {
-               if (cat[i]?.answerMarked?.length === cat[i].correctAnswer?.length) {
-                  for (let j = 0; j < cat[i].correctAnswer?.length; j++) {
-                     if (!(cat[i].correctAnswer.includes(cat[i]?.answerMarked[j]?.split("o")[1]))) {
-                        arr[i] = 0;
-                     }
-                     else {
-                        arr[i] = 1;
-                     }
-                  }
-               }
-               else if (cat[i].correctAnswer?.length === 2) {
-                  arr[i] = cat[i].answerMarked[0] === ("o" + cat[i].correctAnswer[0]) ? 2 : cat[i].answerMarked[0] === ("o" + cat[i].correctAnswer[1]) ? 1 : 0
-               }
-               else {
-                  arr[i] = 0;
-               }
-            }
-            else if (cat[i].questionType === "Draw" || cat[i].questionType === "draw") {
-               for (let i = 0; i < cat.length; i++) {
-                  if (cat[i].answerMarked.length) {
-                     arr[i] = <img style={{ width: "150px" }} alt={cat[i]} src={cat[i].answerMarked[0]} />;
-                  }
-               }
-            }
-            else {
-               let a = 0;
-               for (let j = 0; j < cat[i]?.correctAnswer[0]?.split(",")?.length; j++) {
-                  if (!(cat[i]?.correctAnswer[0]?.split(",").includes((Number(cat[i].answerMarked[j]?.split("o")[1]) - 1).toString()))) {
-                     a += 0;
-                  }
-                  else {
-                     a += 1;
-                  }
-               }
-               arr[i] = a;
-            }
-         }
-      }
-      return arr;
    }
 
    const fetchTotalQuestions = () => {
@@ -193,10 +147,72 @@ const Result = ({ loggedIn }) => {
       }
    }
 
+   const getTimeTaken = (time) => {
+      // let a = typeof (time);
+      const generalDate = {
+         hours: new Date(0).getHours(),
+         minutes: new Date(0).getMinutes(),
+         seconds: new Date(0).getSeconds(),
+         milliseconds: new Date(0).getMilliseconds()
+      }
+      const timeTaken = {
+         hours: new Date(time).getHours(),
+         minutes: new Date(time).getMinutes(),
+         seconds: new Date(time).getSeconds(),
+         milliseconds: new Date(time).getMilliseconds()
+      }
+      let a = "";
+      if (timeTaken.milliseconds - generalDate.milliseconds > 0) {
+         if (timeTaken.seconds - generalDate.seconds > 0) {
+            if (timeTaken.minutes - generalDate.minutes > 0) {
+               if (timeTaken.hours - generalDate.hours > 0)
+                  a += timeTaken.hours + " hrs : "
+               a += timeTaken.minutes + " min : "
+            }
+            a += timeTaken.seconds + " sec : "
+         }
+         a += timeTaken.milliseconds + " ms"
+      }
+      else {
+         if (timeTaken.seconds - generalDate.seconds > 0) {
+            if (timeTaken.minutes - generalDate.minutes > 0) {
+               if (timeTaken.hours - generalDate.hours > 0)
+                  a += timeTaken.hours + " hrs : "
+               a += timeTaken.minutes + " min : "
+            }
+            a += timeTaken.seconds + " sec"
+         }
+         else {
+            if (timeTaken.minutes - generalDate.minutes > 0) {
+               a += timeTaken.minutes + " min"
+            }
+            else {
+               if (timeTaken.hours - generalDate.hours > 0)
+                  a += timeTaken.hours + " hrs"
+               else
+                  a = "-"
+            }
+         }
+      }
+      // return time;
+      return a;
+      // return a.getMinutes() + " : " + a.getSeconds() + " : " + a.getMilliseconds();
+   }
+
+   const calculateTotalTime = (data) => {
+      // console.log(data);
+      let time = 0;
+      data?.forEach(element => {
+         let cat = element?.quesCategory?.categoryName;
+         if (!(cat.includes("Demo"))) time += element.timeTaken;
+      });
+      return getTimeTaken(time)
+   }
+
    return (
       <section>
          <div className="banner">
-            <h1>Result
+            <h1>Time Taken
                <span style={{ display: "flex", alignItems: "center" }}>
                   <span className="refreshBtn" onClick={() => {
                      setContentRefresh(true);
@@ -220,7 +236,7 @@ const Result = ({ loggedIn }) => {
                <button onClick={handleGoToPage}>Go</button>
             </div> */}
             <div className='parentTableContainer'>
-               <table ref={tableRef} className='table-container' style={{ width: `calc(450px * ` + (category.length !== 0 ? category.length / 2 : 2) + `)` }}>
+               <table ref={tableRef} className='table-container' style={{ width: `calc(500px * ` + (category.length !== 0 ? category.length / 2 : 2) + `)` }}>
                   <thead>
                      <tr>
                         <th className='center' rowSpan={2}>S. No</th>
@@ -233,6 +249,7 @@ const Result = ({ loggedIn }) => {
                         <th className='center' rowSpan={2}>Block</th>
                         <th className='center' rowSpan={2}>School Type</th>
                         <th className='center' rowSpan={2}>Age Group</th>
+                        <th className='center' rowSpan={2}>Total Time</th>
                         {
                            category.map((headData, index) => {
                               if (headData?.totalQuestions && !headData?.categoryName.includes("Demo"))
@@ -286,12 +303,12 @@ const Result = ({ loggedIn }) => {
                      {
                         result.length !== 0 ?
                            result?.map((res, index) => {
-                              let user = res.userId;
-                              let resQuestion = regrouping(res.questions);
+                              let user = res?.userId;
+                              let resQuestion = regrouping(res?.questions);
                               return (<tr key={index}>
                                  <td className='center'>{index + 1}</td>
                                  <td className='center'>{user?.name}</td>
-                                 <td className='center'>{user?.rollno}</td>
+                                 <td className='center'>{user?.rollno.toFixed(1)}</td>
                                  <td className='center'>{user?.gender}</td>
                                  <td className='center'>{getRequiredAWCDetail(user?.awcentre, "state")}</td>
                                  <td className='center'>{getRequiredAWCDetail(user?.awcentre, "district")}</td>
@@ -299,6 +316,7 @@ const Result = ({ loggedIn }) => {
                                  <td className='center'>{getRequiredAWCDetail(user?.awcentre, "block")}</td>
                                  <td className='center'>{getRequiredAWCDetail(user?.awcentre, "type")}</td>
                                  <td className='center'>{user?.age}</td>
+                                 <td className='center'>{calculateTotalTime(res?.questions)}</td>
                                  {
                                     category.flatMap((headData, index) => {
                                        if (headData?.categoryName.includes("Demo")) {
@@ -307,11 +325,19 @@ const Result = ({ loggedIn }) => {
                                           };
                                        }
                                        else {
-                                          let categoryRecords = score(headData?.categoryName, resQuestion, headData?.totalQuestions);
+                                          // console.log(headData)
+                                          let newRecords = resQuestion[headData?.categoryName];
 
                                           if (headData?.totalQuestions)
                                              return Array.from({ length: headData?.totalQuestions || 0 }, (_, i) => (
-                                                <td style={{ textAlign: "center" }} key={`${index}-${i}`}>{categoryRecords[i]}</td>
+                                                <td style={{ textAlign: "center" }} key={`${index}-${i}`}>
+                                                   {
+                                                      newRecords?.[i]?.timeTaken ?
+                                                         getTimeTaken(newRecords[i].timeTaken)
+                                                         : "-"
+                                                   }
+                                                </td>
+                                                // newRecords?.[i]?.timeTaken
                                              ))
                                           else
                                              return () => {
@@ -352,4 +378,4 @@ const Result = ({ loggedIn }) => {
    )
 }
 
-export default Result
+export default TimeTaken
