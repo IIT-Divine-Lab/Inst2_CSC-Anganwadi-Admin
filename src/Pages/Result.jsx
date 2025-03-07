@@ -11,19 +11,13 @@ import { useNavigate } from 'react-router-dom';
 
 const Result = ({ loggedIn }) => {
    // eslint-disable-next-line
-   const [pageInput, setPageInput] = useState(1);
+   const [loading, setLoading] = useState(false);
    const dispatch = useDispatch()
    const navigate = useNavigate();
 
    const result = useSelector((state) => state?.result || []);
    const category = useSelector((state) => state?.categories || []);
    const [contentRefresh, setContentRefresh] = useState(false);
-   const recordsPerPage = 10;
-   const totalPages = Math.ceil(result?.length / recordsPerPage) || 1;
-   const [currentPage, setCurrentPage] = useState(totalPages ? 1 : 0);
-   const startIndex = (currentPage - 1) * recordsPerPage;
-   // eslint-disable-next-line
-   const currentRecords = result?.slice(startIndex, startIndex + recordsPerPage);
    const tableRef = useRef();
 
    useEffect(() => {
@@ -40,32 +34,20 @@ const Result = ({ loggedIn }) => {
       XLSX.writeFile(workbook, "exported_table.xlsx");
    };
 
-   // eslint-disable-next-line
-   const handlePageChange = (pageNumber) => {
-      setCurrentPage(pageNumber);
-   };
-
-   // eslint-disable-next-line
-   const handleGoToPage = () => {
-      const pageNum = parseInt(pageInput);
-      if (pageNum >= 1 && pageNum <= totalPages) {
-         setCurrentPage(pageNum);
-      } else {
-         toast.error("Invalid page number.");
-      }
-   };
-
    const fetchResults = useCallback(async () => {
       await axios.get(apiUrl + "result")
          .then(({ data }) => {
-            if (data.message !== "No Record Found")
+            if (data.message !== "No Record Found") {
+               setLoading(false);
                dispatch(setResults(data.result))
+            }
             console.log(data.result)
          })
          .catch((error) => {
             console.error(error)
          })
          .finally(() => {
+            setLoading(false);
             setContentRefresh(false);
          })
    }, [dispatch])
@@ -73,16 +55,17 @@ const Result = ({ loggedIn }) => {
    const fetchCategories = useCallback(async () => {
       axios.get(adminApiUrl + "category")
          .then((({ data }) => {
-            if (data.message !== "No Data")
+            if (data.message !== "No Data") {
+               setLoading(false);
                dispatch(setCategory(data.categories));
+            }
          }))
          .catch((error) => {
             console.log(error);
          })
          .finally(() => {
-            setTimeout(() => {
-               setContentRefresh(false);
-            }, 3000);
+            setLoading(false);
+            setContentRefresh(false);
          })
    }, [dispatch])
 
@@ -172,9 +155,11 @@ const Result = ({ loggedIn }) => {
 
    useEffect(() => {
       if (result.length === 0) {
+         setLoading(true);
          fetchResults();
       }
       if (category.length === 0) {
+         setLoading(true);
          fetchCategories()
       }
    }, [result, fetchResults, category, fetchCategories])
@@ -189,7 +174,6 @@ const Result = ({ loggedIn }) => {
          case "type": return awcDetails[4];
          default:
             break;
-
       }
    }
 
@@ -200,6 +184,7 @@ const Result = ({ loggedIn }) => {
                <span style={{ display: "flex", alignItems: "center" }}>
                   <span className="refreshBtn" onClick={() => {
                      setContentRefresh(true);
+                     setLoading(true);
                      fetchCategories()
                      fetchResults()
                   }}>
@@ -208,18 +193,7 @@ const Result = ({ loggedIn }) => {
                   <button className='actionBtn' onClick={exportToXLSX}>Export</button>
                </span>
             </h1>
-            {/* <div className="pagination-top">
-               <span>Go To</span>
-               <input
-                  type="number"
-                  value={pageInput}
-                  min={1}
-                  max={totalPages}
-                  onChange={(e) => setPageInput(e.target.value)}
-               />
-               <button onClick={handleGoToPage}>Go</button>
-            </div> */}
-            <div className='parentTableContainer'>
+            <div style={loading ? { minHeight: "30vh" } : {}} className='parentTableContainer'>
                <table ref={tableRef} className='table-container' style={{ width: `calc(650px * ` + (category.length !== 0 ? category.length / 2 : 2) + `)` }}>
                   <thead>
                      <tr>
@@ -284,69 +258,69 @@ const Result = ({ loggedIn }) => {
                   </thead>
                   <tbody>
                      {
-                        result.length !== 0 ?
-                           result?.map((res, index) => {
-                              let user = res.userId;
-                              let resQuestion = regrouping(res.questions);
-                              return (<tr key={index}>
-                                 <td className='center'>{index + 1}</td>
-                                 <td className='center'>{user?.name}</td>
-                                 <td className='center'>{user?.rollno}</td>
-                                 <td className='center'>{user?.gender}</td>
-                                 <td className='center'>{getRequiredAWCDetail(user?.awcentre, "state")}</td>
-                                 <td className='center'>{getRequiredAWCDetail(user?.awcentre, "district")}</td>
-                                 <td className='center'>{getRequiredAWCDetail(user?.awcentre, "code")}</td>
-                                 <td className='center'>{getRequiredAWCDetail(user?.awcentre, "block")}</td>
-                                 <td className='center'>{getRequiredAWCDetail(user?.awcentre, "type")}</td>
-                                 <td className='center'>{user?.age}</td>
-                                 {
-                                    category.flatMap((headData, index) => {
-                                       if (headData?.categoryName.includes("Demo")) {
-                                          return () => {
+                        loading ?
+                           <tr>
+                              <td colSpan={10}>
+                                 <div className="loadingContainer">
+                                    <div></div>
+                                    <div></div>
+                                    <div></div>
+                                 </div>
+                              </td>
+                           </tr>
+                           :
+                           <>
+                              {
+                                 result.length !== 0 ?
+                                    result?.map((res, index) => {
+                                       let user = res.userId;
+                                       let resQuestion = regrouping(res.questions);
+                                       return (<tr key={index}>
+                                          <td className='center'>{index + 1}</td>
+                                          <td className='center'>{user?.name}</td>
+                                          <td className='center'>{user?.rollno}</td>
+                                          <td className='center'>{user?.gender}</td>
+                                          <td className='center'>{getRequiredAWCDetail(user?.awcentre, "state")}</td>
+                                          <td className='center'>{getRequiredAWCDetail(user?.awcentre, "district")}</td>
+                                          <td className='center'>{getRequiredAWCDetail(user?.awcentre, "code")}</td>
+                                          <td className='center'>{getRequiredAWCDetail(user?.awcentre, "block")}</td>
+                                          <td className='center'>{getRequiredAWCDetail(user?.awcentre, "type")}</td>
+                                          <td className='center'>{user?.age}</td>
+                                          {
+                                             category.flatMap((headData, index) => {
+                                                if (headData?.categoryName.includes("Demo")) {
+                                                   return () => {
 
-                                          };
-                                       }
-                                       else {
-                                          let categoryRecords = score(headData?.categoryName, resQuestion, headData?.totalQuestions);
+                                                   };
+                                                }
+                                                else {
+                                                   let categoryRecords = score(headData?.categoryName, resQuestion, headData?.totalQuestions);
 
-                                          if (headData?.totalQuestions)
-                                             return Array.from({ length: headData?.totalQuestions || 0 }, (_, i) => (
-                                                <td style={{ textAlign: "center" }} key={`${index}-${i}`}>{categoryRecords[i]}</td>
-                                             ))
-                                          else
-                                             return () => {
-                                             }
-                                       }
+                                                   if (headData?.totalQuestions)
+                                                      return Array.from({ length: headData?.totalQuestions || 0 }, (_, i) => (
+                                                         <td style={{ textAlign: "center" }} key={`${index}-${i}`}>{categoryRecords[i]}</td>
+                                                      ))
+                                                   else
+                                                      return () => {
+                                                      }
+                                                }
+                                             })
+                                          }
+                                       </tr>)
                                     })
-                                 }
-                              </tr>)
-                           })
-                           : (
-                              <tr>
-                                 <td colSpan={fetchTotalQuestions()}>
-                                    No Student Records Found!
-                                 </td>
-                              </tr>
-                           )
+                                    : (
+                                       <tr>
+                                          <td colSpan={fetchTotalQuestions()}>
+                                             No Result Records Found!
+                                          </td>
+                                       </tr>
+                                    )
+                              }
+                           </>
                      }
                   </tbody>
                </table>
             </div>
-            {/* <div className="pagination">
-               <button
-                  onClick={() => handlePageChange(currentPage - 1)}
-                  disabled={!totalPages && (currentPage === 0 || currentPage === 1)}
-               >
-                  Previous
-               </button>
-               <span>Page {totalPages ? currentPage : 0} of {totalPages}</span>
-               <button
-                  onClick={() => handlePageChange(currentPage + 1)}
-                  disabled={!totalPages && currentPage === totalPages}
-               >
-                  Next
-               </button>
-            </div> */}
          </div>
       </section>
    )

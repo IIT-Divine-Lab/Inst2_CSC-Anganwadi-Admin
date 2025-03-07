@@ -166,34 +166,35 @@ const TimeTaken = ({ loggedIn }) => {
          if (timeTaken.seconds - generalDate.seconds > 0) {
             if (timeTaken.minutes - generalDate.minutes > 0) {
                if (timeTaken.hours - generalDate.hours > 0)
-                  a += timeTaken.hours + " hrs : "
-               a += timeTaken.minutes + " min : "
+                  a += (timeTaken.hours - generalDate.hours) + " hrs : "
+               a += (timeTaken.minutes - generalDate.minutes) + " min : "
             }
-            a += timeTaken.seconds + " sec : "
+            a += (timeTaken.seconds - generalDate.seconds) + " sec : "
          }
-         a += timeTaken.milliseconds + " ms"
+         a += (timeTaken.milliseconds - generalDate.milliseconds) + " ms"
       }
       else {
          if (timeTaken.seconds - generalDate.seconds > 0) {
             if (timeTaken.minutes - generalDate.minutes > 0) {
                if (timeTaken.hours - generalDate.hours > 0)
-                  a += timeTaken.hours + " hrs : "
-               a += timeTaken.minutes + " min : "
+                  a += (timeTaken.hours - generalDate.hours) + " hrs : "
+               a += (timeTaken.minutes - generalDate.minutes) + " min : "
             }
-            a += timeTaken.seconds + " sec"
+            a += (timeTaken.seconds - generalDate.seconds) + " sec"
          }
          else {
             if (timeTaken.minutes - generalDate.minutes > 0) {
-               a += timeTaken.minutes + " min"
+               a += (timeTaken.minutes - generalDate.minutes) + " min"
             }
             else {
                if (timeTaken.hours - generalDate.hours > 0)
-                  a += timeTaken.hours + " hrs"
+                  a += (timeTaken.hours - generalDate.hours) + " hrs"
                else
                   a = "-"
             }
          }
       }
+      console.log("\n Time Taken", a, time, timeTaken);
       // return time;
       return a;
       // return a.getMinutes() + " : " + a.getSeconds() + " : " + a.getMilliseconds();
@@ -303,6 +304,9 @@ const TimeTaken = ({ loggedIn }) => {
                      {
                         result.length !== 0 ?
                            result?.map((res, index) => {
+                              {
+                                 console.log("\n\n\n\n Result Changed")
+                              }
                               let user = res?.userId;
                               let resQuestion = regrouping(res?.questions);
                               return (<tr key={index}>
@@ -327,7 +331,7 @@ const TimeTaken = ({ loggedIn }) => {
                                        else {
                                           // console.log(headData)
                                           let newRecords = resQuestion[headData?.categoryName];
-
+                                          console.log("\n\n Category Changed", headData?.categoryName);
                                           if (headData?.totalQuestions)
                                              return Array.from({ length: headData?.totalQuestions || 0 }, (_, i) => (
                                                 <td style={{ textAlign: "center" }} key={`${index}-${i}`}>

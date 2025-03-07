@@ -25,8 +25,6 @@ const Questions = ({ loggedIn }) => {
    const [loading, setLoading] = useState(false);
    const dispatch = useDispatch();
    const questions = useSelector((state) => state.questions || []);
-   // eslint-disable-next-line
-   const [pageInput, setPageInput] = useState(1);
    const [contentRefresh, setContentRefresh] = useState(false);
    const recordsPerPage = 10;
    const totalPages = Math.ceil(questions.length / recordsPerPage);
@@ -127,8 +125,8 @@ const Questions = ({ loggedIn }) => {
       setCurrentPage(pageNumber);
    };
 
-   const handleGoToPage = () => {
-      const pageNum = parseInt(pageInput);
+   const handleGoToPage = (value) => {
+      const pageNum = parseInt(value);
       if (pageNum >= 1 && pageNum <= totalPages) {
          setCurrentPage(pageNum);
       } else {
@@ -297,7 +295,6 @@ const Questions = ({ loggedIn }) => {
                      <select className="pageNavDrop" value={currentPage} name="pages" id="page" onChange={(e) => {
                         handleGoToPage(e.target.value)
                      }}
-                        onKeyUp={(e) => e.key === 'Enter' && handleGoToPage()}
                      >
                         {
                            Array(totalPages).fill(" ").map((_, index) => {

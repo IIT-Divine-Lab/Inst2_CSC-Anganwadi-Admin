@@ -1,15 +1,11 @@
-// eslint-disable-next-line
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import data from "../AnganwadiCentreData.json";
 import axios from 'axios';
-// eslint-disable-next-line
-import { Bar, Radar } from 'react-chartjs-2';
+import { Bar } from 'react-chartjs-2';
 import 'chart.js/auto'; // automatically registers Chart.js components
 import "./Dashboard.css"
 import adminApiUrl from '../adminApiUrl';
-// eslint-disable-next-line
-import { scales } from 'chart.js/auto';
 
 const Dashboard = ({ loggedIn }) => {
    const navigate = useNavigate();
@@ -170,8 +166,6 @@ const Dashboard = ({ loggedIn }) => {
          navigate("/");
    }, [loggedIn, navigate])
 
-   // console.log(kpis)
-
    return (
       <div className="banner">
          <header style={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -327,11 +321,6 @@ const Dashboard = ({ loggedIn }) => {
             </div> */}
          </div>
       </div>
-      // <div className='banner'>
-      //    <h1>
-      //       Welcome 👋
-      //    </h1>
-      // </div>
    )
 }
 

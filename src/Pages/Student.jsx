@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useState } from "react";
 import { toast } from 'react-toastify';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
-// import studentData from '../data/StudentData.json';
 import { RxCross2 } from "react-icons/rx";
 import { TiTick } from "react-icons/ti";
 import "./Student.css"
@@ -13,12 +12,12 @@ import { apiUrl } from "../adminApiUrl.jsx";
 import { TbRefresh } from "react-icons/tb";
 import { MdOutlineKeyboardArrowLeft, MdOutlineKeyboardArrowRight } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
+import { FiClock } from "react-icons/fi";
 
 const Student = ({ loggedIn }) => {
+   const [loading, setLoading] = useState(false);
    const dispatch = useDispatch();
    const students = useSelector((state) => (state.student));
-   // eslint-disable-next-line
-   const [pageInput, setPageInput] = useState(1);
    const [contentRefresh, setContentRefresh] = useState(false);
    const recordsPerPage = 10;
    const totalPages = Math.ceil(students.length / recordsPerPage);
@@ -61,11 +60,10 @@ const Student = ({ loggedIn }) => {
             "Age Group": student.age,
             "Assessment Submitted": student.assessmentId ? '✔️' : '❌'
          })))
-         let sinCentre = str.split(" ");
-         let centreName = "";
-         for (let i = 0; i < sinCentre.length; i++) {
-            centreName += sinCentre[i];
-         }
+         const sinCentre = str.split(" - ");
+         const centreName = sinCentre[0] + "-" + sinCentre[2] + "-" + sinCentre[4].split("led")[0]
+         console.log(centreName)
+         console.log(centreName.length);
          XLSX.utils.book_append_sheet(workbook, worksheet, centreName);
       }
 
@@ -78,8 +76,8 @@ const Student = ({ loggedIn }) => {
       setCurrentPage(pageNumber);
    };
 
-   const handleGoToPage = () => {
-      const pageNum = parseInt(pageInput); // Use the input state
+   const handleGoToPage = (value) => {
+      const pageNum = parseInt(value); // Use the input state
       if (pageNum >= 1 && pageNum <= totalPages) {
          setCurrentPage(pageNum);
       } else {
@@ -93,15 +91,15 @@ const Student = ({ loggedIn }) => {
             if (data.message !== "No Data") {
                dispatch(setStudents(data.students));
                setCurrentPage(1);
+               setLoading(false);
             }
          })
          .catch(error => {
             console.error(error);
          })
          .finally(() => {
-            setTimeout(() => {
-               setContentRefresh(false);
-            }, 3000);
+            setContentRefresh(false);
+            setLoading(false);
          })
    }, [dispatch])
 
@@ -119,9 +117,24 @@ const Student = ({ loggedIn }) => {
       }
    }
 
+   function checkTime(student) {
+      const assessmentTimeStamp = new Date(student);
+      const currentTimeStamp = new Date();
+      let status = true;
+
+      if (currentTimeStamp.getFullYear() - assessmentTimeStamp.getFullYear() > 0) status = false;
+      else if (currentTimeStamp.getMonth() - assessmentTimeStamp.getMonth() > 0) status = false;
+      else if (currentTimeStamp.getDate() - assessmentTimeStamp.getDate() > 0) status = false;
+      else if (currentTimeStamp.getHours() - assessmentTimeStamp.getHours() > 4) status = false;
+
+      return status;
+   }
+
    useEffect(() => {
-      if (students.length === 0)
+      if (students.length === 0) {
+         setLoading(true);
          fetchStudentData()
+      }
    }, [fetchStudentData, students]);
 
    return (
@@ -132,6 +145,7 @@ const Student = ({ loggedIn }) => {
                <span style={{ display: "flex", alignItems: "center" }}>
                   <span className="refreshBtn" onClick={() => {
                      setContentRefresh(true);
+                     setLoading(true);
                      fetchStudentData()
                   }}>
                      <TbRefresh className={contentRefresh ? 'spin2 refreshIcon' : 'refreshIcon'} />
@@ -152,28 +166,55 @@ const Student = ({ loggedIn }) => {
                      <th>Centre Code</th>
                      <th>Block</th>
                      <th>Anganwadi Type</th>
-                     <th>Assessment Submitted</th>
+                     <th>Assessment Status</th>
                   </tr>
                </thead>
                <tbody>
-                  {currentRecords.length > 0 ? (
-                     currentRecords.map((student, index) => (
-                        <tr key={index}>
-                           <td>{startIndex + index + 1}</td>
-                           <td>{student.name}</td>
-                           <td>{student.rollno}</td>
-                           <td>{student.age}</td>
-                           <td>{getRequiredAWCDetail(student.awcentre, "state")}</td>
-                           <td>{getRequiredAWCDetail(student.awcentre, "district")}</td>
-                           <td>{getRequiredAWCDetail(student.awcentre, "code")}</td>
-                           <td>{getRequiredAWCDetail(student.awcentre, "block")}</td>
-                           <td>{getRequiredAWCDetail(student.awcentre, "type")}</td>
-                           <td>{student.assessId ? <TiTick className="tick" /> : <RxCross2 className="cross" />}</td>
+                  {
+                     loading ?
+                        <tr>
+                           <td colSpan={8}>
+                              <div className="loadingContainer">
+                                 <div></div>
+                                 <div></div>
+                                 <div></div>
+                              </div>
+                           </td>
                         </tr>
-                     ))
-                  ) : (
-                     <tr><td colSpan="6">No Student Records Found!</td></tr>
-                  )}
+                        :
+                        <>
+                           {
+
+                              currentRecords.length > 0 ? (
+                                 currentRecords.map((student, index) => (
+                                    <tr key={index}>
+                                       <td>{startIndex + index + 1}</td>
+                                       <td>{student.name}</td>
+                                       <td>{student.rollno}</td>
+                                       <td>{student.age}</td>
+                                       <td>{getRequiredAWCDetail(student.awcentre, "state")}</td>
+                                       <td>{getRequiredAWCDetail(student.awcentre, "district")}</td>
+                                       <td>{getRequiredAWCDetail(student.awcentre, "code")}</td>
+                                       <td>{getRequiredAWCDetail(student.awcentre, "block")}</td>
+                                       <td>{getRequiredAWCDetail(student.awcentre, "type")}</td>
+                                       {
+                                          student.assessId ?
+                                             <td style={{ color: "#007000", display: "flex", alignItems: "center" }}> <TiTick size={26} /> Submitted</td>
+                                             :
+                                             !student.assessmentStartTime ?
+                                                <td>-</td>
+                                                : checkTime(student.assessmentStartTime) ?
+                                                   <td style={{ color: "#ebb105", display: "flex", alignItems: "center" }}> <FiClock size={20} style={{ paddingRight: "5px" }} /> In Progress</td>
+                                                   :
+                                                   <td style={{ color: "red", display: "flex", alignItems: "center" }}> <RxCross2 size={24} /> Aborted</td>
+                                       }
+                                    </tr>
+                                 ))
+                              ) : (
+                                 <tr><td colSpan="6">No Student Records Found!</td></tr>
+                              )}
+                        </>
+                  }
                </tbody>
             </table>
 
@@ -185,7 +226,6 @@ const Student = ({ loggedIn }) => {
                      <select className="pageNavDrop" value={currentPage} name="pages" id="page" onChange={(e) => {
                         handleGoToPage(e.target.value)
                      }}
-                        onKeyUp={(e) => e.key === 'Enter' && handleGoToPage()}
                      >
                         {
                            Array(totalPages).fill(" ").map((_, index) => {

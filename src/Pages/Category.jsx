@@ -2,7 +2,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
-// import { FaEye } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import adminApiUrl from "../adminApiUrl";
@@ -34,7 +33,6 @@ const Category = ({ loggedIn }) => {
       setCurrentPage(pageNumber);
    };
 
-   // eslint-disable-next-line
    const handleGoToPage = (e) => {
       const pageNum = parseInt(e);
       if (pageNum >= 1 && pageNum <= totalPages) {
@@ -148,7 +146,6 @@ const Category = ({ loggedIn }) => {
                      <select className="pageNavDrop" value={currentPage} name="pages" id="page" onChange={(e) => {
                         handleGoToPage(e.target.value)
                      }}
-                        onKeyUp={(e) => e.key === 'Enter' && handleGoToPage()}
                      >
                         {
                            Array(totalPages).fill(" ").map((_, index) => {
