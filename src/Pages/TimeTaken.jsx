@@ -60,7 +60,6 @@ const TimeTaken = ({ loggedIn }) => {
          .then(({ data }) => {
             if (data.message !== "No Record Found")
                dispatch(setResults(data.result))
-            console.log(data.result)
          })
          .catch((error) => {
             console.error(error)
@@ -194,14 +193,12 @@ const TimeTaken = ({ loggedIn }) => {
             }
          }
       }
-      console.log("\n Time Taken", a, time, timeTaken);
       // return time;
       return a;
       // return a.getMinutes() + " : " + a.getSeconds() + " : " + a.getMilliseconds();
    }
 
    const calculateTotalTime = (data) => {
-      // console.log(data);
       let time = 0;
       data?.forEach(element => {
          let cat = element?.quesCategory?.categoryName;
@@ -304,9 +301,6 @@ const TimeTaken = ({ loggedIn }) => {
                      {
                         result.length !== 0 ?
                            result?.map((res, index) => {
-                              {
-                                 console.log("\n\n\n\n Result Changed")
-                              }
                               let user = res?.userId;
                               let resQuestion = regrouping(res?.questions);
                               return (<tr key={index}>
@@ -329,9 +323,7 @@ const TimeTaken = ({ loggedIn }) => {
                                           };
                                        }
                                        else {
-                                          // console.log(headData)
                                           let newRecords = resQuestion[headData?.categoryName];
-                                          console.log("\n\n Category Changed", headData?.categoryName);
                                           if (headData?.totalQuestions)
                                              return Array.from({ length: headData?.totalQuestions || 0 }, (_, i) => (
                                                 <td style={{ textAlign: "center" }} key={`${index}-${i}`}>
@@ -341,7 +333,6 @@ const TimeTaken = ({ loggedIn }) => {
                                                          : "-"
                                                    }
                                                 </td>
-                                                // newRecords?.[i]?.timeTaken
                                              ))
                                           else
                                              return () => {
