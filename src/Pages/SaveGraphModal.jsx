@@ -13,7 +13,7 @@ export default function SaveGraphModal({
 
   useEffect(() => {
     // Generate description based on provided parameters
-    const defaultDescription = `This is a ${graphType} with ${xAxis} as parameter,${yAxis !== null ? ' Y-axis: ${yAxis} as parameters' : ''} and ${filterCount} filters`;
+    const defaultDescription = `This is a ${graphType} with ${xAxis} as parameter, ${yAxis !== null ? `Y-axis: ${yAxis} as parameters` : ``} and ${filterCount} filters`;
     setDescription(defaultDescription);
     
     // Reset error message when modal opens/closes

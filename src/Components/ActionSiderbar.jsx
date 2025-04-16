@@ -1,5 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
-import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import React, { useState } from 'react'
 import { Download, Save, Edit, Copy, X, ChevronDown } from "lucide-react";
 
 const ActionSidebar = ({
