@@ -323,7 +323,7 @@ const CreatedGraph2 = ({ selectedGraph, setSelectedGraph, graphName, setGraphNam
     catch (error) {
       console.error(error);
     }
-  }, [Xaxis, Yaxis, filters, parameterMapping, selectedGraph])
+  }, [Xlabel, Ylabel, filters, parameterMapping, selectedGraph])
 
   useEffect(() => {
     // console.log(!graphData?.labels?.length, !graphData?.datasets?.length)
@@ -438,7 +438,7 @@ const CreatedGraph2 = ({ selectedGraph, setSelectedGraph, graphName, setGraphNam
       .catch((error) => {
         console.error(error);
       })
-  }, [filters, id, selectedGraph, setSavedDescription, setGraphName, setSelectedGraph, setXAxis, setYAxis, setXlabel, setYlabel])
+  }, [id, selectedGraph, setSavedDescription, setGraphName, setSelectedGraph, setXAxis, setYAxis, setXlabel, setYlabel])
 
   useEffect(() => {
     if (id) {
