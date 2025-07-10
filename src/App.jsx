@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import "@uploadcare/react-uploader/core.css"
 import Sidebar from "./Components/Sidebar";

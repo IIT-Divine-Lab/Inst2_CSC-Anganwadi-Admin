@@ -79,23 +79,12 @@ const SelectPara = ({ selectedGraph, setSelectedGraph, graphName, setGraphName, 
 
   useEffect(() => {
     if (isDuplicating) {
-      console.log(Xaxis)
-      console.log(Yaxis)
-      console.log(filters)
-      console.log(selectedGraph);
       console.log("Triggered Duplicating");
     }
   }, [isDuplicating])
 
   useEffect(() => {
     if (isEditing) {
-      console.log(editableId);
-      console.log(Xaxis)
-      console.log(Xlabel)
-      console.log(Yaxis)
-      console.log(Ylabel)
-      console.log(filters)
-      console.log(selectedGraph);
       console.log("Triggered Editing");
     }
   }, [isEditing])
@@ -108,6 +97,8 @@ const SelectPara = ({ selectedGraph, setSelectedGraph, graphName, setGraphName, 
   async function handleGraphEdit() {
     try {
       if (isEditing) {
+        if (editableId === undefined)
+          return navigate("/create-graph")
         const dataToSave = {
           type: selectedGraph,
           name: graphName,
@@ -127,8 +118,6 @@ const SelectPara = ({ selectedGraph, setSelectedGraph, graphName, setGraphName, 
         }
 
         const id = editableId;
-
-        console.log(dataToSave)
 
         axios.put(adminApiUrl + `dashboard/graph/${id}`, dataToSave)
           .then(({ data }) => {

@@ -1,11 +1,11 @@
 import React, { useMemo } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import Pen from '../data/images/pen.png';
 import ParameterImg from '../data/images/parameter.png';
 import CrossImg from '../data/images/cross.png';
 
 const ParaSidebar2 = ({ setIsDragging, isEditing = false, handleEdit, selectedGraph, graphName, setGraphName, Xaxis, setXAxis, Xlabel, setXlabel, Zaxis, setZAxis, Zlabel, setZlabel }) => {
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   // Handle drag start (store the parameter being dragged)
   const handleDragStart = (e, paramName) => {
@@ -65,9 +65,6 @@ const ParaSidebar2 = ({ setIsDragging, isEditing = false, handleEdit, selectedGr
             </div>
           </div>
         </div>
-
-        {console.log(parameters.filter(param => parameterMapping[param.name] !== Xaxis))}
-        {console.log(Xaxis)}
 
         {/* Parameters */}
         <div className='flex flex-col justify-start w-full text-gray p-6 border-t-2 border-[#e2e8f0]'>

@@ -39,7 +39,7 @@ const CreatedGraph2 = ({ selectedGraph, setSelectedGraph, graphName, setGraphNam
   }
 
   const location = useLocation();
-  const { id } = location.state;
+  const id = location.state?.id;
 
   const navigate = useNavigate();
 
@@ -252,13 +252,11 @@ const CreatedGraph2 = ({ selectedGraph, setSelectedGraph, graphName, setGraphNam
 
   const initialDataCall = useCallback(async () => {
     try {
-      let url = `dashboard/getUnsavedGraph/${parameterMapping[Xaxis]}?`
+      let url = `dashboard/getUnsavedGraph/${parameterMapping[Xlabel]}?`
 
-      if (Yaxis) {
-        url += `yAxis=${parameterMapping[Yaxis]}`
+      if (Ylabel) {
+        url += `yAxis=${parameterMapping[Ylabel]}`
       }
-      console.log(selectedGraph)
-      console.log(url)
 
       axios.get(adminApiUrl + url)
         .then(({ data }) => {
@@ -377,8 +375,6 @@ const CreatedGraph2 = ({ selectedGraph, setSelectedGraph, graphName, setGraphNam
         setActiveFilters(graphDetails?.details.filters)
         // }
 
-        console.log(filters);
-        console.log(graphDetails)
         // setFilters(graphDetails?.details.filters);
         setGraphName(graphDetails?.name);
         setGraphSaved(true);
@@ -442,7 +438,7 @@ const CreatedGraph2 = ({ selectedGraph, setSelectedGraph, graphName, setGraphNam
       .catch((error) => {
         console.error(error);
       })
-  }, [filters, id, selectedGraph, setSelectedGraph, setXAxis, setYAxis, setXlabel, setYlabel])
+  }, [filters, id, selectedGraph, setSavedDescription, setGraphName, setSelectedGraph, setXAxis, setYAxis, setXlabel, setYlabel])
 
   useEffect(() => {
     if (id) {
@@ -496,8 +492,6 @@ const CreatedGraph2 = ({ selectedGraph, setSelectedGraph, graphName, setGraphNam
       },
     },
   };
-
-  console.log(chartOptions2d)
 
   const chartData1d = {
     labels: graphData.labels,
