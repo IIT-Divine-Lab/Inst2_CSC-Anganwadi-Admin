@@ -16,7 +16,7 @@ import data from "../data/AnganwadiCentreData.json"
 
 ChartJS.register(CategoryScale, ArcElement, LinearScale, PointElement, LineElement, BarElement, Title, Tooltip, Legend);
 
-const CreatedGraph2 = ({ selectedGraph, setSelectedGraph, graphName, setGraphName, Xaxis, setXAxis, setYAxis, Yaxis, Xlabel, setXlabel, setYlabel, Ylabel, filters, isDuplicating, setIsDuplicating, setFilters }) => {
+const CreatedGraph2 = ({ selectedGraph, setSelectedGraph, graphName, setGraphName, Xaxis, setXAxis, setYAxis, Yaxis, Xlabel, setXlabel, setYlabel, savedDescription = "", setSavedDescription, Ylabel, filters, isDuplicating, setIsDuplicating, isEditing: isGraphEditing, setIsEditing, setFilters }) => {
   // Parameter mapping from ParaSidebar to data fields
   const parameterMapping = useMemo(() => ({
     "State": "state",
@@ -51,7 +51,6 @@ const CreatedGraph2 = ({ selectedGraph, setSelectedGraph, graphName, setGraphNam
   const [savedGraphDetails, setSavedGraphDetails] = useState();
   const [showSaveModal, setShowSaveModal] = useState(false);
   // eslint-disable-next-line
-  const [savedDescription, setSavedDescription] = useState("");
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   // eslint-disable-next-line
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
@@ -358,6 +357,7 @@ const CreatedGraph2 = ({ selectedGraph, setSelectedGraph, graphName, setGraphNam
       .then(({ data }) => {
         console.log(data)
         setGraphSaved(true)
+        setIsDuplicating(false);
         setSavedGraphDetails(data?.graph)
         setSavedDescription(description)
       })
@@ -385,9 +385,9 @@ const CreatedGraph2 = ({ selectedGraph, setSelectedGraph, graphName, setGraphNam
         setSavedDescription(graphDetails.desc);
         setSelectedGraph(graphDetails.type)
         setXlabel(graphDetails.details.Xlabel);
+        setYlabel(graphDetails.details.Ylabel);
         setXAxis(graphDetails.details.Xaxis);
         setYAxis(graphDetails.details.Yaxis);
-        setYlabel(graphDetails.details.Ylabel);
 
         if ((!selectedGraph.includes("Pie") && !selectedGraph.includes("Donut"))) {
 
@@ -451,46 +451,6 @@ const CreatedGraph2 = ({ selectedGraph, setSelectedGraph, graphName, setGraphNam
     }
   }, [id, fetchGraphDataById])
 
-  // const handleEditClick = () => {
-  //   console.log("handleEditClick")
-  //   // Navigate back to the select-parameter page with all the current parameters
-  //   navigate('/select-parameter', {
-  //     state: {
-  //       selectedGraph,
-  //       graphName,
-  //       Xaxis,
-  //       Yaxis,
-  //       Xlabel,
-  //       Ylabel,
-  //       Zaxis,
-  //       Zlabel,
-  //       filters,
-  //       graphId, // Pass the existing graphId for updating
-  //       savedDescription, // Pass the saved description
-  //     }
-  //   });
-  // };
-
-  // const handleDuplicateClick = () => {
-  //   console.log("handleDuplicateClick")
-  //   // Set duplicating flag to create a new graph
-  //   setIsDuplicating(true);
-
-  //   // Clear graphId to make it a new graph
-  //   setGraphId(null);
-  //   setGraphSaved(false);
-
-  //   // Immediately update the graph name to show (COPY) in the UI
-  //   const duplicatedName = `${graphName || `Distribution of ${Xaxis}`} (COPY)`;
-  //   setGraphName(duplicatedName);
-
-  //   // Clear the description for the new copy
-  //   setSavedDescription("");
-
-  //   // Show save modal to confirm
-  //   setShowSaveModal(true);
-  // };
-
   const chartData2d = {
     labels: graphData.labels,
     datasets: graphData.datasets,
@@ -536,6 +496,8 @@ const CreatedGraph2 = ({ selectedGraph, setSelectedGraph, graphName, setGraphNam
       },
     },
   };
+
+  console.log(chartOptions2d)
 
   const chartData1d = {
     labels: graphData.labels,
@@ -655,12 +617,26 @@ const CreatedGraph2 = ({ selectedGraph, setSelectedGraph, graphName, setGraphNam
             onDuplicate={() => {
               setIsDuplicating(true)
               setSelectedGraph(selectedGraph)
-              setXAxis(Xlabel)
+              setXAxis(Xaxis)
+              setXlabel(Xlabel)
               console.log(savedGraphDetails);
               setGraphName(mode === "edit" ? graphName : savedGraphDetails?.name);
-              setYAxis(Ylabel)
+              setYAxis(Yaxis)
+              setYlabel(Ylabel)
               setFilters(activeFilters)
               navigate("/select-parameter")
+            }}
+            onEdit={() => {
+              setIsEditing(true)
+              setSelectedGraph(selectedGraph)
+              setXAxis(Xaxis)
+              setXlabel(Xlabel)
+              console.log(savedGraphDetails);
+              setGraphName(mode === "edit" ? graphName : savedGraphDetails?.name);
+              setYAxis(Yaxis)
+              setYlabel(Ylabel)
+              setFilters(activeFilters)
+              navigate("/select-parameter", { state: { id: mode === "edit" ? id : savedGraphDetails?._id } })
             }}
             onDelete={handleDeleteClick}
             savedDescription={savedDescription}

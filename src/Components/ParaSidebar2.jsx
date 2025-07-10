@@ -1,10 +1,10 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useMemo } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import Pen from '../data/images/pen.png';
 import ParameterImg from '../data/images/parameter.png';
 import CrossImg from '../data/images/cross.png';
 
-const ParaSidebar2 = ({ setIsDragging, selectedGraph, graphName, setGraphName, Xaxis, setXAxis, Xlabel, setXlabel, Zaxis, setZAxis, Zlabel, setZlabel }) => {
+const ParaSidebar2 = ({ setIsDragging, isEditing = false, handleEdit, selectedGraph, graphName, setGraphName, Xaxis, setXAxis, Xlabel, setXlabel, Zaxis, setZAxis, Zlabel, setZlabel }) => {
   const navigate = useNavigate();
 
   // Handle drag start (store the parameter being dragged)
@@ -12,6 +12,16 @@ const ParaSidebar2 = ({ setIsDragging, selectedGraph, graphName, setGraphName, X
     e.dataTransfer.setData("parameter", paramName);
     setIsDragging(true);
   };
+
+  const parameterMapping = useMemo(() => ({
+    "State": "state",
+    "District": "district",
+    "Centre Code": "center",
+    "Block": "block",
+    "School Type": "type",
+    "Age Group": "age",
+    "Gender": "gender"
+  }), []);
 
   const handleDragEnd = () => {
     setIsDragging(false);
@@ -56,7 +66,7 @@ const ParaSidebar2 = ({ setIsDragging, selectedGraph, graphName, setGraphName, X
           </div>
         </div>
 
-        {console.log(parameters.filter(param => param.name !== Xaxis))}
+        {console.log(parameters.filter(param => parameterMapping[param.name] !== Xaxis))}
         {console.log(Xaxis)}
 
         {/* Parameters */}
@@ -64,7 +74,7 @@ const ParaSidebar2 = ({ setIsDragging, selectedGraph, graphName, setGraphName, X
           <div>
             <h1 className='text-gray text-sm mb-2'> Parameters </h1>
             {parameters
-              .filter(param => param.name !== Xaxis)
+              .filter(param => parameterMapping[param.name] !== Xaxis)
               .map((param, index) => (
                 <div
                   key={index}
@@ -107,10 +117,18 @@ const ParaSidebar2 = ({ setIsDragging, selectedGraph, graphName, setGraphName, X
       {/* Create Graph Button */}
       {Xaxis && (
         <button
-          onClick={() => navigate('/create-graph', { state: { selectedGraph, graphName, Xaxis, Xlabel } })}
           className="flex gap-3 justify-center items-center bg-[#6C5DD3] text-white w-[80%] h-14 mb-6 rounded-lg font-semibold hover:cursor-pointer"
         >
-          Create Graph
+          {
+            !isEditing && <Link to="/create-graph" className='w-full h-full flex items-center justify-center'
+              state={{ selectedGraph, graphName, Xaxis, Xlabel }}
+            >
+              <div className=''> Create Graph </div>
+            </Link>
+          }
+          {
+            isEditing && <div onClick={handleEdit} className=''> Edit Graph </div>
+          }
         </button>
       )}
     </div>
