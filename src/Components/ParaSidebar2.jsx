@@ -56,6 +56,9 @@ const ParaSidebar2 = ({ setIsDragging, selectedGraph, graphName, setGraphName, X
           </div>
         </div>
 
+        {console.log(parameters.filter(param => param.name !== Xaxis))}
+        {console.log(Xaxis)}
+
         {/* Parameters */}
         <div className='flex flex-col justify-start w-full text-gray p-6 border-t-2 border-[#e2e8f0]'>
           <div>

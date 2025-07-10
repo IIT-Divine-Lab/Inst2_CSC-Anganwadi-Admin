@@ -21,6 +21,7 @@ const App = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [loggedin, setLoggedIn] = useState(false);
   const [hidden, setHidden] = useState(false);
+  const [isDuplicating, setIsDuplicating] = useState(false);
 
   const [selectedGraph, setSelectedGraph] = useState("Line Graph");
   const [graphName, setGraphName] = useState("");
@@ -51,11 +52,9 @@ const App = () => {
 
           <Route path="/graph-builder" element={<SelectGraph loggedIn={loggedin} selectedGraph={selectedGraph} setSelectedGraph={setSelectedGraph} setGraphName={setGraphName} setXAxis={setXAxis} setYAxis={setYAxis} setZAxis={setZAxis} setFilters={setFilters} />} />
 
-          <Route path="/select-parameter" element={<SelectPara loggedIn={loggedin} selectedGraph={selectedGraph} setSelectedGraph={setSelectedGraph} graphName={graphName} setGraphName={setGraphName} Xaxis={Xaxis} setXAxis={setXAxis} Yaxis={Yaxis} setYAxis={setYAxis} Xlabel={Xlabel} setXlabel={setXlabel} Ylabel={Ylabel} setYlabel={setYlabel} Zaxis={Zaxis} setZAxis={setZAxis} Zlabel={Zlabel} setZlabel={setZlabel} filters={filters} setFilters={setFilters} />} />
+          <Route path="/select-parameter" element={<SelectPara loggedIn={loggedin} selectedGraph={selectedGraph} setSelectedGraph={setSelectedGraph} graphName={graphName} isDuplicating={isDuplicating} setIsDuplicating={setIsDuplicating} setGraphName={setGraphName} Xaxis={Xaxis} setXAxis={setXAxis} Yaxis={Yaxis} setYAxis={setYAxis} Xlabel={Xlabel} setXlabel={setXlabel} Ylabel={Ylabel} setYlabel={setYlabel} Zaxis={Zaxis} setZAxis={setZAxis} Zlabel={Zlabel} setZlabel={setZlabel} filters={filters} setFilters={setFilters} />} />
 
-          {/* <Route path="/create-graph" element={<CreateGraph selectedGraph={selectedGraph} setSelectedGraph={setSelectedGraph} graphName={graphName} setGraphName={setGraphName} Xaxis={Xaxis} setXAxis={setXAxis} Yaxis={Yaxis} setYAxis={setYAxis} Xlabel={Xlabel} setXlabel={setXlabel} Ylabel={Ylabel} setYlabel={setYlabel} filters={filters} setFilters={setFilters} />} /> */}
-
-          <Route path="/create-graph" element={<CreatedGraph2 selectedGraph={selectedGraph} setSelectedGraph={setSelectedGraph} graphName={graphName} setGraphName={setGraphName} Xaxis={Xaxis} setXAxis={setXAxis} Yaxis={Yaxis} setYAxis={setYAxis} Xlabel={Xlabel} setXlabel={setXlabel} Ylabel={Ylabel} setYlabel={setYlabel} filters={filters} setFilters={setFilters} />} />
+          <Route path="/create-graph" element={<CreatedGraph2 selectedGraph={selectedGraph} setSelectedGraph={setSelectedGraph} graphName={graphName} isDuplicating={isDuplicating} setIsDuplicating={setIsDuplicating} setGraphName={setGraphName} Xaxis={Xaxis} setXAxis={setXAxis} Yaxis={Yaxis} setYAxis={setYAxis} Xlabel={Xlabel} setXlabel={setXlabel} Ylabel={Ylabel} setYlabel={setYlabel} filters={filters} setFilters={setFilters} />} />
 
           <Route path="/student" element={<StudentData loggedIn={loggedin} />} />
 

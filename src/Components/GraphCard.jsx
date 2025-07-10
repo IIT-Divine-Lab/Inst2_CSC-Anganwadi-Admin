@@ -20,7 +20,7 @@ const GraphListCard = ({ title, description, chartType, chartData, chartImagePat
             className="w-full h-full object-contain"
           />
         </div>
-        <p className="text-gray-600 text-justify text-sm mt-2 ">{displayDescription.length > 75 ? displayDescription.slice(0, 75) + "..." : displayDescription}</p>
+        <p className="text-gray-600 text-justify text-sm mt-2 ">{displayDescription.length > 60 ? displayDescription.slice(0, 60) + "..." : displayDescription}</p>
       </div>
     </div>
   );

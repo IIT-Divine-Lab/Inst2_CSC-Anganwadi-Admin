@@ -10,7 +10,7 @@ import EmptyGraph from '../Components/EmptyGraph'
 import PreventRefresh from '../Components/PreventRefresh';
 import ParaSidebar2 from '../Components/ParaSidebar2';
 
-const SelectPara = ({ selectedGraph, setSelectedGraph, graphName, setGraphName, Xaxis, setXAxis, Yaxis, setYAxis, Xlabel, setXlabel, Ylabel, setYlabel, Zaxis, setZAxis, Zlabel, setZlabel, filters, setFilters }) => {
+const SelectPara = ({ selectedGraph, setSelectedGraph, graphName, setGraphName, Xaxis, setXAxis, Yaxis, setYAxis, Xlabel, setXlabel, Ylabel, setYlabel, Zaxis, setZAxis, Zlabel, setZlabel, filters, setFilters, isDuplicating = false, setIsDuplicating }) => {
 
   // const navigate = useNavigate();
   const [showFilters, setShowFilters] = useState(false);
@@ -54,6 +54,16 @@ const SelectPara = ({ selectedGraph, setSelectedGraph, graphName, setGraphName, 
     const droppedParam = e.dataTransfer.getData("parameter");
     setXAxis(droppedParam);
   }
+
+  useEffect(() => {
+    if (isDuplicating) {
+      console.log(Xaxis)
+      console.log(Yaxis)
+      console.log(filters)
+      console.log(selectedGraph);
+      console.log("Triggered Duplicating");
+    }
+  }, [isDuplicating])
 
   const handleDragOver = (e) => {
     e.preventDefault();
