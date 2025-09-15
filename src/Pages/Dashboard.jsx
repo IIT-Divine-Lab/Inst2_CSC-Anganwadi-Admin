@@ -27,7 +27,7 @@ const Dashboard = ({ loggedIn, setHidden }) => {
   }, [])
 
   console.log(data)
-  const sampleCardData = data.length > 0 ? data.map(item => {
+  const sampleCardData = data?.length > 0 ? data?.map(item => {
     console.log(item)
     if (!item) return null;
 

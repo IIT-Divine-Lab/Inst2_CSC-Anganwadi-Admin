@@ -10,7 +10,7 @@ const GraphListCard = ({ title, description, chartType, chartData, chartImagePat
     <div className="rounded-2xl overflow-hidden shadow-sm border border-[#6c5ce7] flex flex-col w-full h-full">
 
       <div className="bg-[#6c5ce7] text-white p-4">
-        <h3 className="font-medium text-lg">{`${displayTitle}`}</h3>
+        <h3 className="font-medium text-lg">{`${displayTitle.length > 25 ? displayTitle.slice(0, 25) + "..." : displayTitle}`}</h3>
       </div>
       <div className="bg-white p-4 flex flex-col items-center justify-between flex-grow">
         <div className="w-full h-28 flex items-center justify-center">
@@ -20,7 +20,7 @@ const GraphListCard = ({ title, description, chartType, chartData, chartImagePat
             className="w-full h-full object-contain"
           />
         </div>
-        <p className="text-gray-600 text-justify text-sm mt-2 ">{displayDescription.length > 75 ? displayDescription.slice(0, 75) + "..." : displayDescription}</p>
+        <p className="text-gray-600 text-justify text-sm mt-2 ">{displayDescription.length > 70 ? displayDescription.slice(0, 70) + "..." : displayDescription}</p>
       </div>
     </div>
   );

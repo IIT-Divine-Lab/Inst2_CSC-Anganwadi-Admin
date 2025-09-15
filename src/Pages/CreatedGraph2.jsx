@@ -16,7 +16,7 @@ import data from "../data/AnganwadiCentreData.json"
 
 ChartJS.register(CategoryScale, ArcElement, LinearScale, PointElement, LineElement, BarElement, Title, Tooltip, Legend);
 
-const CreatedGraph2 = ({ selectedGraph, setSelectedGraph, graphName, Xaxis, setXAxis, setYAxis, Yaxis, Xlabel, setXlabel, setYlabel, Ylabel, filters }) => {
+const CreatedGraph2 = ({ selectedGraph, setSelectedGraph, graphName, Xaxis, setXAxis, setYAxis, Yaxis, Xlabel, setXlabel, setYlabel, Ylabel, filters, setFilters }) => {
   // Parameter mapping from ParaSidebar to data fields
   const parameterMapping = useMemo(() => ({
     "State": "state",
@@ -58,6 +58,7 @@ const CreatedGraph2 = ({ selectedGraph, setSelectedGraph, graphName, Xaxis, setX
   const [graphType, setGraphType] = useState(null);
   const [graphSaved, setGraphSaved] = useState(false);
   const [graphData, setGraphData] = useState({ labels: [], datasets: [] });
+  const [appliedFilters, setAppliedFilters] = useState("")
 
   useEffect(() => {
     if (selectedGraph) {
@@ -155,20 +156,25 @@ const CreatedGraph2 = ({ selectedGraph, setSelectedGraph, graphName, Xaxis, setX
     setShowSaveModal(true);
   };
 
-  const updateGraphData = async (filtersToPass) => {
+  const updateGraphData = async () => {
     try {
+      console.log(Xaxis)
       let url = `dashboard/getUnsavedGraph/${parameterMapping[Xaxis]}?`
 
+      console.log(Yaxis)
       if (Yaxis) {
         url += `yAxis=${parameterMapping[Yaxis]}&`
       }
       console.log(selectedGraph)
-      console.log(filtersToPass)
+      // console.log(filtersToPass)
 
-      if (Object.keys(filtersToPass).length !== 0) {
-        url += `filters=${JSON.stringify(filtersToPass)}`
+      if (appliedFilters.length !== 0) {
+        url += `filters=${appliedFilters}`
       }
-      console.log("filter to pass", filtersToPass)
+      // if (Object.keys(filtersToPass).length !== 0) {
+      //   url += `filters=${JSON.stringify(filtersToPass)}`
+      // }
+      console.log("filter to pass", appliedFilters)
       console.log(url)
 
       axios.get(adminApiUrl + url)
@@ -176,7 +182,8 @@ const CreatedGraph2 = ({ selectedGraph, setSelectedGraph, graphName, Xaxis, setX
           const rawData = data.data;
           const backgroundColors = ['#8884d8', '#82ca9d', '#ffc658', '#ff8042', '#a4de6c', '#d0ed57'];
 
-          if (Object.keys(filtersToPass).length !== 0) {
+          if (appliedFilters.length !== 0) {
+            // if (Object.keys(filtersToPass).length !== 0) {
             setActiveFilters(filters)
           }
 
@@ -353,7 +360,7 @@ const CreatedGraph2 = ({ selectedGraph, setSelectedGraph, graphName, Xaxis, setX
       })
   }
 
-  const fetchGraphDataById = useCallback(async () => {
+  const fetchGraphDataById = useCallback(async (graphSelected) => {
     axios.get(adminApiUrl + `dashboard/graph/${id}`)
       .then(({ data }) => {
         const rawData = data.data;
@@ -361,16 +368,18 @@ const CreatedGraph2 = ({ selectedGraph, setSelectedGraph, graphName, Xaxis, setX
         const backgroundColors = ['#8884d8', '#82ca9d', '#ffc658', '#ff8042', '#a4de6c', '#d0ed57'];
 
         // if (Object.keys(filtersToPass).length !== 0) {
-        setActiveFilters(filters)
+        // setActiveFilters(filters)
         // }
 
         setSelectedGraph(graphDetails.type)
         setXlabel(graphDetails.details.Xlabel);
-        setXAxis(graphDetails.details.Xaxis);
-        setYAxis(graphDetails.details.Yaxis);
+        setXAxis(graphDetails.details.Xlabel);
+        setYAxis(graphDetails.details.Ylabel);
         setYlabel(graphDetails.details.Ylabel);
+        setFilters(graphDetails.details.filters);
+        setActiveFilters(graphDetails.details.filters)
 
-        if ((!selectedGraph.includes("Pie") && !selectedGraph.includes("Donut"))) {
+        if ((!graphSelected.includes("Pie") && !graphSelected.includes("Donut"))) {
 
           // 1. Unique districts (yAxis) become labels
           const states = [...new Set(rawData.map(item => item.xAxis))];
@@ -423,13 +432,13 @@ const CreatedGraph2 = ({ selectedGraph, setSelectedGraph, graphName, Xaxis, setX
       .catch((error) => {
         console.error(error);
       })
-  }, [filters, id, selectedGraph, setSelectedGraph, setXAxis, setYAxis, setXlabel, setYlabel])
+  }, [filters, id, setSelectedGraph, setXAxis, setYAxis, setXlabel, setYlabel])
 
   useEffect(() => {
-    if (id) {
-      fetchGraphDataById()
+    if (id && Xlabel === null) {
+      fetchGraphDataById(selectedGraph)
     }
-  }, [id, fetchGraphDataById])
+  }, [id, fetchGraphDataById, selectedGraph])
 
   // const handleEditClick = () => {
   //   console.log("handleEditClick")
@@ -547,6 +556,24 @@ const CreatedGraph2 = ({ selectedGraph, setSelectedGraph, graphName, Xaxis, setX
     },
   };
 
+  const handleFilterUpdate = (filterKey, val) => {
+    console.log(filterKey, val)
+    var newFiltersToApply = "";
+    const obj = {}
+    if (val !== "all") {
+      obj[parameterMapping[filterKey]] = val;
+      if (!appliedFilters.includes(parameterMapping[filterKey]))
+        newFiltersToApply = appliedFilters + JSON.stringify(obj) + ","
+      else {
+        console.log(appliedFilters.split(""))
+        let fil = JSON.parse(appliedFilters)
+        console.log(fil)
+      }
+      console.log(newFiltersToApply)
+      setAppliedFilters(newFiltersToApply)
+    }
+  }
+
   return (
     <div className="min-h-screen bg-slate-200 p-6">
       <div className="max-w-7xl mx-auto">
@@ -577,16 +604,17 @@ const CreatedGraph2 = ({ selectedGraph, setSelectedGraph, graphName, Xaxis, setX
                 {
                   activeFilters.map((filter, index) => (
                     <select
-                      onChange={(e) => e.currentTarget.value !== "all" ? updateGraphData({
-                        [parameterMapping[filter]]: [e.currentTarget.value]
-                      }) : updateGraphData({})}
+                      onChange={(e) => e.currentTarget.value !== "all" ? handleFilterUpdate(filter, e.currentTarget.value) : handleFilterUpdate(filter, "all")}
+                      // onChange={(e) => e.currentTarget.value !== "all" ? updateGraphData({
+                      //   [parameterMapping[filter]]: [e.currentTarget.value]
+                      // }) : updateGraphData({})}
                       key={index}
                       className="flex items-center gap-2 bg-indigo-50 px-3 py-1 rounded-full text-sm text-indigo-600"
                     >
                       <option value={"all"}>All</option>
                       {
                         filterValues[filter].map((val, index) => (
-                          <option value={val}>{val}</option>
+                          <option key={val + index} value={val}>{val}</option>
                         ))
                       }
                     </select>
@@ -603,7 +631,8 @@ const CreatedGraph2 = ({ selectedGraph, setSelectedGraph, graphName, Xaxis, setX
             </div>
 
             <div className="mt-4 text-sm text-gray-500">
-              {`Showing ${graphData?.labels?.length} unique ${Xaxis} values`}
+              {`Showing graph between ${Xlabel} & ${Ylabel} values`}
+              {`Showing graph between ${Xlabel} & ${Ylabel} values`}
             </div>
           </div>
 
