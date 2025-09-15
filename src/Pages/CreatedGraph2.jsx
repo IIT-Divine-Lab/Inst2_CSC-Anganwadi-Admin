@@ -16,7 +16,7 @@ import data from "../data/AnganwadiCentreData.json"
 
 ChartJS.register(CategoryScale, ArcElement, LinearScale, PointElement, LineElement, BarElement, Title, Tooltip, Legend);
 
-const CreatedGraph2 = ({ selectedGraph, setSelectedGraph, graphName, Xaxis, setXAxis, setYAxis, Yaxis, Xlabel, setXlabel, setYlabel, Ylabel, filters, setFilters }) => {
+const CreatedGraph2 = ({ selectedGraph, setSelectedGraph, graphName, setGraphName, Xaxis, setXAxis, setYAxis, Yaxis, Xlabel, setXlabel, setYlabel, savedDescription = "", setSavedDescription, Ylabel, filters, isDuplicating, setIsDuplicating, isEditing: isGraphEditing, setIsEditing, setFilters }) => {
   // Parameter mapping from ParaSidebar to data fields
   const parameterMapping = useMemo(() => ({
     "State": "state",
@@ -39,7 +39,7 @@ const CreatedGraph2 = ({ selectedGraph, setSelectedGraph, graphName, Xaxis, setX
   }
 
   const location = useLocation();
-  const { id } = location.state;
+  const id = location.state?.id;
 
   const navigate = useNavigate();
 
@@ -47,10 +47,10 @@ const CreatedGraph2 = ({ selectedGraph, setSelectedGraph, graphName, Xaxis, setX
 
   // const [loading, setLoading] = useState(true);
   // const [error, setError] = useState(null);
+  const [mode, setMode] = useState("add");
+  const [savedGraphDetails, setSavedGraphDetails] = useState();
   const [showSaveModal, setShowSaveModal] = useState(false);
   // eslint-disable-next-line
-  const [savedDescription, setSavedDescription] = useState("");
-  const [isDuplicating, setIsDuplicating] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   // eslint-disable-next-line
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
@@ -69,7 +69,12 @@ const CreatedGraph2 = ({ selectedGraph, setSelectedGraph, graphName, Xaxis, setX
   const handleGoBack = () => {
     console.log("handleGoBack")
     // Check if there are unsaved changes or important parameters selected
-    if (graphName || Xaxis || Yaxis || filters.length > 0) {
+    console.log("Graph Name: ", graphName)
+    console.log("X Axis: ", Xaxis)
+    console.log("Y Axis: ", Yaxis)
+    console.log("Filters: ", filters.length)
+    // console.log("Filters: ",)
+    if ((graphName || Xaxis || Yaxis || filters.length > 0) && !graphSaved) {
       const confirmNavigation = window.confirm(
         "Are you sure you want to go back? Any unsaved progress will be lost. Please save your graph first if you want to keep it."
       );
@@ -79,6 +84,7 @@ const CreatedGraph2 = ({ selectedGraph, setSelectedGraph, graphName, Xaxis, setX
         setYAxis(null)
         setXlabel(null)
         setYlabel(null)
+        setActiveFilters([]);
         navigate('/'); // Navigate to graph list or appropriate page
       }
     } else {
@@ -158,12 +164,11 @@ const CreatedGraph2 = ({ selectedGraph, setSelectedGraph, graphName, Xaxis, setX
 
   const updateGraphData = async () => {
     try {
-      console.log(Xaxis)
-      let url = `dashboard/getUnsavedGraph/${parameterMapping[Xaxis]}?`
+      let url = `dashboard/getUnsavedGraph/${parameterMapping[Xlabel]}?`
 
       console.log(Yaxis)
       if (Yaxis) {
-        url += `yAxis=${parameterMapping[Yaxis]}&`
+        url += `yAxis=${parameterMapping[Ylabel]}&`
       }
       console.log(selectedGraph)
       // console.log(filtersToPass)
@@ -182,9 +187,13 @@ const CreatedGraph2 = ({ selectedGraph, setSelectedGraph, graphName, Xaxis, setX
           const rawData = data.data;
           const backgroundColors = ['#8884d8', '#82ca9d', '#ffc658', '#ff8042', '#a4de6c', '#d0ed57'];
 
-          if (appliedFilters.length !== 0) {
-            // if (Object.keys(filtersToPass).length !== 0) {
-            setActiveFilters(filters)
+          if (Object.keys(filtersToPass).length !== 0) {
+
+            // console.log(filtersToPass)
+            // console.log(filters)
+            // console.log(activeFilters)
+
+            // setActiveFilters(filters)
           }
 
           if ((!selectedGraph.includes("Pie") && !selectedGraph.includes("Donut"))) {
@@ -248,13 +257,11 @@ const CreatedGraph2 = ({ selectedGraph, setSelectedGraph, graphName, Xaxis, setX
 
   const initialDataCall = useCallback(async () => {
     try {
-      let url = `dashboard/getUnsavedGraph/${parameterMapping[Xaxis]}?`
+      let url = `dashboard/getUnsavedGraph/${parameterMapping[Xlabel]}?`
 
-      if (Yaxis) {
-        url += `yAxis=${parameterMapping[Yaxis]}`
+      if (Ylabel) {
+        url += `yAxis=${parameterMapping[Ylabel]}`
       }
-      console.log(selectedGraph)
-      console.log(url)
 
       axios.get(adminApiUrl + url)
         .then(({ data }) => {
@@ -321,7 +328,7 @@ const CreatedGraph2 = ({ selectedGraph, setSelectedGraph, graphName, Xaxis, setX
     catch (error) {
       console.error(error);
     }
-  }, [Xaxis, Yaxis, filters, parameterMapping, selectedGraph])
+  }, [Xlabel, Ylabel, filters, parameterMapping, selectedGraph])
 
   useEffect(() => {
     // console.log(!graphData?.labels?.length, !graphData?.datasets?.length)
@@ -350,9 +357,11 @@ const CreatedGraph2 = ({ selectedGraph, setSelectedGraph, graphName, Xaxis, setX
     }
 
     axios.post(adminApiUrl + `dashboard/`, dataToSave)
-      .then((data) => {
+      .then(({ data }) => {
         console.log(data)
         setGraphSaved(true)
+        setIsDuplicating(false);
+        setSavedGraphDetails(data?.graph)
         setSavedDescription(description)
       })
       .catch((error) => {
@@ -368,16 +377,18 @@ const CreatedGraph2 = ({ selectedGraph, setSelectedGraph, graphName, Xaxis, setX
         const backgroundColors = ['#8884d8', '#82ca9d', '#ffc658', '#ff8042', '#a4de6c', '#d0ed57'];
 
         // if (Object.keys(filtersToPass).length !== 0) {
-        // setActiveFilters(filters)
+        setActiveFilters(graphDetails?.details.filters)
         // }
 
+        // setFilters(graphDetails?.details.filters);
+        setGraphName(graphDetails?.name);
+        setGraphSaved(true);
+        setSavedDescription(graphDetails.desc);
         setSelectedGraph(graphDetails.type)
         setXlabel(graphDetails.details.Xlabel);
-        setXAxis(graphDetails.details.Xlabel);
-        setYAxis(graphDetails.details.Ylabel);
         setYlabel(graphDetails.details.Ylabel);
-        setFilters(graphDetails.details.filters);
-        setActiveFilters(graphDetails.details.filters)
+        setXAxis(graphDetails.details.Xaxis);
+        setYAxis(graphDetails.details.Yaxis);
 
         if ((!graphSelected.includes("Pie") && !graphSelected.includes("Donut"))) {
 
@@ -432,53 +443,14 @@ const CreatedGraph2 = ({ selectedGraph, setSelectedGraph, graphName, Xaxis, setX
       .catch((error) => {
         console.error(error);
       })
-  }, [filters, id, setSelectedGraph, setXAxis, setYAxis, setXlabel, setYlabel])
+  }, [id, selectedGraph, setSavedDescription, setGraphName, setSelectedGraph, setXAxis, setYAxis, setXlabel, setYlabel])
 
   useEffect(() => {
-    if (id && Xlabel === null) {
-      fetchGraphDataById(selectedGraph)
+    if (id) {
+      setMode("edit");
+      fetchGraphDataById()
     }
   }, [id, fetchGraphDataById, selectedGraph])
-
-  // const handleEditClick = () => {
-  //   console.log("handleEditClick")
-  //   // Navigate back to the select-parameter page with all the current parameters
-  //   navigate('/select-parameter', {
-  //     state: {
-  //       selectedGraph,
-  //       graphName,
-  //       Xaxis,
-  //       Yaxis,
-  //       Xlabel,
-  //       Ylabel,
-  //       Zaxis,
-  //       Zlabel,
-  //       filters,
-  //       graphId, // Pass the existing graphId for updating
-  //       savedDescription, // Pass the saved description
-  //     }
-  //   });
-  // };
-
-  // const handleDuplicateClick = () => {
-  //   console.log("handleDuplicateClick")
-  //   // Set duplicating flag to create a new graph
-  //   setIsDuplicating(true);
-
-  //   // Clear graphId to make it a new graph
-  //   setGraphId(null);
-  //   setGraphSaved(false);
-
-  //   // Immediately update the graph name to show (COPY) in the UI
-  //   const duplicatedName = `${graphName || `Distribution of ${Xaxis}`} (COPY)`;
-  //   setGraphName(duplicatedName);
-
-  //   // Clear the description for the new copy
-  //   setSavedDescription("");
-
-  //   // Show save modal to confirm
-  //   setShowSaveModal(true);
-  // };
 
   const chartData2d = {
     labels: graphData.labels,
@@ -556,21 +528,24 @@ const CreatedGraph2 = ({ selectedGraph, setSelectedGraph, graphName, Xaxis, setX
     },
   };
 
-  const handleFilterUpdate = (filterKey, val) => {
-    console.log(filterKey, val)
-    var newFiltersToApply = "";
-    const obj = {}
-    if (val !== "all") {
-      obj[parameterMapping[filterKey]] = val;
-      if (!appliedFilters.includes(parameterMapping[filterKey]))
-        newFiltersToApply = appliedFilters + JSON.stringify(obj) + ","
-      else {
-        console.log(appliedFilters.split(""))
-        let fil = JSON.parse(appliedFilters)
-        console.log(fil)
+  async function handleDeleteConfirm(e) {
+    const isEditing = mode === "edit";
+
+    const idToDelete = isEditing ? id : savedGraphDetails?._id
+
+    try {
+      const response = await axios.delete(adminApiUrl + `dashboard/graph/${idToDelete}`)
+
+      const { data } = response;
+
+      if (response.status === 200) {
+        navigate("/");
       }
-      console.log(newFiltersToApply)
-      setAppliedFilters(newFiltersToApply)
+
+      console.log(data);
+
+    } catch (error) {
+      return alert("Error");
     }
   }
 
@@ -626,8 +601,8 @@ const CreatedGraph2 = ({ selectedGraph, setSelectedGraph, graphName, Xaxis, setX
             <div className="h-[400px]">
               {graphType === "Line Graph" && <Line ref={chartRef} options={chartOptions2d} data={chartData2d} />}
               {graphType === "Bar Graph" && <Bar ref={chartRef} options={chartOptions2d} data={chartData2d} />}
-              {selectedGraph === "Pie Graph" && <Pie ref={chartRef} data={chartData1d} options={chartOptions1d} />}
-              {selectedGraph === "Doughnut Graph" && <Doughnut ref={chartRef} data={chartData1d} options={chartOptions1d} />}
+              {graphType === "Pie Graph" && <Pie ref={chartRef} data={chartData1d} options={chartOptions1d} />}
+              {graphType === "Doughnut Graph" && <Doughnut ref={chartRef} data={chartData1d} options={chartOptions1d} />}
             </div>
 
             <div className="mt-4 text-sm text-gray-500">
@@ -640,7 +615,30 @@ const CreatedGraph2 = ({ selectedGraph, setSelectedGraph, graphName, Xaxis, setX
             onExport={handleExport}
             onSave={handleSaveClick}
             // onEdit={handleEditClick}
-            // onDuplicate={handleDuplicateClick}
+            onDuplicate={() => {
+              setIsDuplicating(true)
+              setSelectedGraph(selectedGraph)
+              setXAxis(Xaxis)
+              setXlabel(Xlabel)
+              console.log(savedGraphDetails);
+              setGraphName(mode === "edit" ? graphName : savedGraphDetails?.name);
+              setYAxis(Yaxis)
+              setYlabel(Ylabel)
+              setFilters(activeFilters)
+              navigate("/select-parameter")
+            }}
+            onEdit={() => {
+              setIsEditing(true)
+              setSelectedGraph(selectedGraph)
+              setXAxis(Xaxis)
+              setXlabel(Xlabel)
+              console.log(savedGraphDetails);
+              setGraphName(mode === "edit" ? graphName : savedGraphDetails?.name);
+              setYAxis(Yaxis)
+              setYlabel(Ylabel)
+              setFilters(activeFilters)
+              navigate("/select-parameter", { state: { id: mode === "edit" ? id : savedGraphDetails?._id } })
+            }}
             onDelete={handleDeleteClick}
             savedDescription={savedDescription}
             graphSaved={graphSaved}
@@ -667,7 +665,7 @@ const CreatedGraph2 = ({ selectedGraph, setSelectedGraph, graphName, Xaxis, setX
       <DeleteGraphModal
         isOpen={showDeleteModal}
         onClose={() => setShowDeleteModal(false)}
-        // onDelete={handleDeleteConfirm}
+        onDelete={handleDeleteConfirm}
         graphTitle={graphName || `Distribution of ${Xaxis}`}
       />
     </div >

@@ -31,7 +31,7 @@
       "xlsx": "^0.18.5"
    },
    "scripts": {
-      "start-dev": "set PORT=3002 && craco start",
+      "start-dev": "set PORT=3003 && craco start",
       "start": "craco start",
       "build": "craco build",
       "test": "craco test",

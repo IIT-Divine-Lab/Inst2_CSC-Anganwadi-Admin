@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 // import { useNavigate } from 'react-router-dom';
 import Arrow from '../data/images/go-back-arrow.png'
 import Cross from '../data/images/cross.png'
@@ -9,12 +9,27 @@ import Dropdown from '../Components/Dropdown'
 import EmptyGraph from '../Components/EmptyGraph'
 import PreventRefresh from '../Components/PreventRefresh';
 import ParaSidebar2 from '../Components/ParaSidebar2';
+import { useLocation, useNavigate } from 'react-router-dom'
+import axios from 'axios'
+import adminApiUrl from '../adminApiUrl'
 
-const SelectPara = ({ selectedGraph, setSelectedGraph, graphName, setGraphName, Xaxis, setXAxis, Yaxis, setYAxis, Xlabel, setXlabel, Ylabel, setYlabel, Zaxis, setZAxis, Zlabel, setZlabel, filters, setFilters }) => {
+const SelectPara = ({ selectedGraph, setSelectedGraph, graphName, setGraphName, Xaxis, setXAxis, Yaxis, setYAxis, Xlabel, setXlabel, Ylabel, setYlabel, Zaxis, setZAxis, Zlabel, isEditing = false, setIsEditing, description, setEditing, setZlabel, filters, setFilters, isDuplicating = false }) => {
 
-  // const navigate = useNavigate();
+  const location = useLocation()
+  const navigate = useNavigate();
   const [showFilters, setShowFilters] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
+  const [editableId, setEditableId] = useState(location.state?.id)
+
+  const parameterMapping = useMemo(() => ({
+    "State": "state",
+    "District": "district",
+    "Centre Code": "center",
+    "Block": "block",
+    "School Type": "type",
+    "Age Group": "age",
+    "Gender": "gender"
+  }), []);
 
   useEffect(() => {
     setFilters((prevFilters) => prevFilters); // Trigger re-render without modifying state
@@ -26,6 +41,7 @@ const SelectPara = ({ selectedGraph, setSelectedGraph, graphName, setGraphName, 
     setGraphName("");
     setXAxis(null);
     setYAxis(null);
+    setIsEditing(false);
     setZAxis(null);
     setFilters([]);
     window.history.back()
@@ -36,7 +52,9 @@ const SelectPara = ({ selectedGraph, setSelectedGraph, graphName, setGraphName, 
     e.preventDefault();
     setIsDragging(false);
     const droppedParam = e.dataTransfer.getData("parameter");
-    setXAxis(droppedParam);
+    console.log(droppedParam)
+    setXlabel(droppedParam)
+    setXAxis(parameterMapping[droppedParam]);
     setFilters((prevFilters) => prevFilters.filter((item) => item !== droppedParam)); // Remove from filters
   };
 
@@ -44,7 +62,9 @@ const SelectPara = ({ selectedGraph, setSelectedGraph, graphName, setGraphName, 
     e.preventDefault();
     setIsDragging(false);
     const droppedParam = e.dataTransfer.getData("parameter");
-    setYAxis(droppedParam);
+    console.log(droppedParam)
+    setYlabel(droppedParam)
+    setYAxis(parameterMapping[droppedParam]);
     setFilters((prevFilters) => prevFilters.filter((item) => item !== droppedParam)); // Remove from filters
   }
 
@@ -52,13 +72,71 @@ const SelectPara = ({ selectedGraph, setSelectedGraph, graphName, setGraphName, 
     e.preventDefault();
     setIsDragging(false);
     const droppedParam = e.dataTransfer.getData("parameter");
-    setXAxis(droppedParam);
+    console.log(droppedParam)
+    setXlabel(droppedParam)
+    setXAxis(parameterMapping[droppedParam]);
   }
+
+  useEffect(() => {
+    if (isDuplicating) {
+      console.log("Triggered Duplicating");
+    }
+  }, [isDuplicating])
+
+  useEffect(() => {
+    if (isEditing) {
+      console.log("Triggered Editing");
+    }
+  }, [isEditing])
 
   const handleDragOver = (e) => {
     e.preventDefault();
     setIsDragging(true);
   };
+
+  async function handleGraphEdit() {
+    try {
+      if (isEditing) {
+        if (editableId === undefined)
+          return navigate("/create-graph")
+        const dataToSave = {
+          type: selectedGraph,
+          name: graphName,
+          desc: description,
+          details: {
+            Xaxis: parameterMapping[Xlabel],
+            Xlabel,
+            filters
+          }
+        }
+        if ((!selectedGraph.includes("Pie") && !selectedGraph.includes("Donut"))) {
+          dataToSave.details = {
+            ...dataToSave.details,
+            Yaxis: parameterMapping[Ylabel],
+            Ylabel
+          }
+        }
+
+        const id = editableId;
+
+        axios.put(adminApiUrl + `dashboard/graph/${id}`, dataToSave)
+          .then(({ data }) => {
+            console.log(data)
+            setIsEditing(false);
+            setEditableId(null);
+            navigate("/create-graph", { state: { id } })
+          })
+          .catch((error) => {
+            console.error(error);
+          })
+      }
+      else
+        throw new Error("Not Call")
+    }
+    catch (error) {
+      return alert(error?.message || error || "Error")
+    }
+  }
 
   return (
     <>
@@ -93,7 +171,7 @@ const SelectPara = ({ selectedGraph, setSelectedGraph, graphName, setGraphName, 
 
             </button>
             {/* Heading */}
-            <h1 className='text-xl text-black mt-4 font-medium'> Creating new graph </h1>
+            <h1 className='text-xl text-black mt-4 font-medium'> {isEditing ? "Editing graph" : "Creating new graph"} </h1>
           </div>
 
           {/* Graph-Type, Filters Options */}
@@ -186,11 +264,11 @@ const SelectPara = ({ selectedGraph, setSelectedGraph, graphName, setGraphName, 
 
         {/* Right Sidebar */}
         {selectedGraph !== "Pie Graph" && selectedGraph !== "Doughnut Graph" && (
-          <ParaSidebar setIsDragging={setIsDragging} selectedGraph={selectedGraph} graphName={graphName} setGraphName={setGraphName} Xaxis={Xaxis} setXAxis={setXAxis} Yaxis={Yaxis} setYAxis={setYAxis} Xlabel={Xlabel} setXlabel={setXlabel} Ylabel={Ylabel} setYlabel={setYlabel} filters={filters} setFilters={setFilters} showFilters={showFilters} setShowFilters={setShowFilters} />
+          <ParaSidebar handleEdit={handleGraphEdit} isEditing={isEditing} setIsDragging={setIsDragging} selectedGraph={selectedGraph} graphName={graphName} setGraphName={setGraphName} Xaxis={Xaxis} setXAxis={setXAxis} Yaxis={Yaxis} setYAxis={setYAxis} Xlabel={Xlabel} setXlabel={setXlabel} Ylabel={Ylabel} setYlabel={setYlabel} filters={filters} setFilters={setFilters} showFilters={showFilters} setShowFilters={setShowFilters} />
         )}
 
         {(selectedGraph === "Pie Graph" || selectedGraph === "Doughnut Graph") && (
-          <ParaSidebar2 setIsDragging={setIsDragging} selectedGraph={selectedGraph} graphName={graphName} setGraphName={setGraphName} Xaxis={Xaxis} setXAxis={setXAxis} setXlabel={setXlabel} Xlabel={Xlabel} Zaxis={Zaxis} setZAxis={setZAxis} Zlabel={Zlabel} setZlabel={setZlabel} filters={filters} setFilters={setFilters} />
+          <ParaSidebar2 isEditing={isEditing} handleEdit={handleGraphEdit} setIsDragging={setIsDragging} selectedGraph={selectedGraph} graphName={graphName} setGraphName={setGraphName} Xaxis={Xaxis} setXAxis={setXAxis} setXlabel={setXlabel} Xlabel={Xlabel} Zaxis={Zaxis} setZAxis={setZAxis} Zlabel={Zlabel} setZlabel={setZlabel} filters={filters} setFilters={setFilters} />
         )}
 
       </div>

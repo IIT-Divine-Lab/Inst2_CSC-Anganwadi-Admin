@@ -6,10 +6,20 @@ import ArrowDown from '../data/images/down-arrow.png'
 import ArrowUp from '../data/images/up-arrow.png'
 import { Link } from 'react-router-dom'
 
-const ParaSidebar = ({ isDragging, setIsDragging, selectedGraph, graphName, setGraphName, Xaxis, setXAxis, Yaxis, setYAxis, Xlabel, setXlabel, Ylabel, setYlabel, filters, setFilters, showFilters, setShowFilters }) => {
+const ParaSidebar = ({ isDragging, isEditing = false, setIsDragging, selectedGraph, graphName, setGraphName, Xaxis, setXAxis, Yaxis, setYAxis, Xlabel, handleEdit, setXlabel, Ylabel, setYlabel, filters, setFilters, showFilters, setShowFilters }) => {
 
   const [checkedFilters, setCheckedFilters] = useState({}); // Stores checkbox states
   const [filterToggle, setFilterToggle] = useState(false);
+
+  const parameterMapping = useMemo(() => ({
+    "State": "state",
+    "District": "district",
+    "Centre Code": "center",
+    "Block": "block",
+    "School Type": "type",
+    "Age Group": "age",
+    "Gender": "gender"
+  }), []);
 
   const parameters = useMemo(() => ([
     { name: "State", type: "Categorical" },
@@ -100,7 +110,11 @@ const ParaSidebar = ({ isDragging, setIsDragging, selectedGraph, graphName, setG
               <h1 className='text-gray text-sm mb-2'> Parameters </h1>
 
               {parameters
-                .filter(param => param.name !== Xaxis && param.name !== Yaxis)
+                .filter(param => {
+                  console.log(param)
+
+                  return parameterMapping[param.name] !== Xaxis && parameterMapping[param.name] !== Yaxis
+                })
                 .map((param, index) => (
                   <div
                     key={index}
@@ -161,7 +175,7 @@ const ParaSidebar = ({ isDragging, setIsDragging, selectedGraph, graphName, setG
                   {filterToggle && (
                     <div className='p-2 pb-4 '>
                       {parameters
-                        .filter(param => param.name !== Xaxis && param.name !== Yaxis)
+                        .filter(param => parameterMapping[param.name] !== Xaxis && parameterMapping[param.name] !== Yaxis)
                         .map((param, index) => (
                           <div key={index} className='flex items-center gap-2 p-2'>
                             <input
@@ -194,11 +208,16 @@ const ParaSidebar = ({ isDragging, setIsDragging, selectedGraph, graphName, setG
 
         {(Xaxis && Yaxis) && (
           <button className="flex gap-3 justify-center items-center bg-[#6C5DD3] text-white w-[80%] h-14 mb-6 rounded-lg font-semibold hover:cursor-pointer">
-            <Link to="/create-graph" className='w-full h-full flex items-center justify-center'
-              state={{ selectedGraph, graphName, Xaxis, Yaxis, Xlabel, Ylabel, filters }}
-            >
-              <div className=''> Create Graph </div>
-            </Link>
+            {
+              !isEditing && <Link to="/create-graph" className='w-full h-full flex items-center justify-center'
+                state={{ selectedGraph, graphName, Xaxis, Yaxis, Xlabel, Ylabel, filters }}
+              >
+                <div className=''> Create Graph </div>
+              </Link>
+            }
+            {
+              isEditing && <div onClick={handleEdit} className=''> Edit Graph </div>
+            }
           </button>
         )}
       </div>

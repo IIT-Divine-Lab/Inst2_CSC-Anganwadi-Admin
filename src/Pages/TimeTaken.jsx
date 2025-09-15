@@ -134,15 +134,17 @@ const TimeTaken = ({ loggedIn }) => {
 
    const getRequiredAWCDetail = (awc, field) => {
       const awcDetails = awc?.split(" - ");
+      if (awcDetails === undefined || awcDetails?.length <= 0) {
+         return;
+      }
       switch (field) {
-         case "state": return awcDetails[0];
-         case "district": return awcDetails[1];
-         case "code": return awcDetails[2];
-         case "block": return awcDetails[3];
-         case "type": return awcDetails[4];
+         case "state": return awcDetails?.[0];
+         case "district": return awcDetails?.[1];
+         case "code": return awcDetails?.[2];
+         case "block": return awcDetails?.[3];
+         case "type": return awcDetails?.[4];
          default:
             break;
-
       }
    }
 
