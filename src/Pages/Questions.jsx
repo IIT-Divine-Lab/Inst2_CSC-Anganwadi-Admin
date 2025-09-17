@@ -186,7 +186,7 @@ const Questions = ({ loggedIn }) => {
       }}>
         <ReactModal isOpen={!!deleteModalView} style={{
           content: {
-            width: "400px",
+            width: "450px",
             height: "300px",
             marginLeft: 0,
             marginRight: 0,
@@ -211,7 +211,7 @@ const Questions = ({ loggedIn }) => {
       }}>
         <ReactModal isOpen={!!modalContent} style={{
           content: {
-            width: "600px",
+            width: "700px",
             marginLeft: 0,
             marginRight: 0,
             display: "flex",

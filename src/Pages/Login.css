@@ -6,7 +6,7 @@
    align-items: center;
 }
 
-.loginLeftContainer{
+.loginLeftContainer {
    width: 50%;
    height: 100%;
    background-size: cover;
@@ -14,7 +14,7 @@
    background-repeat: no-repeat;
 }
 
-.loginRightContainer{
+.loginRightContainer {
    width: 50%;
    height: 100%;
    background-color: white;
@@ -23,7 +23,7 @@
    justify-content: space-between;
 }
 
-.headerIconContainer{
+.headerIconContainer {
    /* padding: 11px 0px 11px 0; */
    margin: 11px 0 11px 0;
    height: 10%;
@@ -32,53 +32,55 @@
    justify-content: flex-end;
 }
 
-.headerIconContainer > div{
+.headerIconContainer > div {
    padding-right: 15px;
+   display: flex;
 }
+
 .headerIconContainer > div,
-.headerIconContainer > div> img{
+.headerIconContainer > div > img {
    height: 100%;
 }
-.headerIconContainer > div> img:last-child{
+.headerIconContainer > div > img:last-child {
    margin-left: 15px;
 }
 
-.loginFormContainer.util-flex-col{
+.loginFormContainer.util-flex-col {
    height: 80%;
-   width: calc(100% - 200px);
+   width: 100%;
    justify-content: center;
    padding: 0 100px;
 }
 
-.util-flex-col{
+.util-flex-col {
    display: flex;
    width: 100%;
    flex-direction: column;
 }
 
-.util-flex-col:nth-child(2){
+.util-flex-col:nth-child(2) {
    margin: 30px 0;
 }
 
-.util-flex-col > p:first-child{
+.util-flex-col > p:first-child {
    font-size: 24px;
    margin-bottom: 8px;
 }
 
 .util-flex-col > input,
-.util-flex-col > div > input{
+.util-flex-col > div > input {
    width: calc(100% - 8px);
    height: 40px;
    padding-right: 0;
    font-size: 16px;
 }
 
-.customInput{
+.customInput {
    position: relative;
    width: 100%;
 }
 
-.customInput > div{
+.customInput > div {
    position: absolute;
    top: 50%;
    transform: translateY(-50%);
@@ -90,18 +92,17 @@
    font-weight: bold;
    color: var(--primary-color);
 
-   &:hover{
+   &:hover {
       color: var(--white);
       background-color: var(--primary-color);
    }
 }
 
-
-.util-flex-col > input:first-child{
+.util-flex-col > input:first-child {
    margin-bottom: 15px;
 }
 
-.customLoginBtn{
+.customLoginBtn {
    width: 100%;
    /* padding: 0; */
    margin: 0;

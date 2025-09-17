@@ -187,14 +187,14 @@ const CreatedGraph2 = ({ selectedGraph, setSelectedGraph, graphName, setGraphNam
           const rawData = data.data;
           const backgroundColors = ['#8884d8', '#82ca9d', '#ffc658', '#ff8042', '#a4de6c', '#d0ed57'];
 
-          if (Object.keys(filtersToPass).length !== 0) {
+         //  if (Object.keys(filtersToPass).length !== 0) {
 
             // console.log(filtersToPass)
             // console.log(filters)
             // console.log(activeFilters)
 
             // setActiveFilters(filters)
-          }
+         //  }
 
           if ((!selectedGraph.includes("Pie") && !selectedGraph.includes("Donut"))) {
 
@@ -579,7 +579,7 @@ const CreatedGraph2 = ({ selectedGraph, setSelectedGraph, graphName, setGraphNam
                 {
                   activeFilters.map((filter, index) => (
                     <select
-                      onChange={(e) => e.currentTarget.value !== "all" ? handleFilterUpdate(filter, e.currentTarget.value) : handleFilterUpdate(filter, "all")}
+                     //  onChange={(e) => e.currentTarget.value !== "all" ? handleFilterUpdate(filter, e.currentTarget.value) : handleFilterUpdate(filter, "all")}
                       // onChange={(e) => e.currentTarget.value !== "all" ? updateGraphData({
                       //   [parameterMapping[filter]]: [e.currentTarget.value]
                       // }) : updateGraphData({})}

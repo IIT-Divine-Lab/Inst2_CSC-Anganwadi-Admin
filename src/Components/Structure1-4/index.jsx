@@ -13,7 +13,13 @@ const Structure1to4 = ({ view, structure, questionText, questionImageBefore, que
       aud.play();
    }
 
+   const getSourceWidth = (img) => {
+      console.log(img);
+      return true
+   }
+
    const getSourceURL = (obj, type = "image") => {
+      console.log("Hello");
       try {
          if (obj && type === "audio") {
             let blobData = obj;
@@ -55,6 +61,7 @@ const Structure1to4 = ({ view, structure, questionText, questionImageBefore, que
          </Heading>
          <Body>
             {
+               console.log(questionImageAfter) && 
                structure === 1 || structure === 2 ?
                   questionImageAfter !== undefined ?
                      <div>

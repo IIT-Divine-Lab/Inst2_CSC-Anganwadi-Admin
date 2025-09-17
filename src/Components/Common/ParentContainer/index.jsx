@@ -4,8 +4,8 @@ const ParentContainer = (props) => {
 
    const questionStructure = {
       width: props.view ? "850px" : "100%",
-      minHeight: props.view ? "80vh" : "",
-      height: props.view ? "80vh" : "100%",
+      minHeight: props.view ? "80vh" : "100%",
+      // height: props.view ? "80vh" : "100%",
       display: "flex",
       justifyContent: "center",
       alignItems: "center"
