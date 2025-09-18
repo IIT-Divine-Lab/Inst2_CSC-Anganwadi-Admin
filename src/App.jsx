@@ -50,7 +50,7 @@ const App = () => {
     else if (window.innerWidth > 1200 && loggedin) {
       setIsCollapsed(false);
     }
-  }, [loggedin])
+  }, [loggedin, isCollapsed])
 
   return (
     <Router>

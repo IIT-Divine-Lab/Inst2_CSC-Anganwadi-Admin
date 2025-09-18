@@ -391,9 +391,9 @@ const CreatedGraph2 = ({ selectedGraph, setSelectedGraph, graphName, setGraphNam
         setYlabel(graphDetails.details.Ylabel);
         setXAxis(graphDetails.details.Xaxis);
         setYAxis(graphDetails.details.Yaxis);
-
+        
         if ((!graphSelected.includes("Pie") && !graphSelected.includes("Donut"))) {
-
+           
           // 1. Unique districts (yAxis) become labels
           const states = [...new Set(rawData.map(item => item.xAxis))];
 
@@ -404,22 +404,22 @@ const CreatedGraph2 = ({ selectedGraph, setSelectedGraph, graphName, setGraphNam
             return {
               label: district,
               data: states.map(state => {
-                const entry = rawData.find(d => d.xAxis === state && d.yAxis === district);
-                return entry ? entry.value : 0;
+                 const entry = rawData.find(d => d.xAxis === state && d.yAxis === district);
+                 return entry ? entry.value : 0;
               }),
               backgroundColor: backgroundColors[index % backgroundColors.length]
             };
-          });
-          console.log({ labels: states, datasets })
-          setGraphData({ labels: states, datasets })
-        }
+         });
+         console.log({ labels: states, datasets })
+         setGraphData({ labels: states, datasets })
+      }
         else {
-          const valueMap = {};
+           const valueMap = {};
 
-          rawData.forEach(({ xAxis, value }) => {
-            if (!valueMap[xAxis]) {
-              valueMap[xAxis] = 0;
-            }
+           rawData.forEach(({ xAxis, value }) => {
+              if (!valueMap[xAxis]) {
+                 valueMap[xAxis] = 0;
+               }
             valueMap[xAxis] += value;
           });
 
@@ -433,27 +433,28 @@ const CreatedGraph2 = ({ selectedGraph, setSelectedGraph, graphName, setGraphNam
           );
           setGraphData({
             labels, datasets: [
-              {
-                label: '',
+               {
+                  label: '',
                 data: values,
                 backgroundColors: dynamicBackgroundColors
               }
             ]
           })
-        }
+         }
       })
       .catch((error) => {
-        console.error(error);
+         console.log(selectedGraph)
+         console.error(error);
       })
   }, [id, selectedGraph, setSavedDescription, setGraphName, setSelectedGraph, setXAxis, setYAxis, setXlabel, setYlabel])
 
   useEffect(() => {
-    if (id) {
+     if (id) {
       setMode("edit");
       fetchGraphDataById()
       console.log(selectedGraph)
     }
-  }, [id, fetchGraphDataById, selectedGraph])
+   }, [id, fetchGraphDataById, selectedGraph])
 
   const chartData2d = {
     labels: graphData.labels,
