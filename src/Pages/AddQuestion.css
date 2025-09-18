@@ -2,13 +2,16 @@
    width: 47%;
 }
 
-.w-100{
-   width: 100%;
+
+@media (max-width: 1200px){
+   .w-100{
+      width: calc(100vw - 140px);
+   }
 }
 
 .flex-jc {
    display: flex;
-   justify-content: center;
+   justify-content: space-around;
 }
 
 .fieldLabel {

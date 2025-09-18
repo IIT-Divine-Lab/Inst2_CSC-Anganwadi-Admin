@@ -1,11 +1,19 @@
 .banner {
    background-color: #fff;
    padding: 20px;
-   min-width: 100%;
    min-height: 100%;
    border-radius: 8px;
    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
+
+.banner:not(:has(> .flex-jc))
+.banner:not(:has(.w-47)) {
+   min-width: 100%;
+}
+
+/* .banner:has(> .flex-jc) {
+   min-width: initial;
+} */
 
 h1 {
    color: #333;

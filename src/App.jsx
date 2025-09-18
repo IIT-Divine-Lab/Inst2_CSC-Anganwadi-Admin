@@ -68,7 +68,9 @@ const App = () => {
               :
               { marginLeft: "190px" }
           :
-          {}
+          {
+            height: "unset"
+          }
         }
       >
         <Routes>

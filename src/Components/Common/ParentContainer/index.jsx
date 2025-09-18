@@ -15,7 +15,7 @@ const ParentContainer = (props) => {
       transform: props.view ? `scale(${props.view})` : "",
       minHeight: "750px",
       width: "90%",
-      padding: "0 5%",
+      // padding: "0 5%",
       display: "flex",
       justifyContent: "center",
       alignItems: "center",

@@ -7,7 +7,7 @@ const Button = (props) => {
       color: "white",
       padding: "15px 0",
       marginTop: props.form ? 0 : "10px",
-      width: props.form ? "200px" : "500px",
+      width: props.form ? "200px" : "-webkit-fill-available",
       borderRadius: "16px",
       cursor: "pointer",
       textAlign: "center",

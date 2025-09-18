@@ -111,7 +111,7 @@ const Structure1to4 = ({ view, structure, questionText, questionImageBefore, que
                   }
                   {
                      totalOptions >= 3 ?
-                        <div className="optionContainer" style={totalOptions >= 3 ? { marginLeft: "0px", marginTop: "40px" } : {}}>
+                        <div className="optionContainer">
                            <img src={options !== undefined ? getSourceURL(options[2]) : undefined} alt='' className={correctAnswer && correctAnswer[0] === "3" ? "option optionActive" : "option"} style={options === undefined ? { minHeight: "120px", backgroundColor: "#cacaca" } : {}} />
                            <input type="radio" name="q1" id="a3" className='chooseOption' />
                         </div>
@@ -120,7 +120,7 @@ const Structure1to4 = ({ view, structure, questionText, questionImageBefore, que
                   }
                   {
                      totalOptions >= 4 ?
-                        <div className="optionContainer" style={totalOptions >= 3 ? { marginTop: "40px" } : {}}>
+                        <div className="optionContainer">
                            <img src={options !== undefined ? getSourceURL(options[3]) : undefined} alt='' className={correctAnswer && correctAnswer[0] === "4" ? "option optionActive" : "option"} style={options === undefined ? { minHeight: "120px", backgroundColor: "#cacaca" } : {}} />
                            <input type="radio" name="q1" id="a4" className='chooseOption' />
                         </div>

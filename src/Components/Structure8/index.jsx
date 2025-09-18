@@ -37,11 +37,13 @@ const Structure8 = ({ view, questionText, questionImageAfter }) => {
             {questionText !== "" ? questionText : "Your question text will appear."}
          </Heading>
          <Body>
-            <div>
-               <img style={{ height: "300px", width: "auto", minWidth: "400px", backgroundColor: "transparent" }} className='quesImageAfter' src={questionImageAfter !== undefined ? getSourceURL(questionImageAfter) : undefined} alt="" />
-            </div>
-            <div style={{ marginTop: "20px", height: "350px", width: "500px", backgroundColor: "#cacaca", display: "flex", justifyContent: "center", alignItems: "center", fontSize: "28px", fontWeight: "bold" }}>
-               CANVAS HERE
+            <div className=''>
+               <div>
+                  <img style={{ minHeight: "180px", height: "auto", minWidth: "400px", backgroundColor: "transparent" }} className='quesImageAfter !min-w-48' src={questionImageAfter !== undefined ? getSourceURL(questionImageAfter) : undefined} alt="" />
+               </div>
+               <div className='!min-w-[350px]' style={{ marginTop: "20px", height: "350px", width: "100%", backgroundColor: "#cacaca", display: "flex", justifyContent: "center", alignItems: "center", fontSize: "28px", fontWeight: "bold" }}>
+                  CANVAS HERE
+               </div>
             </div>
          </Body>
          <Button>

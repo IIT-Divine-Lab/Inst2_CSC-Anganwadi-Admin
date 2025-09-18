@@ -568,8 +568,14 @@ const AddQuestion = ({ loggedIn }) => {
                      if (categories.filter((cat) => cat._id === e.target.value)[0]?.structure === 6) {
                         setTotalOptions(4);
                      }
+                     else if (categories.filter((cat) => cat._id === e.target.value)[0]?.structure === 5) {
+                        setTotalOptions(10);
+                     }
                      else if (categories.filter((cat) => cat._id === e.target.value)[0]?.structure === 7) {
                         setTotalOptions(5);
+                     }
+                     else {
+                        setTotalOptions(4);
                      }
                      setWorkingStructure(categories.filter((cat) => cat._id === e.target.value)[0]?.structure);
                   }}>
