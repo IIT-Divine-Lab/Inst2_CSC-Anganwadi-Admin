@@ -18,27 +18,27 @@ const Sidebar = ({ isCollapsed, setHidden, setIsCollapsed, hidden = false }) => 
   }, [location, setHidden])
 
   const handleQuestionsClick = () => {
-    setIsCollapsed(false);
+   //  setIsCollapsed(false);
     navigate("/questions");
   };
 
   const handleStudentDataClick = () => {
-    setIsCollapsed(false);
+   //  setIsCollapsed(false);
     navigate("/student");
   };
 
   const handleCategoryClick = () => {
-    setIsCollapsed(false);
+   //  setIsCollapsed(false);
     navigate("/category");
   };
 
   const handleResultClick = () => {
-    setIsCollapsed(false);
+   //  setIsCollapsed(false);
     navigate("/result");
   };
 
   const handleTimeClick = () => {
-    setIsCollapsed(false);
+   //  setIsCollapsed(false);
     navigate("/result/time");
   };
 

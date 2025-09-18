@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import "@uploadcare/react-uploader/core.css"
 import Sidebar from "./Components/Sidebar";
@@ -35,13 +35,22 @@ const App = () => {
   const [Zlabel, setZlabel] = useState(null); // stores label for pie & doughnut chart
   const [filters, setFilters] = useState([]); // Stores selected filters
 
-  // console.log("Is Editing", isEditing)
-
-  // useEffect(() => {
-  //   setXlabel(Xaxis);
-  //   setYlabel(Yaxis);
-  //   setZlabel(Zaxis);
-  // }, [Xaxis, Yaxis, Zaxis]);
+  useEffect(() => {
+    window.addEventListener("resize", () => {
+      if (window.innerWidth <= 1200 && loggedin && !isCollapsed) {
+        setIsCollapsed(true);
+      }
+      else if (window.innerWidth > 1200 && loggedin) {
+        setIsCollapsed(false);
+      }
+    })
+    if (window.innerWidth <= 1200 && loggedin && !isCollapsed) {
+      setIsCollapsed(true);
+    }
+    else if (window.innerWidth > 1200 && loggedin) {
+      setIsCollapsed(false);
+    }
+  }, [loggedin])
 
   return (
     <Router>
@@ -49,7 +58,18 @@ const App = () => {
       {loggedin && <Sidebar setHidden={setHidden} hidden={hidden} isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed} />}
       <div
         className="content"
-        style={loggedin ? isCollapsed ? { marginLeft: "110px" } : hidden ? { marginLeft: "0px" } : { marginLeft: "200px" } : {}}
+        style={loggedin ?
+          isCollapsed ?
+            { marginLeft: "70px" }
+            :
+            hidden
+              ?
+              { marginLeft: "0px" }
+              :
+              { marginLeft: "190px" }
+          :
+          {}
+        }
       >
         <Routes>
           <Route path="/" element={loggedin ? <Dashboard setHidden={setHidden} loggedIn={loggedin} /> : <Login loggedIn={loggedin} setLoggedIn={setLoggedIn} />} />

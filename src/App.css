@@ -3,6 +3,10 @@
    --uc-primary-oklch-light: 10% 0 0;
 }
 
+#root {
+   overflow-x: hidden;
+}
+
 .App {
    text-align: center;
 }
@@ -41,18 +45,42 @@
       transform: rotate(360deg);
    }
 }
+
+.content {
+   height: calc(100vh - 20px);
+   overflow-x: auto;
+}
+
 .sidebar {
    position: fixed;
    top: 10px;
    left: 14px;
    width: 180px;
-   height: 95vh;
+   height: calc(100vh - 20px);
    background-color: var(--primary-color);
    color: var(--white);
    padding: 10px 0px 10px 20px;
    border-top-right-radius: 16px;
    border-bottom-right-radius: 16px;
    transition: width 0.3s;
+}
+
+@media (max-width: 1200px) {
+   .sidebar {
+      width: 70px;
+      padding-left: 0;
+   }
+   .link-item > .description {
+      display: none;
+   }
+   .banner {
+      width: fit-content;
+   }
+   .banner > h1 {
+      width: calc(100vw - 140px);
+      position: sticky;
+      left: 20px;
+   }
 }
 
 .sidebar.collapsed {
@@ -105,11 +133,11 @@
       width: 100%; /* Full width on smaller screens */
       margin-left: 0; /* Remove margin on smaller screens */
    }
-   th,
+   /* th,
    td {
-      display: block; /* Stack cells on smaller screens */
-      width: 100%; /* Full width for each cell */
-   }
+      display: block; 
+      width: 100%; 
+   } */
 }
 
 @media (max-width: 480px) {
