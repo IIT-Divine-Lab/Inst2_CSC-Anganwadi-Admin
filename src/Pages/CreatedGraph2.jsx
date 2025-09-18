@@ -58,6 +58,7 @@ const CreatedGraph2 = ({ selectedGraph, setSelectedGraph, graphName, setGraphNam
   const [graphType, setGraphType] = useState(null);
   const [graphSaved, setGraphSaved] = useState(false);
   const [graphData, setGraphData] = useState({ labels: [], datasets: [] });
+  // eslint-disable-next-line
   const [appliedFilters, setAppliedFilters] = useState("")
 
   useEffect(() => {
@@ -161,7 +162,8 @@ const CreatedGraph2 = ({ selectedGraph, setSelectedGraph, graphName, setGraphNam
     console.log("handleSaveClick")
     setShowSaveModal(true);
   };
-
+  
+  // eslint-disable-next-line
   const updateGraphData = async () => {
     try {
       let url = `dashboard/getUnsavedGraph/${parameterMapping[Xlabel]}?`
@@ -449,6 +451,7 @@ const CreatedGraph2 = ({ selectedGraph, setSelectedGraph, graphName, setGraphNam
     if (id) {
       setMode("edit");
       fetchGraphDataById()
+      console.log(selectedGraph)
     }
   }, [id, fetchGraphDataById, selectedGraph])
 

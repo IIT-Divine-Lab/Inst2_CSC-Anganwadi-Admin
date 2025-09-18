@@ -13,6 +13,7 @@ const Structure1to4 = ({ view, structure, questionText, questionImageBefore, que
       aud.play();
    }
 
+   // eslint-disable-next-line
    const getSourceWidth = (img) => {
       console.log(img);
       return true
@@ -61,7 +62,6 @@ const Structure1to4 = ({ view, structure, questionText, questionImageBefore, que
          </Heading>
          <Body>
             {
-               console.log(questionImageAfter) && 
                structure === 1 || structure === 2 ?
                   questionImageAfter !== undefined ?
                      <div>
