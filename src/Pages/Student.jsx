@@ -139,7 +139,7 @@ const Student = ({ loggedIn }) => {
 
    return (
       <section>
-         <div className="banner">
+         <div className="banner w-fit">
             <h1>
                Student
                <span style={{ display: "flex", alignItems: "center" }}>

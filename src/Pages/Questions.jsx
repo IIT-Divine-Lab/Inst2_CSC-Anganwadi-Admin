@@ -223,7 +223,11 @@ const Questions = ({ loggedIn }) => {
       </div>
       <div className="banner">
         <h1>
-          Questions Data
+          Questions Data {window.outerWidth}
+          {/* Inner Width: 1194, 1204, 1373 */}
+          {/* Outer Width: 1194, 1205, 1373 */}
+          {/* Inner Height: 702, 585, 822 */}
+          {/* Outer Height: 834, 681, 954 */}
           <span style={{ display: "flex", alignItems: "center" }}>
             <span className="refreshBtn" onClick={() => {
               setContentRefresh(true);
