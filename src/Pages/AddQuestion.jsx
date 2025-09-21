@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import "./AddQuestion.css"
 import { useDispatch, useSelector } from 'react-redux'
 import Structure1to4 from '../Components/Structure1-4';
@@ -12,24 +12,24 @@ import { toast } from 'react-toastify';
 import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import adminApiUrl, { apiUrl } from '../adminApiUrl';
-import { addQuestion, modifyQuestion, setCategory } from '../redux/actions/actions';
+import { modifyQuestion, setCategory } from '../redux/actions/actions';
 import Select from 'react-select';
 
-import Agarbatti from "../Components/Images/Agarbatti.png"
-import Food from "../Components/Images/Food.png"
-import IceBowl from "../Components/Images/IceBowl.png"
-import RedBall from "../Components/Images/RedBall.png"
-import Speaker from "../Components/Images/Speaker.png"
-import Ear from "../Components/Images/ear.png"
-import Eyes from "../Components/Images/eyes.png"
-import Hand from "../Components/Images/hand.png"
-import Nose from "../Components/Images/nose.png"
-import Candle from "../Components/Images/candle.png"
-import Icecream from "../Components/Images/icecream.png"
-import Perfume from "../Components/Images/perfume.png"
-import Teddy from "../Components/Images/teddyBear.png"
-import DemoSpeaker from "../Components/Images/demoSpeaker.png"
-import Tongue from "../Components/Images/tongue.png"
+// import Agarbatti from "../Components/Images/Agarbatti.png"
+// import Food from "../Components/Images/Food.png"
+// import IceBowl from "../Components/Images/IceBowl.png"
+// import RedBall from "../Components/Images/RedBall.png"
+// import Speaker from "../Components/Images/Speaker.png"
+// import Ear from "../Components/Images/ear.png"
+// import Eyes from "../Components/Images/eyes.png"
+// import Hand from "../Components/Images/hand.png"
+// import Nose from "../Components/Images/nose.png"
+// import Candle from "../Components/Images/candle.png"
+// import Icecream from "../Components/Images/icecream.png"
+// import Perfume from "../Components/Images/perfume.png"
+// import Teddy from "../Components/Images/teddyBear.png"
+// import DemoSpeaker from "../Components/Images/demoSpeaker.png"
+// import Tongue from "../Components/Images/tongue.png"
 
 const AddQuestion = ({ loggedIn }) => {
    const categories = useSelector((state) => state.categories);
@@ -59,105 +59,25 @@ const AddQuestion = ({ loggedIn }) => {
    const [activeAnswerImage, setActiveAnswerImage] = useState(undefined);
    const [inactiveAnswerImage, setInactiveAnswerImage] = useState(undefined);
    const [matches, setMatches] = useState([]);
+   const [optionTypeS7, setOptionTypeS7] = useState({
+      left: "both",
+      right: "both"
+   })
+   const demoOptionS7 = {
+      text: "",
+      image: null,
+      orientation: null,
+      previewUrl: null,
+   };
+
+   const previewUrlsRef = useRef(new Set());
+   const [leftColumn, setLeftColumn] = useState(Array.from({ length: 3 }).fill(demoOptionS7))
+   const [rightColumn, setRightColumn] = useState(Array.from({ length: 3 }).fill(demoOptionS7))
 
    useEffect(() => {
-      console.log(quesCategory);
       if (!loggedIn)
          navigate("/");
    }, [loggedIn, navigate, quesCategory])
-
-   const leftColumn = {
-      Demo: [
-         {
-            val: "त्वचा",
-            src: Hand
-         },
-         {
-            val: "आंख",
-            src: Eyes
-         },
-         {
-            val: "कान",
-            src: Ear
-         },
-         {
-            val: "नाक",
-            src: Nose
-         },
-         {
-            val: "जीभ",
-            src: Tongue
-         }
-      ],
-      Ques: [
-         {
-            val: "जीभ",
-            src: Tongue
-         },
-         {
-            val: "आंख",
-            src: Eyes
-         },
-         {
-            val: "कान",
-            src: Ear
-         },
-         {
-            val: "त्वचा",
-            src: Hand
-         },
-         {
-            val: "नाक",
-            src: Nose
-         }
-      ]
-   }
-   const rightColumn = {
-      Demo: [
-         {
-            val: "Candle",
-            src: Candle
-         },
-         {
-            val: "IceCream",
-            src: Icecream
-         },
-         {
-            val: "Perfume",
-            src: Perfume
-         },
-         {
-            val: "Teddy",
-            src: Teddy
-         },
-         {
-            val: "Speaker",
-            src: DemoSpeaker
-         }
-      ],
-      Ques: [
-         {
-            val: "Ball",
-            src: RedBall
-         },
-         {
-            val: "Jalebi",
-            src: Food
-         },
-         {
-            val: "Agarbatti",
-            src: Agarbatti
-         },
-         {
-            val: "Ice",
-            src: IceBowl
-         },
-         {
-            val: "Speaker",
-            src: Speaker
-         }
-      ]
-   }
 
    const struct = () => {
       let selectCategory = categories.filter((cat) => cat._id === quesCategory);
@@ -197,8 +117,9 @@ const AddQuestion = ({ loggedIn }) => {
          />
          case 7: return <Structure7
             questionText={questionText}
-            leftColumn={getCategoryName(quesCategory).includes("Demo") ? leftColumn.Demo : leftColumn.Ques}
-            rightColumn={getCategoryName(quesCategory).includes("Demo") ? rightColumn.Demo : rightColumn.Ques}
+            optionType={optionTypeS7}
+            leftColumn={leftColumn}
+            rightColumn={rightColumn}
             matches={matches}
             setMatches={setMatches}
          />
@@ -263,8 +184,8 @@ const AddQuestion = ({ loggedIn }) => {
          }
       }
       if (workingStructure === 7) {
-         for (let i = 0; i < matches.length; i++) {
-            correctAnswers.push(`${matches[i].left.val}-${matches[i].right}`)
+         for (let i = 0; i < totalOptions; i++) {
+            correctAnswers.push(`lo${(i + 1)}-ro${i + 1}`)
          }
       }
       const formData = new FormData();
@@ -275,18 +196,35 @@ const AddQuestion = ({ loggedIn }) => {
       formData.append("questionText", questionText || "")
       formData.append("questionType", ((workingStructure >= 1 && workingStructure <= 6) && workingStructure !== 5) ? "single" : workingStructure === 8 ? "draw" : "multi")
       formData.append("totalOptions", workingStructure === 8 ? -1 : (workingStructure === 6 ? 4 : totalOptions))
-      formData.append("correctAnswer", workingStructure === 5 || workingStructure === 7 ? correctAnswers : workingStructure === 8 ? ["draw"] : workingStructure === 2 && totalOptions > 2 && quesCategory.includes("6729d6893ae29c44e7450897") ? [correctAnswer, neutralAnswer] : [correctAnswer])
+      formData.append("correctAnswer", workingStructure === 5 ? correctAnswers : workingStructure === 8 ? ["draw"] : workingStructure === 2 && totalOptions > 2 && quesCategory.includes("6729d6893ae29c44e7450897") ? [correctAnswer, neutralAnswer] : [correctAnswer])
 
-      if (workingStructure === 6) {
+      if (workingStructure === 7) {
+         for (let index = 0; index < totalOptions; index++) {
+            if (optionTypeS7.left === "both" || optionTypeS7.left === "image")
+               formData.append(`option.leftColumn.` + index + `.image`, leftColumn[index].image);
+            if (optionTypeS7.left === "both" || optionTypeS7.left === "text")
+               formData.append(`option.leftColumn.` + index + `.text`, leftColumn[index].text);
+
+            if (optionTypeS7.right === "both" || optionTypeS7.right === "image")
+               formData.append(`option.rightColumn.` + index + `.image`, rightColumn[index].image);
+            if (optionTypeS7.right === "both" || optionTypeS7.right === "text")
+               formData.append(`option.rightColumn.` + index + `.text`, rightColumn[index].text);
+         }
+
+         const formDataObj = Object.fromEntries(formData.entries());
+         console.log(formDataObj);
+      }
+      else if (workingStructure === 6) {
          formData.append(`answerImage`, answerImage)
          formData.append(`option.active`, activeAnswerImage)
          formData.append(`option.inactive`, inactiveAnswerImage)
       }
-      else if (workingStructure !== 6 || workingStructure !== 8) {
+      else if (workingStructure <= 6) {
          for (let index = 0; index < totalOptions; index++) {
             formData.append(`option.` + index, option[index]);
          }
       }
+
       if (workingStructure === 1 || workingStructure === 2 || workingStructure === 6 || workingStructure === 8) {
          formData.append("questionImageAfter", questionImageAfter)
          if (workingStructure === 1)
@@ -308,15 +246,12 @@ const AddQuestion = ({ loggedIn }) => {
             body: formData
          })
          const data = await response.json();
-         dispatch(addQuestion(data?.question))
-         navigate("/questions")
+         console.log(data);
+         // dispatch(addQuestion(data?.question))
+         // navigate("/questions")
       } catch (error) {
          console.error("Upload Failed", error)
       }
-   }
-
-   const getCategoryName = (id) => {
-      return categories.filter((cat) => cat._id === id)[0].categoryName
    }
 
    const fetchEditableQuestion = useCallback(async () => {
@@ -572,7 +507,7 @@ const AddQuestion = ({ loggedIn }) => {
                         setTotalOptions(10);
                      }
                      else if (categories.filter((cat) => cat._id === e.target.value)[0]?.structure === 7) {
-                        setTotalOptions(5);
+                        setTotalOptions(3);
                      }
                      else {
                         setTotalOptions(4);
@@ -710,28 +645,82 @@ const AddQuestion = ({ loggedIn }) => {
                                  : ""
                         }
                         {
-                           workingStructure !== 6 && workingStructure !== 7 && workingStructure !== 8 ?
+                           workingStructure !== 6 && workingStructure !== 8 ?
                               <div className="formFieldContainer">
                                  <label htmlFor='totalOptions' className="fieldLabel">Select Total Options</label>
                                  <select name="totalOptions" disabled={id ? workingStructure === 5 || workingStructure === 7 ? true : false : option !== undefined ? true : false} id="totalOptions" value={totalOptions} onChange={(e) => {
+                                    const newTotal = e.target.value;
                                     if (id) {
                                        setOption(undefined);
+                                    }
+                                    if (workingStructure === 7) {
+                                       setLeftColumn((prev = []) => {
+                                          const updated = [...prev];
+
+                                          if (newTotal > updated.length) {
+                                             // append empty slots preserving existing items
+                                             for (let i = updated.length; i < newTotal; i++) {
+                                                updated.push({ text: "", image: null, orientation: null, previewUrl: null });
+                                             }
+                                          } else if (newTotal < updated.length) {
+                                             // revoke previewUrls for removed items and truncate array
+                                             for (let i = newTotal; i < updated.length; i++) {
+                                                const url = updated[i]?.previewUrl;
+                                                if (url) {
+                                                   URL.revokeObjectURL(url);
+                                                   previewUrlsRef.current.delete(url);
+                                                }
+                                             }
+                                             updated.length = newTotal; // truncate
+                                          }
+
+                                          return updated;
+                                       });
+                                       setRightColumn((prev = []) => {
+                                          const updated = [...prev];
+
+                                          if (newTotal > updated.length) {
+                                             // append empty slots preserving existing items
+                                             for (let i = updated.length; i < newTotal; i++) {
+                                                updated.push({ text: "", image: null, orientation: null, previewUrl: null });
+                                             }
+                                          } else if (newTotal < updated.length) {
+                                             // revoke previewUrls for removed items and truncate array
+                                             for (let i = newTotal; i < updated.length; i++) {
+                                                const url = updated[i]?.previewUrl;
+                                                if (url) {
+                                                   URL.revokeObjectURL(url);
+                                                   previewUrlsRef.current.delete(url);
+                                                }
+                                             }
+                                             updated.length = newTotal; // truncate
+                                          }
+
+                                          return updated;
+                                       });
                                     }
                                     setTotalOptions(e.target.value)
                                  }} className="formField">
                                     <option value={0}>Select Total Options</option>
                                     {
-                                       workingStructure !== 5 ?
+                                       workingStructure === 7 ?
                                           <>
-                                             <option value={2}>2</option>
                                              <option value={3}>3</option>
                                              <option value={4}>4</option>
+                                             <option value={5}>5</option>
                                           </>
                                           :
-                                          <>
-                                             <option value={8}>8</option>
-                                             <option value={10}>10</option>
-                                          </>
+                                          workingStructure !== 5 ?
+                                             <>
+                                                <option value={2}>2</option>
+                                                <option value={3}>3</option>
+                                                <option value={4}>4</option>
+                                             </>
+                                             :
+                                             <>
+                                                <option value={8}>8</option>
+                                                <option value={10}>10</option>
+                                             </>
                                     }
                                  </select>
                               </div>
@@ -811,20 +800,162 @@ const AddQuestion = ({ loggedIn }) => {
                                                    />
                                                 </div>
                                                 : workingStructure === 7 ?
-                                                   <div className="formFieldContainer">
-                                                      <label className="fieldLabel">Correct Answers</label>
-                                                      {
-                                                         matches?.map((val, index) => {
-                                                            return <span key={index}>
-                                                               <span>Left: {val.left.val}</span>
-                                                               <span style={{
-                                                                  marginLeft: "10px"
-                                                               }}>
-                                                                  Right: {val.right}
-                                                               </span>
-                                                            </span>
-                                                         })
-                                                      }
+                                                   <div className='formFieldContainer w-full'>
+                                                      <div className='w-full flex flex-wrap gap-y-5 justify-between'>
+                                                         <div className='flex-1 mr-1'>
+                                                            <div className='flex mb-3 items-center'>
+                                                               <label className='fieldLabel'>
+                                                                  Left
+                                                               </label>
+                                                               <select value={optionTypeS7.left} onChange={(e) => setOptionTypeS7((prev) => ({ ...prev, left: e.target.value }))} className='formField capitalize ml-5 w-40 !mt-0'>
+                                                                  {
+                                                                     ["both", "image", "text"].map((field, index) => {
+                                                                        return <option className='capitalize' key={index} value={field}>{field}</option>
+                                                                     })
+                                                                  }
+                                                               </select>
+                                                            </div>
+                                                            <div className='flex w-full'>
+                                                               <div className='flex-1'>
+                                                                  <div className="flex flex-col w-full">
+                                                                     {
+                                                                        Array.from({ length: totalOptions }, (_, index) => (
+                                                                           <div key={index} className='flex mt-2 flex-wrap'>
+                                                                              {
+                                                                                 optionTypeS7.left === "both" || optionTypeS7.left === "image" ?
+                                                                                    <Input
+                                                                                       type="matchType"
+                                                                                       uploadFunc={(file) => {
+                                                                                          // load the image and detect orientation
+                                                                                          const img = new Image();
+                                                                                          img.onload = () => {
+                                                                                             const orientation =
+                                                                                                img.width > img.height ? "landscape" : "portrait";
+
+                                                                                             setLeftColumn((prev) => {
+                                                                                                const updated = [...prev];
+                                                                                                updated[index] = {
+                                                                                                   ...updated[index],
+                                                                                                   image: file,
+                                                                                                   orientation,
+                                                                                                   previewUrl: URL.createObjectURL(file)
+                                                                                                };
+                                                                                                return updated;
+                                                                                             });
+                                                                                          };
+                                                                                          img.src = URL.createObjectURL(file);
+                                                                                       }}
+                                                                                    />
+                                                                                    :
+                                                                                    <></>
+                                                                              }
+                                                                              {
+                                                                                 optionTypeS7.left === "both" || optionTypeS7.left === "text" ?
+                                                                                    <Input
+                                                                                       containerStyle={{ marginTop: "0px" }}
+                                                                                       inputType="text"
+                                                                                       name={"leftOption" + index}
+                                                                                       id={"leftOption" + index}
+                                                                                       value={leftColumn[index]?.text || ""}
+                                                                                       onChange={(e) => {
+                                                                                          const value = e.target.value;
+                                                                                          setLeftColumn((prev) => {
+                                                                                             const updated = [...prev];
+                                                                                             updated[index] = { ...updated[index], text: value }; // maintain existing fields
+                                                                                             return updated;
+                                                                                          });
+                                                                                       }}
+                                                                                    />
+                                                                                    :
+                                                                                    <></>
+                                                                              }
+
+                                                                           </div>
+                                                                        ))
+                                                                     }
+
+
+                                                                  </div>
+                                                               </div>
+                                                            </div>
+                                                         </div>
+                                                         <div className='flex-1 ml-1'>
+                                                            <div className='flex mb-3 items-center'>
+                                                               <label className='fieldLabel'>
+                                                                  Right
+                                                               </label>
+                                                               <select value={optionTypeS7.right} onChange={(e) => setOptionTypeS7((prev) => ({ ...prev, right: e.target.value }))} className='formField capitalize ml-5 w-40 !mt-0'>
+                                                                  {
+                                                                     ["both", "image", "text"].map((field, index) => {
+                                                                        return <option className='capitalize' key={index} value={field}>{field}</option>
+                                                                     })
+                                                                  }
+
+                                                               </select>
+                                                            </div>
+                                                            <div className='flex w-full'>
+                                                               <div className='flex-1'>
+                                                                  <div className="flex flex-col w-full">
+                                                                     {
+                                                                        Array.from({ length: totalOptions }, (_, index) => (
+                                                                           <div key={index} className='flex mt-2 flex-wrap'>
+                                                                              {
+                                                                                 optionTypeS7.right === "both" || optionTypeS7.right === "image" ?
+                                                                                    <Input
+                                                                                       type="matchType"
+                                                                                       uploadFunc={(file) => {
+                                                                                          // load the image and detect orientation
+                                                                                          const img = new Image();
+                                                                                          img.onload = () => {
+                                                                                             const orientation =
+                                                                                                img.width > img.height ? "landscape" : "portrait";
+
+                                                                                             setRightColumn((prev) => {
+                                                                                                const updated = [...prev];
+                                                                                                updated[index] = {
+                                                                                                   ...updated[index],
+                                                                                                   image: file,
+                                                                                                   orientation,
+                                                                                                   previewUrl: URL.createObjectURL(file)
+                                                                                                };
+                                                                                                return updated;
+                                                                                             });
+                                                                                          };
+                                                                                          img.src = URL.createObjectURL(file);
+                                                                                       }}
+                                                                                    />
+                                                                                    :
+                                                                                    <></>
+                                                                              }
+                                                                              {
+                                                                                 optionTypeS7.right === "both" || optionTypeS7.right === "text" ?
+                                                                                    <Input
+                                                                                       containerStyle={{ marginTop: "0px" }}
+                                                                                       inputType="text"
+                                                                                       name={"rightOption" + index}
+                                                                                       id={"rightOption" + index}
+                                                                                       value={rightColumn[index]?.text || ""}
+                                                                                       onChange={(e) => {
+                                                                                          const value = e.target.value;
+                                                                                          setRightColumn((prev) => {
+                                                                                             const updated = [...prev];
+                                                                                             updated[index] = { ...updated[index], text: value }; // maintain existing fields
+                                                                                             return updated;
+                                                                                          });
+                                                                                       }}
+                                                                                    />
+                                                                                    :
+                                                                                    <></>
+                                                                              }
+
+                                                                           </div>
+                                                                        ))
+                                                                     }
+                                                                  </div>
+                                                               </div>
+                                                            </div>
+                                                         </div>
+                                                      </div>
                                                    </div>
                                                    : ""
                                        }

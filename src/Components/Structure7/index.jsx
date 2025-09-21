@@ -1,9 +1,9 @@
-import React, { useRef, useState } from 'react'
+import { useCallback, useEffect, useRef } from 'react'
 import Heading from '../Common/Heading';
 import ParentContainer from '../Common/ParentContainer';
 import Button from '../Common/Button';
 
-const Structure7 = ({ questionText, leftColumn, rightColumn, matches, setMatches }) => {
+const Structure7 = ({ questionText, optionType = { left: "both", right: "both" }, leftColumn = [], rightColumn = [], matches, setMatches }) => {
 
    const colors = [
       {
@@ -28,52 +28,50 @@ const Structure7 = ({ questionText, leftColumn, rightColumn, matches, setMatches
       },
    ]
 
-   const [selectedLeft, setSelectedLeft] = useState(null);
-   const [matchedLeft, setMatchedLeft] = useState([]);
-   const [matchedRight, setMatchedRight] = useState([])
-
    const leftRefs = useRef([]);
    const rightRefs = useRef([]);
    const containerRef = useRef();
 
-   const handleLeftClick = (item) => {
-      if (!((matchedLeft.findIndex(val => val.val === item.val) + 1) !== 0)) {
-         setSelectedLeft(item);
+   const haveCommonNonEmptyValue = useCallback((arr1 = leftColumn, arr2 = rightColumn) => {
+
+      const commmonIndex = [];
+
+      for (let i = 0; i < Math.min(arr1.length, arr2.length); i++) {
+         if ((arr1[i]?.text !== "" || arr1[i]?.image !== null) && (arr2[i]?.text !== "" || arr2[i]?.image !== null)) {
+            commmonIndex.push(i); // both have values at the same index
+         }
       }
-      else {
-         setMatchedLeft(matchedLeft.filter((val) => val.val !== item.val))
-         let right = matches.filter((val) => val.left.val === item.val)[0].right;
-         setMatchedRight(matchedRight.filter((val) => val !== right));
-         setMatches(matches.filter((val) => val.left.val !== item.val))
-         setSelectedLeft(item);
+      if (commmonIndex.length === 0)
+         return [-1]; // no common index with values
+      return commmonIndex;
+   }, [leftColumn, rightColumn])
+
+   const checkMatches = useCallback(() => {
+      const commonIndex = haveCommonNonEmptyValue();
+      if (commonIndex[0] !== -1) {
+         const matchArray = Array.from({ length: commonIndex.length });
+         for (let i = 0; i < commonIndex.length; i++) {
+            const leftRect = leftRefs.current[commonIndex[i]]?.getBoundingClientRect();
+            const rightRect = rightRefs.current[commonIndex[i]]?.getBoundingClientRect();
+            const containerRect = containerRef.current?.getBoundingClientRect();
+            const leftCenter = {
+               x: leftRect.right - containerRect.left, // Adjusted relative to container
+               y: leftRect.top + leftRect.height / 2 - containerRect.top,
+            };
+            const rightCenter = {
+               x: rightRect.left - containerRect.left, // Adjusted relative to container
+               y: rightRect.top + rightRect.height / 2 - containerRect.top,
+            };
+            matchArray[commonIndex[i]] = { leftCenter, rightCenter };
+         }
+         console.log("Match Array: ", matchArray);
+         setMatches(matchArray);
       }
-   };
-   const handleRightClick = (item) => {
-      if (selectedLeft && !matchedRight.includes(item)) {
-         const leftIndex = leftColumn.findIndex((val) => val.val === selectedLeft.val);
-         const rightIndex = rightColumn.findIndex((val) => val.val === item);
+   }, [haveCommonNonEmptyValue, setMatches])
 
-         const leftRect = leftRefs.current[leftIndex].getBoundingClientRect();
-         const rightRect = rightRefs.current[rightIndex].getBoundingClientRect();
-
-         const containerRect = containerRef.current.getBoundingClientRect();
-
-         const leftCenter = {
-            x: leftRect.right - containerRect.left, // Adjusted relative to container
-            y: leftRect.top + leftRect.height / 2 - containerRect.top,
-         };
-         const rightCenter = {
-            x: rightRect.left - containerRect.left, // Adjusted relative to container
-            y: rightRect.top + rightRect.height / 2 - containerRect.top,
-         };
-
-         // Store the match with coordinates
-         setMatches([...matches, { left: selectedLeft, right: item, leftCenter, rightCenter }]);
-         setMatchedLeft([...matchedLeft, selectedLeft]);
-         setMatchedRight([...matchedRight, item]);
-         setSelectedLeft(null);
-      }
-   }
+   useEffect(() => {
+      checkMatches();
+   }, [leftColumn, rightColumn, checkMatches])
 
    return (
       <ParentContainer>
@@ -91,38 +89,16 @@ const Structure7 = ({ questionText, leftColumn, rightColumn, matches, setMatches
                      return <div
                         key={index}
                         ref={(el) => (leftRefs.current[index] = el)}
-                        onClick={() => handleLeftClick(item)}
+                        className='flex justify-between items-center mt-5 first:mt-0 font-semibold text-wrap px-2.5 rounded-xl text-center cursor-pointer min-w-44 min-h-32 max-w-52 max-h-36'
                         style={{
-                           backgroundColor: ((matchedLeft.findIndex(val => val.val === item.val) + 1) !== 0) ? colors[index].bgCol : 'transparent',
-                           border: (selectedLeft?.val === item.val || matchedLeft.findIndex(val => val.val === item.val) + 1 !== 0) ? '3px solid ' + colors[index].color : '3px solid black',
-                           fontSize: "28px",
-                           textAlign: "center",
-                           width: "200px",
-                           padding: '10px',
-                           cursor: "pointer",
-                           borderRadius: "10px",
-                           fontWeight: "600",
-                           display: "flex",
-                           alignItems: "center",
-                           justifyContent: "flex-end",
-                           margin: "25px 0"
+                           backgroundColor: haveCommonNonEmptyValue().includes(index) ? colors[index].bgCol : "transparent",
+                           border: haveCommonNonEmptyValue().includes(index) ? '3px solid ' + colors[index].color : '3px solid black',
                         }}
                      >
-                        <div style={{
-                           display: "flex",
-                           justifyContent: "center",
-                           minWidth: "65%",
-                           height: "85px",
-                           width: "auto"
-                        }}>
-                           <img src={item.src} alt={item.val} />
-                        </div>
-                        <span style={{
-                           marginLeft: "10px",
-                           minWidth: "25%"
-                        }}>
-                           {item.val}
-                        </span>
+                        {(optionType.left === "both" || optionType.left === "image") && <img alt={"phot" + index} className={`${item?.orientation === "landscape" ? "w-3/5 h-auto" : "w-auto max-h-32 h-full"}`} src={item?.image !== undefined && item?.image !== null ? item?.previewUrl : ""} />}
+                        {(optionType.left === "both" || optionType.left === "text") && <span className='max-w-[50%]'>
+                           {item?.text}
+                        </span>}
                      </div>
                   })}
                </div>
@@ -130,22 +106,23 @@ const Structure7 = ({ questionText, leftColumn, rightColumn, matches, setMatches
                <div style={{ position: "relative", width: '100px' }} ref={containerRef}>
                   <svg style={{ position: 'absolute', top: 0, left: 0, width: '100px', height: '100%' }}>
                      {
-                        matches.map((match, index) => (
-                           <line
+                        matches.map((match, index) => {
+                           return <line
                               key={index}
                               x1={match.leftCenter.x}
                               y1={match.leftCenter.y}
                               x2={match.rightCenter.x}
                               y2={match.rightCenter.y}
-                              stroke={colors[leftColumn.findIndex((val) => val.val === matches[matches.findIndex((val) => val.right === match.right)]?.left.val)]?.color}
+                              stroke={colors[index]?.color}
                               strokeWidth="2"
                            />
-                        ))}
+
+                        })}
                   </svg>
                </div>
 
                <div style={{
-                  height: "100%",
+                  backgroundColor: "transparent",
                   display: "flex",
                   flexDirection: "column"
                }}>
@@ -153,31 +130,16 @@ const Structure7 = ({ questionText, leftColumn, rightColumn, matches, setMatches
                      return <div
                         key={index}
                         ref={(el) => (rightRefs.current[index] = el)}
-                        onClick={() => handleRightClick(item.val)}
+                        className='flex justify-between items-center mb-5 first:mt-0 font-semibold text-wrap px-2.5 rounded-xl text-center cursor-pointer min-w-44 min-h-32 max-w-52 max-h-36'
                         style={{
-                           backgroundColor: matchedRight.includes(item.val) ? colors[leftColumn.findIndex((val) => val.val === matches[matches.findIndex((val) => val.right === item.val)]?.left.val)]?.bgCol : 'white',
-                           border: matchedRight.includes(item.val) ? '3px solid' + colors[leftColumn.findIndex((val) => val.val === matches[matches.findIndex((val) => val.right === item.val)]?.left.val)]?.color : '3px solid black',
-                           fontSize: "28px",
-                           textAlign: "center",
-                           width: "200px",
-                           padding: '10px',
-                           margin: "25px 0",
-                           cursor: "pointer",
-                           borderRadius: "10px",
-                           fontWeight: "600",
-                           display: "flex",
-                           flexDirection: "column"
+                           backgroundColor: haveCommonNonEmptyValue().includes(index) ? colors[index].bgCol : "transparent",
+                           border: haveCommonNonEmptyValue().includes(index) ? '3px solid ' + colors[index].color : '3px solid black',
                         }}
                      >
-                        <div style={{
-                           display: "flex",
-                           justifyContent: "center",
-                           alignItems: "center",
-                           height: "85px",
-                           width: "auto"
-                        }}>
-                           <img style={{ height: "100%" }} src={item.src} alt={item.val} />
-                        </div>
+                        {(optionType.right === "both" || optionType.right === "image") && <img className={`${item?.orientation === "landscape" ? "w-3/5 h-auto" : "w-auto max-h-32 h-full"}`} src={item?.image !== undefined && item?.image !== null ? item?.previewUrl : ""} alt={item?.text} />}
+                        {(optionType.right === "both" || optionType.right === "text") && <span>
+                           {item?.text}
+                        </span>}
                      </div>
                   })}
                </div>

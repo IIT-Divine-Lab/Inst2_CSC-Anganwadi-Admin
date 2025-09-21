@@ -6,7 +6,7 @@ import imageCompression from "browser-image-compression"
 import { FFmpeg } from '@ffmpeg/ffmpeg';
 
 
-const FileUploader = ({ updateFileFunc, uploadAccept, updateStatus, multiple = false, maxFiles, minFiles }) => {
+const FileUploader = ({ updateFileFunc, type, uploadAccept, updateStatus, multiple = false, maxFiles, minFiles }) => {
    const uniqueId = useId()
 
    const [name, setName] = useState("");
@@ -17,7 +17,7 @@ const FileUploader = ({ updateFileFunc, uploadAccept, updateStatus, multiple = f
          let processFileName = "";
          for (let index = 0; index < files.length; index++) {
             var file = files[index];
-            let type = file.type;
+            let type = file?.type;
             if (file === undefined || type === undefined) {
 
             }
@@ -55,7 +55,7 @@ const FileUploader = ({ updateFileFunc, uploadAccept, updateStatus, multiple = f
       }
       else {
          let file = files[0];
-         let type = file.type;
+         let type = file?.type;
          if (file === undefined || type === undefined) {
             if (name === "") {
                updateStatus(undefined);
@@ -97,8 +97,8 @@ const FileUploader = ({ updateFileFunc, uploadAccept, updateStatus, multiple = f
    };
 
    return (
-      <div style={{ display: "flex", height: "36px" }}>
-         <div className='uploadContainer' style={{ height: "36px", width: "120px" }}>
+      <div style={{ display: "flex", height: "40px" }}>
+         <div className='uploadContainer' style={{ height: "100%", marginRight: "8px", width: "120px" }}>
             <input
                style={{ width: "120px", height: "100% ", display: "none", cursor: "pointer" }}
                type="file"
@@ -112,7 +112,7 @@ const FileUploader = ({ updateFileFunc, uploadAccept, updateStatus, multiple = f
             <GoUpload size={16} />
             <label style={{ cursor: "pointer" }} htmlFor={`fileInput${uniqueId}`} className='uploadText'>Upload file</label>
          </div>
-         <div style={{ paddingLeft: "8px", fontSize: "12px", whiteSpace: "nowrap", maxWidth: "320px", overflow: "hidden", textOverflow: "ellipsis" }}> {name}</div>
+         {type !== "matchType" && <div style={{ fontSize: "12px", whiteSpace: "nowrap", maxWidth: "320px", overflow: "hidden", textOverflow: "ellipsis" }}> {name}</div>}
       </div>
    )
 }
