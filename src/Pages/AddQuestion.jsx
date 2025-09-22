@@ -12,7 +12,7 @@ import { toast } from 'react-toastify';
 import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import adminApiUrl, { apiUrl } from '../adminApiUrl';
-import { modifyQuestion, setCategory } from '../redux/actions/actions';
+import { addQuestion, modifyQuestion, setCategory } from '../redux/actions/actions';
 import Select from 'react-select';
 
 // import Agarbatti from "../Components/Images/Agarbatti.png"
@@ -247,8 +247,8 @@ const AddQuestion = ({ loggedIn }) => {
          })
          const data = await response.json();
          console.log(data);
-         // dispatch(addQuestion(data?.question))
-         // navigate("/questions")
+         dispatch(addQuestion(data?.question))
+         navigate("/questions")
       } catch (error) {
          console.error("Upload Failed", error)
       }

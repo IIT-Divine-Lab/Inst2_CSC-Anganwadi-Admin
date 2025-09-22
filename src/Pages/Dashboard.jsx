@@ -17,8 +17,13 @@ const Dashboard = ({ loggedIn, setHidden }) => {
     axios.get(adminApiUrl + "dashboard/getAllGraphs")
       .then(({ data }) => {
         console.log(data)
-        setIsDataAvailable(true);
-        setData(data.graphData)
+        if (data.message !== "No Data") {
+          setIsDataAvailable(true);
+          setData(data.graphData)
+        }
+        else {
+          setIsDataAvailable(false);
+        }
       })
       .catch((error) => {
         console.error(error);
@@ -43,7 +48,7 @@ const Dashboard = ({ loggedIn, setHidden }) => {
   }) : [];
 
   useEffect(() => {
-    if (data.length === 0) {
+    if (data?.length === 0) {
       fetchGraphData()
     }
   }, [fetchGraphData, data])
@@ -92,7 +97,7 @@ const Dashboard = ({ loggedIn, setHidden }) => {
                     onClick={() => { navigate("/create-graph", { state: { id: card?.id } }) }}
                   >
                     <GraphListCard
-                      title={card?.title.length > 20 ? card?.title.slice(0, 20) + "..." : card?.title}
+                      title={card?.title?.length > 20 ? card?.title.slice(0, 20) + "..." : card?.title}
                       description={card?.description}
                       chartType={card?.chartType}
                       chartData={card?.chartData}
